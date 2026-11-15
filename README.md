@@ -8,6 +8,13 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
 - Ratings and cost for two from current listings for the hotspots, plus live
   Google rating, price and veg info when you open a place (needs a Google key)
 - Directions, Zomato and Swiggy menu links, and Near me on the live site
+- ♥ Save favourites (kept in your browser), Share a link to any place (`#p-…` opens it)
+- Open now filter, read from each place's opening hours (Mumbai time)
+- Suggest a missing place (opens a pre-filled GitHub issue)
+- Install it as a phone app; it works offline after the first visit
+- Data refreshes itself on the 1st of every month (GitHub Action)
+
+Live site: https://nyayaai-dev.github.io/cafe_finder/
 
 ## How it's built
 
@@ -45,7 +52,33 @@ Every push to `main` redeploys the site.
   so repeat opens are free.
 - Google's terms allow showing its data live; the site never stores it.
 
-## Refresh the data
+## Publish to GitHub Pages
+
+The live site is the `gh-pages` branch, made from the `site/` folder:
+
+```
+py build/build.py
+git add -A && git commit -m "Update site"
+git push origin main
+git subtree split --prefix site -b gh-pages-new && git push origin gh-pages-new:gh-pages && git branch -D gh-pages-new
+```
+
+### Your own domain
+
+1. Buy a domain (for example from GoDaddy, Namecheap or Google Domains' successor).
+2. In the repo: **Settings → Pages → Custom domain**, enter it (e.g. `cafes.example.in`) and save.
+3. At the domain seller, add a `CNAME` record pointing `cafes` to `nyayaai-dev.github.io`
+   (for a bare domain, add `A` records to 185.199.108.153, .109.153, .110.153 and .111.153).
+4. Back in Pages settings, tick **Enforce HTTPS** once it's offered.
+
+## Automatic monthly refresh
+
+`.github/workflows/refresh-data.yml` runs on the 1st of each month (and from the
+Actions tab with **Run workflow**). It downloads places, rebuilds, and republishes
+Pages. If a download looks cut short (under 90% of the current places), it stops
+without changing anything.
+
+## Refresh the data by hand
 
 ```
 py build/fetch_places.py       # cafes and restaurants from OpenStreetMap

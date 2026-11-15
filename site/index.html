@@ -1,5 +1,12 @@
 <meta charset="utf-8">
 <title>Mumbai Cafe &amp; Restaurant Finder</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#c2410c">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="description" content="Find every cafe and restaurant from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
+<script>if ('serviceWorker' in navigator && window.isSecureContext) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap">
@@ -873,6 +880,31 @@ button {
 .line a.muted { text-decoration: none; }
 .checks { gap: 6px 14px; font-size: 13px; }
 .checks label { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; }
+.fav {
+  background: none; border: 0; padding: 0 2px; font-size: 18px; line-height: 1; color: var(--muted); cursor: pointer;
+}
+.fav.on { color: #e11d48; }
+.fav:focus-visible { outline: 2px solid var(--accent); border-radius: 4px; }
+.name .right { display: inline-flex; gap: 8px; align-items: center; flex: none; }
+.tag.open { color: var(--veg); background: color-mix(in srgb, var(--veg) 14%, transparent) !important; font-weight: 600; }
+.tag.shut { color: var(--nonveg); background: color-mix(in srgb, var(--nonveg) 14%, transparent) !important; font-weight: 600; }
+.suggest { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding-block: 10px; border-top: 1px solid var(--line); font-size: 13px; }
+dialog#suggestDlg {
+  border: 1px solid var(--line); border-radius: 14px; padding: 20px; width: min(440px, calc(100vw - 32px));
+  background: var(--panel); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+dialog#suggestDlg::backdrop { background: rgba(0,0,0,.45); }
+#suggestForm { display: grid; gap: 6px; }
+#suggestForm h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
+#suggestForm label { font-size: 12px; font-weight: 600; margin-top: 6px; }
+#suggestForm textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical; }
+.dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
+button.ghost { background: var(--chip); color: var(--ink); }
+#toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 2000;
+  background: var(--ink); color: var(--panel); padding: 10px 16px; border-radius: 99px; font-size: 13px; font-weight: 600;
+  box-shadow: 0 6px 20px rgba(0,0,0,.3);
+}
 .addr { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .rate { color: var(--link); font-weight: 600; text-decoration: none; }
 .rate:hover { text-decoration: underline; }
@@ -973,6 +1005,7 @@ button {
       <button type="button" data-area="Bhiwandi">Bhiwandi</button>
       <button type="button" id="viewBtn">This map view</button>
       <button type="button" id="meBtn" hidden>📍 Near me</button>
+      <button type="button" id="installBtn" hidden>⬇ Install app</button>
     </div>
 
     <section class="filters pad">
@@ -997,6 +1030,8 @@ button {
         <label><input type="checkbox" id="fJain"> Jain food</label>
         <label><input type="checkbox" id="fNon"> Non-veg</label>
         <label><input type="checkbox" id="fRated"> Has rating</label>
+        <label><input type="checkbox" id="fOpen"> Open now</label>
+        <label><input type="checkbox" id="fFav"> ♥ Saved <small id="nFav" class="muted"></small></label>
       </div>
       <div class="row between">
         <span id="countLabel" class="muted"></span>
@@ -1005,10 +1040,36 @@ button {
     </section>
 
     <ol id="list" class="list"></ol>
+    <div class="suggest pad">
+      <span class="muted">Missing a cafe or restaurant?</span>
+      <button type="button" class="linkbtn" id="suggestBtn">Suggest a place</button>
+    </div>
     <p class="foot pad">Covers Colaba to Mira Road and Bhayandar, Thane, Bhiwandi, Kalyan and Dombivli, and Navi Mumbai to Panvel. Ratings and cost for two come from the listing named on each place (Zomato, Swiggy, EazyDiner, District, Justdial and others) and can differ between sites. Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, snapshot of 15 November 2026, plus cafes from web listings checked the same day. Ratings open on Google Maps.</p>
   </aside>
   <main id="map" aria-label="Map of Mumbai cafes and restaurants"></main>
 </div>
+
+<dialog id="suggestDlg" aria-labelledby="sgTitle">
+  <form id="suggestForm" method="dialog">
+    <h2 id="sgTitle">Suggest a missing place</h2>
+    <p class="muted">Tell us about a cafe or restaurant that isn't on the map. Sending opens a pre-filled GitHub issue (a free GitHub account is needed), or copy the details to share them another way.</p>
+    <label for="sgName">Name</label>
+    <input id="sgName" required maxlength="120" placeholder="e.g. Kala Ghoda Cafe">
+    <label for="sgArea">Area or street</label>
+    <input id="sgArea" required maxlength="160" placeholder="e.g. Rope Walk Lane, Kala Ghoda">
+    <label for="sgKind">Type</label>
+    <select id="sgKind"><option>Cafe</option><option>Restaurant</option><option>Fast food</option><option>Dessert / bakery</option></select>
+    <label for="sgNotes">Anything else (veg/Jain, cost for two, Google Maps link)</label>
+    <textarea id="sgNotes" rows="3" maxlength="600"></textarea>
+    <p id="sgMsg" class="muted" role="status"></p>
+    <div class="dlg-actions">
+      <button type="button" class="ghost" id="sgCancel">Cancel</button>
+      <button type="button" class="ghost" id="sgCopy">Copy details</button>
+      <button type="submit" id="sgSend">Send on GitHub</button>
+    </div>
+  </form>
+</dialog>
+<div id="toast" role="status" aria-live="polite" hidden></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
@@ -1032,6 +1093,73 @@ button {
   places.forEach((p) => { p.info = [p.address, p.hours, p.phone, p.website, p.menu, p.src, p.priceTwo].filter(Boolean).length + p.cuisine.length; });
 
   const state = { cat: "all", area: null, shown: PAGE, active: null };
+
+  // Stable short key per place (same across rebuilds), used for favourites and share links.
+  const hash = (str) => { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0; return h.toString(36); };
+  places.forEach((p) => { p.key = hash(`${p.name}|${p.lat.toFixed(4)}|${p.lng.toFixed(4)}`); });
+  const byKey = new Map(places.map((p) => [p.key, p]));
+
+  // Favourites live in this browser only.
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage blocked */ } },
+  };
+  const favs = new Set(store.get("cf-favs", []));
+  const favBtn = (p) => `<button type="button" class="fav${favs.has(p.key) ? " on" : ""}" data-fav="${p.key}" aria-pressed="${favs.has(p.key)}" aria-label="${favs.has(p.key) ? "Remove from saved" : "Save"} ${esc(p.name)}">${favs.has(p.key) ? "♥" : "♡"}</button>`;
+
+  // Opening hours (OpenStreetMap format), evaluated in Mumbai time.
+  const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  function nowIST() {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+      .formatToParts(new Date()).map((x) => [x.type, x.value]));
+    return { day: DAYS.indexOf(parts.weekday.slice(0, 2)), min: (+parts.hour) * 60 + (+parts.minute) };
+  }
+  function daySet(spec) {
+    const out = new Set();
+    for (const part of spec.split(",")) {
+      const m = part.trim().match(/^(Mo|Tu|We|Th|Fr|Sa|Su)(?:-(Mo|Tu|We|Th|Fr|Sa|Su))?$/);
+      if (!m) return null;
+      let a = DAYS.indexOf(m[1]); const b = m[2] ? DAYS.indexOf(m[2]) : a;
+      for (let i = 0; i < 7; i++) { out.add(a); if (a === b) break; a = (a + 1) % 7; }
+    }
+    return out;
+  }
+  // Returns true (open), false (closed) or null (hours missing or in a format we don't read).
+  function openNow(hours) {
+    if (!hours) return null;
+    const h = hours.trim();
+    if (h === "24/7") return true;
+    const { day, min } = nowIST();
+    const prev = (day + 6) % 7;
+    let st = null, matched = false;
+    for (const ruleRaw of h.split(";")) {
+      const rule = ruleRaw.trim();
+      if (!rule) continue;
+      const m = rule.match(/^((?:(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)(?:\s*,\s*(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)*)?\s*(.*)$/);
+      if (!m) return null;
+      const days = m[1] ? daySet(m[1].replace(/\s+/g, "")) : new Set([0, 1, 2, 3, 4, 5, 6]);
+      if (!days) return null;
+      const times = m[2].trim();
+      if (/^(off|closed)$/i.test(times)) { if (days.has(day)) { st = false; matched = true; } continue; }
+      const spans = times.split(",").map((t) => t.trim().match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})\+?$/));
+      if (!spans.length || spans.some((x) => !x)) return null;
+      let open = false, applies = false;
+      for (const sp of spans) {
+        const a = +sp[1] * 60 + +sp[2]; let b = +sp[3] * 60 + +sp[4];
+        if (b <= a) b += 1440;                                   // runs past midnight
+        if (days.has(day)) { applies = true; if (min >= a && min < b) open = true; }
+        if (days.has(prev) && b > 1440 && min < b - 1440) { applies = true; open = true; }
+      }
+      if (applies) { st = open; matched = true; }
+    }
+    return matched ? st : false;
+  }
+  const hoursLine = (p) => {
+    if (!p.hours) return "";
+    const o = openNow(p.hours);
+    const tag = o === true ? `<span class="tag open">Open now</span>` : o === false ? `<span class="tag shut">Closed now</span>` : "";
+    return `<div class="line"><span class="lbl">Hours</span>${tag}<span class="muted">${esc(p.hours)}</span></div>`;
+  };
 
   // Every place carries its suburb (e.g. Girgaon) and nearest locality or
   // station (e.g. Charni Road), both worked out from the map's named places.
@@ -1217,6 +1345,7 @@ button {
       <a class="btn" href="${esc(menuUrl(p))}" target="_blank" rel="noopener">${p.menu ? "Menu" : "Menu · Zomato"}</a>
       <a class="btn" href="${esc(swiggyUrl(p))}" target="_blank" rel="noopener">Swiggy</a>
       <a class="btn" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google Maps</a>
+      <button type="button" class="btn" data-share="${p.key}">Share</button>
     </div>`;
 
   // ------------------------------------------------------------ live Google details (website only)
@@ -1257,11 +1386,11 @@ button {
   }
 
   function popupHtml(p) {
-    return `<div class="pop"><h3>${esc(p.name)}</h3>${catTag(p)}
+    return `<div class="pop"><h3>${esc(p.name)} ${favBtn(p)}</h3>${catTag(p)}
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
       ${area(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
-      ${p.hours ? `<p class="meta">Hours: ${esc(p.hours)}</p>` : ""}
+      ${hoursLine(p)}
       ${p.phone ? `<p class="meta">Phone: ${esc(p.phone)}</p>` : ""}
       ${p.website ? `<p class="meta"><a class="rate" href="${esc(p.website)}" target="_blank" rel="noopener">Website</a></p>` : ""}
       <p class="meta">GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</p>
@@ -1277,8 +1406,10 @@ button {
     const text = $("filterText").value.trim().toLowerCase();
     const cu = $("cuisine").value;
     const veg = $("fVeg").checked, jain = $("fJain").checked, non = $("fNon").checked, rated = $("fRated").checked;
+    const openOnly = $("fOpen").checked, favOnly = $("fFav").checked;
     return places.filter((p) => inArea(p) && inCat(p) &&
       (!veg || p.pureVeg) && (!jain || p.jain) && (!non || p.nonVeg) && (!rated || p.rating) &&
+      (!openOnly || openNow(p.hours) === true) && (!favOnly || favs.has(p.key)) &&
       (!cu || p.cuisine.includes(cu)) &&
       (!text || (p.name + " " + p.address + " " + p.loc + " " + p.sub + " " + p.zone).toLowerCase().includes(text)));
   }
@@ -1328,8 +1459,8 @@ button {
     }
     $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
       <li data-id="${p.id}" class="pad${p.id === state.active ? " active" : ""}">
-        <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="dist">${fmtKm(p.d)}</span></div>
-        ${area(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
+        <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="right"><span class="dist">${fmtKm(p.d)}</span>${favBtn(p)}</span></div>
+        ${area(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${cuisine(p)}${source(p)}
         ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
         ${actions(p)}
       </li>`).join("") + (rows.length > state.shown
@@ -1423,7 +1554,7 @@ button {
     document.querySelectorAll(".seg [data-cat]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
     refreshCounts(); render();
   }));
-  ["fVeg", "fJain", "fNon", "fRated"].forEach((id) => $(id).addEventListener("change", () => { state.shown = PAGE; render(); }));
+  ["fVeg", "fJain", "fNon", "fRated", "fOpen", "fFav"].forEach((id) => $(id).addEventListener("change", () => { state.shown = PAGE; render(); }));
   ["filterText", "cuisine"].forEach((id) => $(id).addEventListener("input", () => { state.shown = PAGE; render(); }));
   $("sortBy").addEventListener("change", () => { state.shown = PAGE; render(false); });
   let moveTimer;
@@ -1456,7 +1587,99 @@ button {
     });
   })();
 
+  // ------------------------------------------------------------ favourites
+  const syncFavCount = () => { $("nFav").textContent = favs.size ? `(${favs.size})` : ""; };
+  function toggleFav(key) {
+    favs.has(key) ? favs.delete(key) : favs.add(key);
+    store.set("cf-favs", [...favs]);
+    document.querySelectorAll(`[data-fav="${key}"]`).forEach((b) => {
+      const on = favs.has(key);
+      b.classList.toggle("on", on); b.textContent = on ? "♥" : "♡"; b.setAttribute("aria-pressed", on);
+    });
+    syncFavCount();
+    toast(favs.has(key) ? "Saved" : "Removed from saved");
+    if ($("fFav").checked) render(false);
+  }
+
+  // ------------------------------------------------------------ toast
+  let toastTimer;
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2200);
+  }
+
+  // ------------------------------------------------------------ share links (#p-<key>)
+  const linkFor = (p) => location.href.split("#")[0] + "#p-" + p.key;
+  async function share(key) {
+    const p = byKey.get(key); if (!p) return;
+    const url = linkFor(p);
+    try {
+      if (navigator.share) { await navigator.share({ title: p.name, text: `${p.name}, ${p.address}`, url }); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); toast("Link copied"); }
+    catch (e) { window.prompt ? toast("Copy this link: " + url) : toast(url); }
+  }
+  function openFromHash() {
+    const m = location.hash.match(/^#p-([a-z0-9]+)$/);
+    if (!m || !byKey.has(m[1])) return;
+    const p = byKey.get(m[1]);
+    setTimeout(() => select(p.id, true), 300);
+  }
+  window.addEventListener("hashchange", openFromHash);
+
+  // Hearts and Share live in the list and in popups.
+  document.addEventListener("click", (e) => {
+    const f = e.target.closest("[data-fav]");
+    if (f) { e.preventDefault(); e.stopPropagation(); return toggleFav(f.dataset.fav); }
+    const s = e.target.closest("[data-share]");
+    if (s) { e.preventDefault(); e.stopPropagation(); return share(s.dataset.share); }
+  }, true);
+
+  // ------------------------------------------------------------ suggest a place
+  const REPO = "https://github.com/nyayaai-dev/cafe_finder";
+  const dlg = $("suggestDlg");
+  const suggestion = () => {
+    const v = (id) => $(id).value.trim();
+    return {
+      title: `Add place: ${v("sgName")} (${v("sgArea")})`,
+      body: `**Name:** ${v("sgName")}\n**Area / street:** ${v("sgArea")}\n**Type:** ${v("sgKind")}\n**Notes:** ${v("sgNotes") || "-"}\n\n_Suggested from the website._`,
+    };
+  };
+  $("suggestBtn").addEventListener("click", () => {
+    $("sgMsg").textContent = "";
+    if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+    $("sgName").focus();
+  });
+  $("sgCancel").addEventListener("click", () => dlg.close());
+  $("sgCopy").addEventListener("click", async () => {
+    const s = suggestion();
+    try { await navigator.clipboard.writeText(`${s.title}\n\n${s.body.replace(/\*\*/g, "")}`); $("sgMsg").textContent = "Details copied. Paste them wherever you like to send them."; }
+    catch (e) { $("sgMsg").textContent = "Copying isn't allowed here. Select the text in the fields and copy it."; }
+  });
+  $("suggestForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!$("sgName").value.trim() || !$("sgArea").value.trim()) { $("sgMsg").textContent = "Add a name and an area so we can find it."; return; }
+    const s = suggestion();
+    const a = document.createElement("a");
+    a.href = `${REPO}/issues/new?` + new URLSearchParams({ title: s.title, body: s.body, labels: "place suggestion" });
+    a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+    $("sgMsg").textContent = "GitHub opened in a new tab. Press “Submit new issue” there to send it.";
+  });
+
+  // ------------------------------------------------------------ install as an app
+  let installEvt = null;
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); installEvt = e; $("installBtn").hidden = false; });
+  $("installBtn").addEventListener("click", async () => {
+    if (!installEvt) return;
+    installEvt.prompt();
+    await installEvt.userChoice.catch(() => null);
+    installEvt = null; $("installBtn").hidden = true;
+  });
+  window.addEventListener("appinstalled", () => { $("installBtn").hidden = true; toast("Installed. Open it from your home screen."); });
+
+  syncFavCount();
   refreshCounts();
   render();
+  openFromHash();
 })();
 </script>

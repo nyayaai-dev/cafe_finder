@@ -226,7 +226,7 @@ def js(obj):
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
-SNAPSHOT = "15 November 2026"
+SNAPSHOT = data.get("fetched_label") or "15 November 2026"
 mapbase = open(os.path.join(DATA_DIR, "map_base.json"), encoding="utf-8").read()
 streets = open(os.path.join(DATA_DIR, "map_minor.json"), encoding="utf-8").read()
 html = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
@@ -238,7 +238,8 @@ if SINGLE:
     block = ('<script type="application/json" id="minor-streets">' + streets.replace("</", "<\\/") + "</script>\n"
              "<script>\nconst RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\nconst MAPD = " + mapbase + ";\n</script>")
     OUT = SINGLE
-    open(OUT, "w", encoding="utf-8").write(html[:start] + block + html[end:])
+    page = html[:start] + block + html[end:]
+    open(OUT, "w", encoding="utf-8").write(page.replace("<!--PWA-->", ""))
 else:
     # Website: data in separate, cacheable files; streets load on first zoom-in.
     os.makedirs(os.path.join(SITE_DIR, "data"), exist_ok=True)
@@ -248,7 +249,34 @@ else:
     open(os.path.join(SITE_DIR, "data", "streets.json"), "w", encoding="utf-8").write(streets)
     block = '<script src="data/places.js"></script>\n<script src="data/basemap.js"></script>'
     OUT = os.path.join(SITE_DIR, "index.html")
-    open(OUT, "w", encoding="utf-8").write(html[:start] + block + html[end:])
+
+    # Installable app: manifest, icons and an offline cache (service worker).
+    import hashlib, subprocess
+    subprocess.run([sys.executable, "-I", os.path.join(HERE, "make_icons.py")], check=True, stdout=subprocess.DEVNULL)
+    version = hashlib.sha1((js(rows) + mapbase[:5000] + html).encode()).hexdigest()[:10]
+    manifest = {
+        "name": "Mumbai Cafe & Restaurant Finder", "short_name": "Cafe Finder",
+        "description": "Every cafe and restaurant from Colaba to Thane, Kalyan and Panvel on one map.",
+        "start_url": "./", "scope": "./", "display": "standalone",
+        "background_color": "#f7f5f2", "theme_color": "#c2410c",
+        "icons": [
+            {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
+            {"src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml"},
+        ],
+    }
+    json.dump(manifest, open(os.path.join(SITE_DIR, "manifest.webmanifest"), "w", encoding="utf-8"), indent=1)
+    sw = open(os.path.join(HERE, "sw.template.js"), encoding="utf-8").read().replace("__VERSION__", version)
+    open(os.path.join(SITE_DIR, "sw.js"), "w", encoding="utf-8").write(sw)
+    pwa = ('<link rel="manifest" href="manifest.webmanifest">\n'
+           '<meta name="theme-color" content="#c2410c">\n'
+           '<link rel="icon" href="icons/icon.svg" type="image/svg+xml">\n'
+           '<link rel="apple-touch-icon" href="icons/icon-192.png">\n'
+           '<meta name="apple-mobile-web-app-capable" content="yes">\n'
+           '<meta name="description" content="Find every cafe and restaurant from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">\n'
+           "<script>if ('serviceWorker' in navigator && window.isSecureContext) "
+           "addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>")
+    open(OUT, "w", encoding="utf-8").write((html[:start] + block + html[end:]).replace("<!--PWA-->", pwa))
 print(f"{len(rows)} places ({sum(r[21] for r in rows)} from web listings, {sum(1 for r in rows if r[17])} with ratings, {sum(1 for r in rows if r[13])} with cost for two, {sum(1 for r in rows if r[20] & 1)} pure veg, {sum(1 for r in rows if r[20] & 2)} jain, {sum(1 for r in rows if r[20] & 4)} non-veg) from {os.path.basename(src)}; "
       f"{len(ZLIST)} main areas, {len(SUBS)} neighbourhoods, {len(LOCS)} localities; groups: { {k: len(v) for k, v in groups.items()} }; "
       f"{os.path.getsize(OUT)/1024:.0f} KB")
