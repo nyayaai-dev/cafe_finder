@@ -1225,8 +1225,12 @@ button {
   const live = { site: false, google: false, cache: new Map() };
   fetch("api/place?probe=1").then((r) => r.json()).then((d) => {
     live.site = true; live.google = !!d.configured;
-    $("meBtn").hidden = !("geolocation" in navigator);
   }).catch(() => {});
+  // Near me needs a secure page that isn't embedded (the claude.ai shareable page is
+  // framed and can't use location; Vercel, GitHub Pages and localhost can).
+  let framed = true;
+  try { framed = window.top !== window; } catch (e) { framed = true; }
+  $("meBtn").hidden = !("geolocation" in navigator && window.isSecureContext && !framed);
 
   const PRICE_WORDS = ["Free", "Inexpensive", "Moderate", "Expensive", "Very expensive"];
   function liveHtml(g) {
