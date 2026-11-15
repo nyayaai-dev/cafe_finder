@@ -882,7 +882,16 @@ button.ghost { background: var(--chip); color: var(--ink); }
     const m = location.hash.match(/^#p-([a-z0-9]+)$/);
     if (!m || !byKey.has(m[1])) return;
     const p = byKey.get(m[1]);
-    setTimeout(() => select(p.id, true), 300);
+    // Jump without animation (animations stall in background tabs), then open the popup.
+    select(p.id, false);
+    map.setView([p.lat, p.lng], 18, { animate: false });
+    const mk = markers[p.id];
+    const tryOpen = (n) => {
+      if (cluster.getVisibleParent(mk) === mk) mk.openPopup();
+      else if (n > 0) setTimeout(() => tryOpen(n - 1), 250);
+      else cluster.zoomToShowLayer(mk, () => mk.openPopup());
+    };
+    setTimeout(() => tryOpen(8), 150);
   }
   window.addEventListener("hashchange", openFromHash);
 
