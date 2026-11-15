@@ -1,0 +1,192 @@
+[
+ {
+  "name": "Brunch 'N' Munch",
+  "lat": 19.18451,
+  "lng": 72.82689,
+  "kind": "Cafe",
+  "address": "Orlem, Malad West",
+  "priceTwo": 950,
+  "src": "District",
+  "srcUrl": "https://www.district.in/blog/mumbai-breakfast-cafes"
+ },
+ {
+  "name": "The Burrow Cafe",
+  "lat": 19.18529,
+  "lng": 72.83586,
+  "kind": "Cafe",
+  "address": "Malad West",
+  "priceTwo": 900,
+  "src": "Free Press Journal",
+  "srcUrl": "https://www.freepressjournal.in/lifestyle/best-breakfast-spots-in-mumbais-western-suburbs-5-cafes-you-cant-miss"
+ },
+ {
+  "name": "Love & Latte",
+  "lat": 19.18529,
+  "lng": 72.83586,
+  "kind": "Cafe",
+  "address": "Malad West",
+  "priceTwo": 650,
+  "src": "Swiggy",
+  "srcUrl": "https://www.localsamosa.com/food-and-drinks/coffee-shops-in-mumbai-10068806"
+ },
+ {
+  "name": "Blue Tokai Coffee Roasters (Malad West)",
+  "lat": 19.19078,
+  "lng": 72.83263,
+  "kind": "Coffee shop",
+  "address": "Evershine Nagar, Malad West",
+  "priceTwo": null,
+  "src": "Blue Tokai",
+  "srcUrl": "https://bluetokaicoffee.com/pages/blue-tokai-coffee-roasters-malad-west"
+ },
+ {
+  "name": "Circle Cafe",
+  "lat": 19.1868,
+  "lng": 72.842,
+  "kind": "Cafe",
+  "address": "Kanchpada, Malad West",
+  "priceTwo": null,
+  "src": "Explurger",
+  "srcUrl": "https://www.explurger.com/pd/oyk1jaydvsbzqpbzk"
+ },
+ {
+  "name": "Aaron's Bake n Brew House",
+  "lat": 19.18451,
+  "lng": 72.82689,
+  "kind": "Bakery cafe",
+  "address": "Orlem, Malad West",
+  "priceTwo": null,
+  "src": "Foursquare",
+  "srcUrl": "https://lv.foursquare.com/anisha27310/list/the-best-afterwork-drink-spots-in-mumbai"
+ },
+ {
+  "name": "Magari",
+  "lat": 19.20763,
+  "lng": 72.83709,
+  "kind": "Cafe",
+  "address": "Mahavir Nagar, Kandivali West",
+  "priceTwo": null,
+  "src": "Yappe",
+  "srcUrl": "https://yappe.in/maharashtra/mumbai/magari/280394"
+ },
+ {
+  "name": "Mittea Cafe",
+  "lat": 19.20246,
+  "lng": 72.84164,
+  "kind": "Cafe",
+  "address": "Shantilal Modi Road, Kandivali West",
+  "priceTwo": 300,
+  "src": "District",
+  "srcUrl": "https://www.district.in/dining/mumbai/mittea-cafe-kandivali-west"
+ },
+ {
+  "name": "Cafe Ville Villa",
+  "lat": 19.2043,
+  "lng": 72.844,
+  "kind": "Cafe",
+  "address": "MHB Colony, Kandivali West",
+  "priceTwo": null,
+  "src": "LBB",
+  "srcUrl": "https://lbb.in/places/Cafe-Ville-Villa-kandivali-west-0834d6"
+ },
+ {
+  "name": "Third Wave Coffee (Kandivali West)",
+  "lat": 19.20763,
+  "lng": 72.83709,
+  "kind": "Coffee shop",
+  "address": "Sai Baba Extension Road, Mahavir Nagar, Kandivali West",
+  "priceTwo": null,
+  "src": "eChai",
+  "srcUrl": "https://echai.ventures/grid/mumbai/third-wave-coffee-35"
+ },
+ {
+  "name": "The Chocolate Room",
+  "lat": 19.20763,
+  "lng": 72.83709,
+  "kind": "Cafe",
+  "address": "Mahavir Nagar, Kandivali West",
+  "priceTwo": null,
+  "src": "Foursquare",
+  "srcUrl": "https://lv.foursquare.com/anisha27310/list/the-best-afterwork-drink-spots-in-mumbai"
+ },
+ {
+  "name": "Blue Tokai Coffee Roasters (Kandivali East)",
+  "lat": 19.2052,
+  "lng": 72.86262,
+  "kind": "Coffee shop",
+  "address": "Kandivali East",
+  "priceTwo": null,
+  "src": "Blue Tokai",
+  "srcUrl": "https://stores.bluetokaicoffee.com/blue-tokai-coffee-roasters-kandivali-east-cafe-kandivali-east-mumbai-436746/Home"
+ },
+ {
+  "name": "Tea Post",
+  "lat": 19.22981,
+  "lng": 72.84714,
+  "kind": "Tea shop",
+  "address": "Borivali West",
+  "priceTwo": null,
+  "src": "Trip101",
+  "srcUrl": "https://trip101.com/article/cafes-in-borivali"
+ },
+ {
+  "name": "Blue Bliss Cafe",
+  "lat": 19.22981,
+  "lng": 72.84714,
+  "kind": "Cafe",
+  "address": "Borivali West",
+  "priceTwo": null,
+  "src": "Trip101",
+  "srcUrl": "https://trip101.com/article/cafes-in-borivali"
+ },
+ {
+  "name": "Cafe Pibatie",
+  "lat": 19.22981,
+  "lng": 72.84714,
+  "kind": "Cafe",
+  "address": "Borivali West",
+  "priceTwo": null,
+  "src": "eChai",
+  "srcUrl": "https://echai.ventures/grid/mumbai/cafe-pibatie-borivali"
+ },
+ {
+  "name": "Third Wave Coffee (Borivali West)",
+  "lat": 19.229,
+  "lng": 72.848,
+  "kind": "Coffee shop",
+  "address": "Roshan Nagar, Borivali West",
+  "priceTwo": null,
+  "src": "eChai",
+  "srcUrl": "https://echai.ventures/grid/mumbai/third-wave-coffee-34"
+ },
+ {
+  "name": "Blue Tokai Coffee Roasters (IC Colony)",
+  "lat": 19.229,
+  "lng": 72.848,
+  "kind": "Coffee shop",
+  "address": "IC Colony, Borivali West",
+  "priceTwo": null,
+  "src": "Blue Tokai",
+  "srcUrl": "https://stores.bluetokaicoffee.com/blue-tokai-coffee-roasters-ic-colony-borivali-cafe-borivali-west-mumbai-436750/Contact-Us/"
+ },
+ {
+  "name": "Bunkerzzz Cafe",
+  "lat": 19.22981,
+  "lng": 72.84714,
+  "kind": "Cafe",
+  "address": "Borivali",
+  "priceTwo": null,
+  "src": "Curly Tales",
+  "srcUrl": "https://curlytales.com/5-instagram-worthy-cafes-in-borivali-to-chill-after-a-long-day-at-work"
+ },
+ {
+  "name": "June Bistro & Bar",
+  "lat": 19.24888,
+  "lng": 72.85296,
+  "kind": "Cafe & restaurant",
+  "address": "Dahisar West",
+  "priceTwo": null,
+  "src": "VenueLook",
+  "srcUrl": "https://www.venuelook.com/mumbai/locality/dahisar-west/venuetype/cafes"
+ }
+]

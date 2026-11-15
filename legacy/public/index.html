@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cafe &amp; Restaurant Finder</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<link rel="stylesheet" href="styles.css?v=7">
+</head>
+<body>
+<div class="app">
+  <aside class="panel">
+    <header class="brand">
+      <span class="logo" aria-hidden="true">☕</span>
+      <div>
+        <h1>Cafe &amp; Restaurant Finder</h1>
+        <p class="sub">Every cafe and restaurant in <span id="cityName">Mumbai</span></p>
+      </div>
+      <span id="sourceBadge" class="badge">…</span>
+    </header>
+
+    <form id="searchForm" class="search" autocomplete="off">
+      <label for="place" class="sr">Area in Mumbai</label>
+      <input id="place" placeholder="All of Mumbai, or an area: Bandra West, Colaba…">
+      <button id="goBtn" type="submit">Search</button>
+    </form>
+    <div class="quick">
+      <button type="button" data-q="">All Mumbai</button>
+      <button type="button" data-q="Bandra West">Bandra</button>
+      <button type="button" data-q="Andheri West">Andheri</button>
+      <button type="button" data-q="Colaba">Colaba</button>
+      <button type="button" data-q="Lower Parel">Lower Parel</button>
+      <button type="button" id="viewBtn">This map view</button>
+      <button type="button" id="meBtn">📍 Near me</button>
+    </div>
+
+    <section id="progress" class="progress" hidden>
+      <div class="bar"><span id="barFill"></span></div>
+      <div class="stats">
+        <span><b id="stFound">0</b> places</span>
+        <span><b id="stTiles">0</b>/<b id="stTotal">0</b> tiles</span>
+        <span><b id="stCalls">0</b> API calls</span>
+        <button id="stopBtn" type="button" class="link">Stop</button>
+      </div>
+      <p id="status" class="status"></p>
+    </section>
+
+    <section class="filters">
+      <div class="seg" role="radiogroup" aria-label="Category">
+        <button type="button" data-cat="all" class="on" role="radio" aria-checked="true">All <span id="nAll">0</span></button>
+        <button type="button" data-cat="cafe" role="radio" aria-checked="false"><i class="sw cafe"></i>Cafés <span id="nCafe">0</span></button>
+        <button type="button" data-cat="restaurant" role="radio" aria-checked="false"><i class="sw restaurant"></i>Restaurants <span id="nRest">0</span></button>
+      </div>
+      <input id="filterText" placeholder="Filter by name or address">
+      <div class="row">
+        <select id="minRating" aria-label="Minimum rating">
+          <option value="0">Any rating</option>
+          <option value="3.5">3.5+</option>
+          <option value="4">4.0+</option>
+          <option value="4.5">4.5+</option>
+        </select>
+        <select id="sortBy" aria-label="Sort by">
+          <option value="rating">Top rated on Google</option>
+          <option value="priceLow">Lowest price for two</option>
+          <option value="reviews">Most reviewed</option>
+          <option value="name">Name A–Z</option>
+          <option value="distance">Nearest (to you, or map centre)</option>
+        </select>
+        <select id="cuisine" aria-label="Cuisine"><option value="">All cuisines</option></select>
+        <label class="check"><input id="openNow" type="checkbox"> Open now</label>
+      </div>
+      <div class="row between">
+        <span id="countLabel" class="muted">No search yet</span>
+        <button id="csvBtn" type="button" class="link" disabled>Export CSV</button>
+      </div>
+    </section>
+
+    <ol id="list" class="list"></ol>
+  </aside>
+  <main id="map" aria-label="Map of cafes and restaurants"></main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="app.js?v=7"></script>
+</body>
+</html>

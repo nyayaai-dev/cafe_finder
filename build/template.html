@@ -1,0 +1,723 @@
+<meta charset="utf-8">
+<title>Mumbai Cafe &amp; Restaurant Finder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/*__VENDOR_CSS__*/
+</style>
+<style>
+/* Layout: list panel on the left, drawn map of Mumbai on the right; stacked with a pinned map on phones. */
+:root {
+  --bg: #f7f5f2;
+  --panel: #ffffff;
+  --ink: #241a14;
+  --muted: #76675c;
+  --line: #e7e0d9;
+  --chip: #f1ece6;
+  --accent: #7a3f1d;         /* roasted coffee: cafes + primary actions */
+  --accent-ink: #ffffff;
+  --rest: #17786b;           /* restaurants */
+  --link: #a0561f;
+  --veg: #1e8a3c;
+  --nonveg: #b3261e;
+  --star: #b7791f;
+  --pin-cafe: #c2410c;
+  --pin-rest: #0f8b7d;
+  --map-land: #f2efe9;
+  --map-sea: #aad3df;
+  --map-park: #c8facc;
+  --map-forest: #add19e;
+  --map-grass: #cdebb0;
+  --map-mangrove: #a8d8c4;
+  --map-motorway: #e892a2; --map-motorway-c: #dc2a67;
+  --map-trunk: #f9b29c; --map-trunk-c: #c84e2f;
+  --map-primary: #fcd6a4; --map-primary-c: #a06b00;
+  --map-secondary: #f7fabf; --map-secondary-c: #707d05;
+  --map-tertiary: #ffffff; --map-tertiary-c: #8f8f8f;
+  --map-minor: #ffffff; --map-minor-c: #c4bcb4;
+  --map-rail: #707070;
+  --map-metro: #2b6cd1;
+  --map-label: #5b4d43;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15110e; --veg: #5cc77c; --nonveg: #f08a80; --star: #e9b44c; --panel: #1d1814; --ink: #f0e7de; --muted: #a8998c; --line: #352c25; --chip: #2a231d;
+    --accent: #d48d57; --accent-ink: #1a110b; --rest: #4cc2ae; --link: #e3a273;
+    --map-land: #232220; --map-sea: #1d3a4a; --map-park: #24402b; --map-forest: #1f3a22; --map-grass: #2a3d26; --map-mangrove: #1f3b35; --map-motorway: #b0586a; --map-motorway-c: #6e2236; --map-trunk: #b77356; --map-trunk-c: #6a3220; --map-primary: #a88a5c; --map-primary-c: #5a4319; --map-secondary: #8c8a5e; --map-secondary-c: #4b4a22; --map-tertiary: #5e5a55; --map-tertiary-c: #2c2a27; --map-minor: #4a4743; --map-minor-c: #2a2826; --map-rail: #8f8a84; --map-metro: #5b9bff; --map-label: #b9aa9c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15110e; --veg: #5cc77c; --nonveg: #f08a80; --star: #e9b44c; --panel: #1d1814; --ink: #f0e7de; --muted: #a8998c; --line: #352c25; --chip: #2a231d;
+  --accent: #d48d57; --accent-ink: #1a110b; --rest: #4cc2ae; --link: #e3a273;
+  --map-land: #232220; --map-sea: #1d3a4a; --map-park: #24402b; --map-forest: #1f3a22; --map-grass: #2a3d26; --map-mangrove: #1f3b35; --map-motorway: #b0586a; --map-motorway-c: #6e2236; --map-trunk: #b77356; --map-trunk-c: #6a3220; --map-primary: #a88a5c; --map-primary-c: #5a4319; --map-secondary: #8c8a5e; --map-secondary-c: #4b4a22; --map-tertiary: #5e5a55; --map-tertiary-c: #2c2a27; --map-minor: #4a4743; --map-minor-c: #2a2826; --map-rail: #8f8a84; --map-metro: #5b9bff; --map-label: #b9aa9c;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.45 var(--font-body);
+}
+.app { display: grid; grid-template-columns: minmax(340px, 410px) 1fr; height: 100%; }
+.panel {
+  background: var(--panel); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; min-height: 0; min-width: 0;
+}
+.pad { padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: 18px; }
+#map { height: 100%; background: var(--map-sea); position: relative; overflow: hidden; }
+
+.brand { padding-block: 18px 8px; }
+.brand h1 {
+  margin: 0; font: 700 22px/1.1 var(--font-display); letter-spacing: -.02em; text-wrap: balance;
+}
+.brand p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+
+.search { display: flex; gap: 8px; padding-block: 8px; }
+input, select, button { font: inherit; }
+input, select {
+  color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 10px; min-width: 0;
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.search input { flex: 1; }
+button {
+  cursor: pointer; border: 0; border-radius: 8px; background: var(--accent); color: var(--accent-ink);
+  padding: 8px 14px; font-weight: 600;
+}
+.quick { display: flex; flex-wrap: wrap; gap: 6px; padding-block: 2px 12px; }
+.quick button {
+  background: var(--chip); color: var(--ink); font-weight: 500; font-size: 12px; padding: 5px 11px; border-radius: 99px;
+}
+.quick button.on { background: var(--ink); color: var(--panel); }
+
+.filters { display: grid; gap: 8px; padding-block: 12px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.seg { display: flex; gap: 3px; background: var(--chip); border-radius: 10px; padding: 3px; }
+.seg button {
+  flex: 1; min-width: 0; background: none; color: var(--muted); font-size: 13px; padding: 7px 4px;
+  display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+}
+.seg button.on { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.18); }
+.seg small { font-size: 11px; color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.sw { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.sw.cafe { background: var(--accent); }
+.sw.rest { background: var(--rest); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row > select { flex: 1 1 140px; }
+.between { justify-content: space-between; }
+.muted { color: var(--muted); font-size: 12px; }
+.linkbtn { background: none; color: var(--link); padding: 0; font-weight: 600; font-size: 13px; }
+
+.list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+.list li { padding-block: 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.list li:hover, .list li.active { background: var(--chip); }
+.name { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; font-size: 15px; }
+.name > span { min-width: 0; overflow-wrap: anywhere; }
+.dist { font-weight: 500; font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cat {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  padding: 1px 7px; border-radius: 99px; vertical-align: 2px; white-space: nowrap; margin-left: 4px;
+  color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.cat.web { color: var(--muted); background: var(--chip); }
+.cat.rest { color: var(--rest); background: color-mix(in srgb, var(--rest) 14%, transparent); }
+.line { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; font-size: 12px; margin-top: 5px; }
+.lbl {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); min-width: 54px;
+}
+.tag { background: var(--chip); border-radius: 99px; padding: 1px 8px; }
+.list li .tag { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.tag.veg { color: var(--veg); background: color-mix(in srgb, var(--veg) 14%, transparent) !important; font-weight: 600; }
+.tag.nonveg { color: var(--nonveg); background: color-mix(in srgb, var(--nonveg) 14%, transparent) !important; font-weight: 600; }
+.tag.jain { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent) !important; font-weight: 600; }
+.stars { color: var(--star); }
+.line a.muted { text-decoration: none; }
+.checks { gap: 6px 14px; font-size: 13px; }
+.checks label { display: inline-flex; gap: 5px; align-items: center; cursor: pointer; }
+.addr { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.rate { color: var(--link); font-weight: 600; text-decoration: none; }
+.rate:hover { text-decoration: underline; }
+.actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 9px; }
+.btn {
+  font-size: 12px; font-weight: 600; text-decoration: none; padding: 5px 11px; border-radius: 99px;
+  border: 1px solid var(--line); color: var(--ink); background: var(--panel);
+}
+.btn:hover { border-color: var(--accent); }
+.btn.go { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.more { text-align: center; cursor: default; }
+.empty { padding: 28px 18px; color: var(--muted); text-align: center; cursor: default; }
+.foot { padding-block: 10px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); }
+.foot a { color: var(--muted); }
+
+/* map pieces */
+.leaflet-container { font-family: var(--font-body); background: var(--map-sea); }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--panel); color: var(--ink); }
+.leaflet-popup-content { margin: 14px 16px; min-width: 250px; font-size: 13px; line-height: 1.4; }
+.leaflet-container a.leaflet-popup-close-button { color: var(--muted); }
+.leaflet-bar a { background: var(--panel); color: var(--ink); border-color: var(--line); }
+.leaflet-control-attribution { background: color-mix(in srgb, var(--panel) 85%, transparent) !important; color: var(--muted); }
+.leaflet-control-attribution a { color: var(--link); }
+.pop h3 { margin: 0 0 2px; font: 700 16px/1.2 var(--font-display); }
+.pop .meta { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+.dot {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--pin-cafe); color: #fff;
+  border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.45);
+  display: grid; place-items: center; transition: transform .12s;
+}
+.dot svg { width: 13px; height: 13px; }
+.dot.rest { background: var(--pin-rest); }
+.dot.rated { box-shadow: 0 0 0 2px var(--star), 0 1px 4px rgba(0,0,0,.45); }
+.dot:hover { transform: scale(1.15); }
+.dot.hi { transform: scale(1.35); box-shadow: 0 0 0 3px var(--ink), 0 2px 6px rgba(0,0,0,.5); }
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+  background: var(--pin-cafe); color: #fff; font: 700 12px var(--font-body); box-shadow: 0 0 0 2px #fff, 0 1px 4px rgba(0,0,0,.4);
+}
+.marker-cluster-medium div { background: #b45309; }
+.marker-cluster-large div { background: #9a3412; }
+.area-label {
+  font: 700 11.5px var(--font-body); color: var(--map-label); text-transform: uppercase; letter-spacing: .08em;
+  white-space: nowrap; text-shadow: 0 0 2px var(--map-land), 0 0 3px var(--map-land), 0 0 5px var(--map-land); pointer-events: none;
+  transform: translate(-50%, -50%); display: inline-block;
+}
+.loc-label {
+  font: 500 10.5px var(--font-body); color: var(--map-label); white-space: nowrap; pointer-events: none;
+  text-shadow: 0 0 3px var(--map-land), 0 0 3px var(--map-land); transform: translate(-50%, -50%); display: inline-block; opacity: .85;
+}
+.hide-labels .area-label, .hide-locs .loc-label { display: none; }
+
+@media (max-width: 760px) {
+  html, body { height: auto; }
+  .app { grid-template-columns: 1fr; height: auto; }
+  #map {
+    order: -1; height: 44vh; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+    border-bottom: 1px solid var(--line);
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+  .panel { border-right: 0; }
+  .pad { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .list { overflow: visible; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="app">
+  <aside class="panel">
+    <header class="brand pad">
+      <h1>Mumbai Cafe &amp; Restaurant Finder</h1>
+      <p>Every named cafe and restaurant from Colaba to Mira Road, Thane, Bhiwandi, Kalyan and Panvel.</p>
+    </header>
+
+    <form id="searchForm" class="search pad" autocomplete="off">
+      <label for="place" hidden>Area</label>
+      <input id="place" list="areaList" placeholder="Any area or station: Charni Road, Vashi, Malad West…">
+      <datalist id="areaList"></datalist>
+      <button type="submit">Show</button>
+    </form>
+    <div class="quick pad" id="quick">
+      <button type="button" data-area="" class="on">Everywhere</button>
+      <button type="button" data-area="Colaba">Colaba</button>
+      <button type="button" data-area="Kala Ghoda">Kala Ghoda</button>
+      <button type="button" data-area="Churchgate">Churchgate</button>
+      <button type="button" data-area="Lower Parel">Lower Parel</button>
+      <button type="button" data-area="Bandra">Bandra</button>
+      <button type="button" data-area="Khar">Khar</button>
+      <button type="button" data-area="Juhu">Juhu</button>
+      <button type="button" data-area="Santacruz">Santacruz</button>
+      <button type="button" data-area="Andheri">Andheri</button>
+      <button type="button" data-area="Powai">Powai</button>
+      <button type="button" data-area="Malad to Dahisar">Malad → Dahisar</button>
+      <button type="button" data-area="Mira Road &amp; Bhayandar">Mira Road</button>
+      <button type="button" data-area="Navi Mumbai">Navi Mumbai</button>
+      <button type="button" data-area="Thane">Thane</button>
+      <button type="button" data-area="Kalyan &amp; Dombivli">Kalyan</button>
+      <button type="button" data-area="Bhiwandi">Bhiwandi</button>
+      <button type="button" id="viewBtn">This map view</button>
+      <button type="button" id="meBtn" hidden>📍 Near me</button>
+    </div>
+
+    <section class="filters pad">
+      <div class="seg" role="radiogroup" aria-label="Category">
+        <button type="button" data-cat="all" class="on" role="radio" aria-checked="true">All <small id="nAll">0</small></button>
+        <button type="button" data-cat="cafe" role="radio" aria-checked="false"><i class="sw cafe"></i>Cafes <small id="nCafe">0</small></button>
+        <button type="button" data-cat="rest" role="radio" aria-checked="false"><i class="sw rest"></i>Restaurants <small id="nRest">0</small></button>
+      </div>
+      <input id="filterText" placeholder="Filter by name or street" aria-label="Filter by name or street">
+      <div class="row">
+        <select id="cuisine" aria-label="Cuisine"><option value="">All cuisines</option></select>
+        <select id="sortBy" aria-label="Sort by">
+          <option value="near">Nearest to map centre</option>
+          <option value="rating">Top rated (where a rating is listed)</option>
+          <option value="cheap">Lowest cost for two</option>
+          <option value="name">Name A–Z</option>
+          <option value="info">Most details listed</option>
+        </select>
+      </div>
+      <div class="row checks">
+        <label><input type="checkbox" id="fVeg"> Pure veg</label>
+        <label><input type="checkbox" id="fJain"> Jain food</label>
+        <label><input type="checkbox" id="fNon"> Non-veg</label>
+        <label><input type="checkbox" id="fRated"> Has rating</label>
+      </div>
+      <div class="row between">
+        <span id="countLabel" class="muted"></span>
+        <button id="csvBtn" type="button" class="linkbtn" hidden>Download CSV</button>
+      </div>
+    </section>
+
+    <ol id="list" class="list"></ol>
+    <p class="foot pad">Covers Colaba to Mira Road and Bhayandar, Thane, Bhiwandi, Kalyan and Dombivli, and Navi Mumbai to Panvel. Ratings and cost for two come from the listing named on each place (Zomato, Swiggy, EazyDiner, District, Justdial and others) and can differ between sites. Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, snapshot of __SNAPSHOT__, plus cafes from web listings checked the same day. Ratings open on Google Maps.</p>
+  </aside>
+  <main id="map" aria-label="Map of Mumbai cafes and restaurants"></main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<!--DATA-->
+<script>/* filled in by build/build.py: RAW, GEO, MAPD (+ inline streets for the single-file page) */</script>
+<!--/DATA-->
+<script>
+(() => {
+  const PAGE = 150;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  // [name, isRestaurant, kind, address, lat, lng, cuisine;list, hours, phone, website, menu]
+  const places = RAW.map((r, i) => ({
+    id: i, name: r[0], cat: r[1] ? "rest" : "cafe", kind: r[2], address: r[3], lat: r[4], lng: r[5],
+    cuisine: r[6] ? r[6].split(";") : [], hours: r[7], phone: r[8], website: r[9], menu: r[10],
+    web: !!r[21], src: r[11], srcUrl: r[12], priceTwo: r[13] || 0,
+    rating: r[17] || 0, ratingSrc: r[18], priceSrc: r[19], pureVeg: !!(r[20] & 1), jain: !!(r[20] & 2), nonVeg: !!(r[20] & 4), vegOk: !!(r[20] & 8),
+    sub: GEO.suburbs[r[14]].name, loc: GEO.locs[r[15]].name, zone: GEO.zones[r[16]].name,
+  }));
+  places.forEach((p) => { p.info = [p.address, p.hours, p.phone, p.website, p.menu, p.src, p.priceTwo].filter(Boolean).length + p.cuisine.length; });
+
+  const state = { cat: "all", area: null, shown: PAGE, active: null };
+
+  // Every place carries its suburb (e.g. Girgaon) and nearest locality or
+  // station (e.g. Charni Road), both worked out from the map's named places.
+  const GROUPS = {};
+  Object.entries(GEO.groups).forEach(([n, parts]) => { GROUPS[n.toLowerCase()] = { name: n, parts }; });
+
+  // ------------------------------------------------------------ map
+  const MUMBAI = L.latLngBounds(GEO.outline);
+  const map = L.map("map", {
+    preferCanvas: true, minZoom: 10, maxZoom: 18, maxBounds: MUMBAI.pad(0.15),
+    zoomSnap: 0.5, attributionControl: true,
+  }).fitBounds(MUMBAI);
+  map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
+
+  // ---------------------------------------------------------- base map (OpenStreetMap data)
+  const dec = (a) => { const out = []; let y = 0, x = 0; for (let i = 0; i < a.length; i += 2) { y += a[i]; x += a[i + 1]; out.push([y / 1e5, x / 1e5]); } return out; };
+  const R = L.canvas({ padding: 0.4, tolerance: 0 });
+  map.createPane("basemap"); map.getPane("basemap").style.zIndex = 250;
+  const opt = (o) => Object.assign({ renderer: R, pane: "basemap", interactive: false }, o);
+
+  // Road widths by class and zoom (px), casing drawn 1.6 px wider.
+  const WIDTH = { motorway: [1.4, 9], trunk: [1.2, 8], primary: [1, 7], secondary: [0.7, 6], tertiary: [0.5, 5], minor: [0.4, 4] };
+  const MINZ = { motorway: 0, trunk: 0, primary: 10.5, secondary: 11.5, tertiary: 12.5, minor: 13.5 };
+  const width = (cls, z) => { const [a, b] = WIDTH[cls]; const k = Math.min(1, Math.max(0, (z - 10) / 7)); return a + (b - a) * k * k; };
+
+  const fills = [], roadLayers = [];
+  function polyLayer(key, token) {
+    const lines = (MAPD[key] || []).map(dec);
+    if (!lines.length) return;
+    const l = L.polygon(lines.map((r) => [r]), opt({ stroke: false, fillOpacity: 1 }));
+    fills.push([l, token]);
+    l.addTo(map);
+  }
+  ["land", "water", "mangrove", "grass", "park", "forest"].forEach((k) =>
+    polyLayer(k, { land: "--map-land", water: "--map-sea", mangrove: "--map-mangrove", grass: "--map-grass", park: "--map-park", forest: "--map-forest" }[k]));
+
+  function addRoadGroup(cls, lines) {
+    const casing = L.polyline(lines, opt({ lineCap: "round", lineJoin: "round" }));
+    const fill = L.polyline(lines, opt({ lineCap: "round", lineJoin: "round" }));
+    const g = { cls, casing, fill };
+    roadLayers.push(g);
+    return g;
+  }
+  const ORDER = ["tertiary", "secondary", "primary", "trunk", "motorway"];
+  const majorGroups = [];
+  ORDER.forEach((cls) => Object.values((MAPD.roads || {})[cls] || {}).forEach((cell) => majorGroups.push(addRoadGroup(cls, cell.map(dec)))));
+
+  const railLines = ((MAPD.rail || {}).rail || []).map(dec);
+  const metroLines = ((MAPD.rail || {}).metro || []).map(dec);
+  const railBase = L.polyline(railLines, opt({ weight: 3 }));
+  const railDash = L.polyline(railLines, opt({ weight: 1.6, dashArray: "6 6" }));
+  const metro = L.polyline(metroLines, opt({ weight: 3, opacity: 0.9 }));
+
+  // Residential streets: loaded on first zoom-in, shown only for the cells in view.
+  let minor = null, minorLoading = false;
+  const minorGroups = new Map();
+  function syncMinor() {
+    const z = map.getZoom();
+    if (z < MINZ.minor) { minorGroups.forEach((g) => { g.casing.remove(); g.fill.remove(); }); return; }
+    if (!minor) {
+      if (!minorLoading) {
+        minorLoading = true;
+        // Street data ships inside the page; it is parsed only on the first zoom-in.
+        // Single-file page: streets are inline. Website: they load from data/streets.json.
+        const inline = document.getElementById("minor-streets");
+        (inline ? Promise.resolve().then(() => JSON.parse(inline.textContent)) : fetch("data/streets.json").then((r) => r.json()))
+          .then((d) => { minor = d; syncMinor(); })
+          .catch(() => { minorLoading = false; });
+      }
+      return;
+    }
+    const b = map.getBounds().pad(0.3), C = minor.cell;
+    const want = new Set();
+    for (let y = Math.floor((b.getSouth() - 18) / C); y <= Math.floor((b.getNorth() - 18) / C); y++)
+      for (let x = Math.floor((b.getWest() - 72) / C); x <= Math.floor((b.getEast() - 72) / C); x++) want.add(`${y}_${x}`);
+    minorGroups.forEach((g, k) => { if (!want.has(k)) { g.casing.remove(); g.fill.remove(); } });
+    want.forEach((k) => {
+      if (!minor.cells[k]) return;
+      let g = minorGroups.get(k);
+      if (!g) { g = addRoadGroup("minor", minor.cells[k].map(dec)); minorGroups.set(k, g); styleRoad(g, map.getZoom()); }
+      if (!map.hasLayer(g.fill)) { g.casing.addTo(map); g.fill.addTo(map); }
+    });
+    // keep street layers under the main roads
+    majorGroups.forEach((g) => { if (map.hasLayer(g.casing)) { g.casing.bringToFront(); } });
+    majorGroups.forEach((g) => { if (map.hasLayer(g.fill)) { g.fill.bringToFront(); } });
+    [railBase, railDash, metro].forEach((l) => map.hasLayer(l) && l.bringToFront());
+  }
+
+  function styleRoad(g, z) {
+    const w = width(g.cls, z);
+    g.casing.setStyle({ color: css(`--map-${g.cls}-c`), weight: w + (z >= 12 ? 1.6 : 0.8), opacity: z >= 12 ? 1 : 0.7 });
+    g.fill.setStyle({ color: css(`--map-${g.cls}`), weight: w });
+  }
+
+  let outline = null, mask = null;
+  function drawBase() {
+    const z = map.getZoom();
+    fills.forEach(([l, tok]) => l.setStyle({ fillColor: css(tok) }));
+    majorGroups.forEach((g) => {
+      const show = z >= MINZ[g.cls];
+      if (show) { styleRoad(g, z); if (!map.hasLayer(g.fill)) { g.casing.addTo(map); g.fill.addTo(map); } }
+      else { g.casing.remove(); g.fill.remove(); }
+    });
+    minorGroups.forEach((g) => styleRoad(g, z));
+    railBase.setStyle({ color: css("--map-rail"), weight: z >= 13 ? 3.2 : 2 }).addTo(map);
+    railDash.setStyle({ color: css("--map-land"), weight: z >= 13 ? 1.6 : 0.9 }).addTo(map);
+    metro.setStyle({ color: css("--map-metro"), weight: z >= 13 ? 4 : 2.6 }).addTo(map);
+    if (mask) mask.remove();
+    if (outline) outline.remove();
+    // Soften everything outside the covered region.
+    mask = L.polygon([[[10, 60], [10, 90], [30, 90], [30, 60]], GEO.outline], opt({ stroke: false, fillColor: css("--bg"), fillOpacity: 0.55 })).addTo(map);
+    outline = L.polygon(GEO.outline, opt({ color: css("--accent"), weight: 1.5, dashArray: "7 6", fill: false })).addTo(map);
+    syncMinor();
+  }
+  map.on("zoomend", drawBase);
+  map.on("moveend", syncMinor);
+  drawBase();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawBase);
+  new MutationObserver(drawBase).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  const labels = L.layerGroup().addTo(map);
+  const label = (a, cls) => L.marker([a.lat, a.lng], {
+    interactive: false, keyboard: false,
+    icon: L.divIcon({ className: "", html: `<span class="${cls}">${esc(a.name)}</span>`, iconSize: [0, 0] }),
+  }).addTo(labels);
+  const subNames = new Set(GEO.suburbs.map((a) => a.name));
+  GEO.suburbs.forEach((a) => label(a, "area-label"));
+  GEO.locs.filter((a) => !subNames.has(a.name)).forEach((a) => label(a, "loc-label"));
+  const syncLabels = () => {
+    const z = map.getZoom(), c = map.getContainer();
+    c.classList.toggle("hide-labels", z < 11.5 || z > 15);
+    c.classList.toggle("hide-locs", z < 14);
+  };
+  map.on("zoomend", syncLabels); syncLabels();
+
+  const areaBox = L.rectangle([[0, 0], [0, 0]], { color: css("--accent"), weight: 1.5, dashArray: "5 5", fill: false, interactive: false });
+
+  const cluster = L.markerClusterGroup({ clusterPane: L.Marker.prototype.options.pane, chunkedLoading: true, maxClusterRadius: 48, showCoverageOnHover: false });
+  map.addLayer(cluster);
+  const CUP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h1.5a2.5 2.5 0 0 1 0 5H16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M7 3.5c0 1 1 1 1 2M11 3.5c0 1 1 1 1 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>';
+  const FORK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7m-2-7v4.5A2 2 0 0 0 7 10a2 2 0 0 0 2-2.5V3M7 10v11M16.5 3c-1.9 1.2-2.6 3.6-2.6 6.2 0 1.6.9 2.6 2.6 2.8V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const icon = (p, hi) => L.divIcon({ className: "", html: `<div class="dot ${p.cat}${p.rating ? " rated" : ""}${hi ? " hi" : ""}">${p.cat === "cafe" ? CUP : FORK}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
+  const markers = places.map((p) => {
+    const m = L.marker([p.lat, p.lng], { icon: icon(p), title: p.name, keyboard: false });
+    m.bindPopup(() => popupHtml(p), { maxWidth: 320 });
+    m.on("popupopen", () => liveLookup(p));
+    m.on("click", () => select(p.id, false));
+    return m;
+  });
+
+  // ------------------------------------------------------------ links + snippets
+  // Web-listed places have street-level pins, so Google Maps finds them by name instead.
+  const placeText = (p) => `${p.name}, ${p.address.replace(/^Near /, "")}, Mumbai`;
+  const gmaps = (p) => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(p.web ? placeText(p) : `${p.name} ${p.lat},${p.lng}`);
+  // No origin: Google Maps starts from the phone's own GPS position.
+  const directions = (p) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.web ? placeText(p) : p.lat + "," + p.lng)}&travelmode=driving`;
+  const where = (p) => [p.loc, p.zone].filter((x, i, a) => x && a.indexOf(x) === i).join(" ");
+  const menuUrl = (p) => p.menu || "https://www.google.com/search?btnI=1&q=" + encodeURIComponent(`${p.name} ${where(p)} menu site:zomato.com`);
+  const swiggyUrl = (p) => "https://www.google.com/search?btnI=1&q=" + encodeURIComponent(`${p.name} ${where(p)} site:swiggy.com`);
+  const catTag = (p) => `<span class="cat ${p.cat}">${esc(p.kind)}</span>` + (p.web ? `<span class="cat web">Web listing</span>` : "");
+  const price = (p) => p.priceTwo ? `<div class="line"><span class="lbl">For two</span><b>≈ ₹${p.priceTwo.toLocaleString("en-IN")}</b><span class="muted">per ${esc(p.priceSrc || p.src)}</span></div>` : "";
+  const food = (p) => {
+    const t = [];
+    if (p.pureVeg) t.push(`<span class="tag veg">● Pure veg</span>`);
+    else if (p.nonVeg && p.vegOk) t.push(`<span class="tag veg">● Veg</span><span class="tag nonveg">▲ Non-veg</span>`);
+    else if (p.nonVeg) t.push(`<span class="tag nonveg">▲ Non-veg</span>`);
+    else if (p.vegOk) t.push(`<span class="tag veg">● Veg options</span>`);
+    if (p.jain) t.push(`<span class="tag jain">Jain food</span>`);
+    return `<div class="line"><span class="lbl">Food</span>${t.length ? t.join("") : `<span class="muted">Veg / non-veg not listed</span>`}</div>`;
+  };
+  const source = (p) => p.web ? `<div class="line"><span class="lbl">Source</span><a class="rate" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">${esc(p.src)}</a><span class="muted">· map pin approximate, Directions finds the exact spot</span></div>` : "";
+  const area = (p) => {
+    const parts = [];
+    [p.loc, p.sub, p.zone].forEach((n) => { if (!parts.some((x) => x.toLowerCase().startsWith(n.toLowerCase()) || n.toLowerCase().startsWith(x.toLowerCase()))) parts.push(n); });
+    return `<div class="line"><span class="lbl">Area</span><span>${esc(parts.join(" · "))}</span></div>`;
+  };
+  const rating = (p) => p.rating
+    ? `<div class="line"><span class="lbl">Rating</span><b class="stars">★ ${p.rating.toFixed(1)}</b><a class="muted" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">per ${esc(p.ratingSrc)}</a><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google ↗</a></div>`
+    : `<div class="line"><span class="lbl">Rating</span><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">★ See rating on Google</a></div>`;
+  const cuisine = (p) => `<div class="line"><span class="lbl">Cuisine</span>${p.cuisine.length ? p.cuisine.map((c) => `<span class="tag">${esc(c)}</span>`).join("") : `<span class="muted">Not listed</span>`}</div>`;
+  const actions = (p) => `<div class="actions">
+      <a class="btn go" href="${esc(directions(p))}" target="_blank" rel="noopener">➤ Directions</a>
+      <a class="btn" href="${esc(menuUrl(p))}" target="_blank" rel="noopener">${p.menu ? "Menu" : "Menu · Zomato"}</a>
+      <a class="btn" href="${esc(swiggyUrl(p))}" target="_blank" rel="noopener">Swiggy</a>
+      <a class="btn" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google Maps</a>
+    </div>`;
+
+  // ------------------------------------------------------------ live Google details (website only)
+  // The website's /api/place function looks a place up on Google when its popup
+  // opens. The single-file page has no server, so the probe fails and nothing shows.
+  const live = { site: false, google: false, cache: new Map() };
+  fetch("api/place?probe=1").then((r) => r.json()).then((d) => {
+    live.site = true; live.google = !!d.configured;
+    $("meBtn").hidden = !("geolocation" in navigator);
+  }).catch(() => {});
+
+  const PRICE_WORDS = ["Free", "Inexpensive", "Moderate", "Expensive", "Very expensive"];
+  function liveHtml(g) {
+    if (!g || !g.found) return `<span class="muted">Not found on Google</span>`;
+    const bits = [];
+    if (g.rating) bits.push(`<b class="stars">★ ${g.rating.toFixed(1)}</b> <span class="muted">(${(g.reviews || 0).toLocaleString("en-IN")} on Google)</span>`);
+    if (g.priceFrom) bits.push(`<b>₹${(g.priceFrom * 2).toLocaleString("en-IN")}${g.priceTo ? "–₹" + (g.priceTo * 2).toLocaleString("en-IN") : "+"}</b> <span class="muted">for two</span>`);
+    else if (g.priceLevel != null) bits.push(`${"₹".repeat(Math.max(1, g.priceLevel))} <span class="muted">${PRICE_WORDS[g.priceLevel]}</span>`);
+    if (g.veg === true) bits.push(`<span class="tag veg">● Serves veg</span>`);
+    if (g.openNow === true) bits.push(`<span class="tag veg">Open now</span>`);
+    if (g.openNow === false) bits.push(`<span class="tag nonveg">Closed now</span>`);
+    return bits.length ? bits.join(" ") : `<span class="muted">No rating on Google yet</span>`;
+  }
+  function liveLookup(p) {
+    if (!live.google) return;
+    const slot = document.getElementById("glive-" + p.id);
+    if (!slot) return;
+    slot.hidden = false;
+    const fill = (g) => { const s = document.getElementById("glive-" + p.id); if (s) s.querySelector(".gval").innerHTML = liveHtml(g); };
+    if (live.cache.has(p.id)) return fill(live.cache.get(p.id));
+    const q = new URLSearchParams({ name: p.name, lat: p.lat.toFixed(5), lng: p.lng.toFixed(5) });
+    fetch("api/place?" + q).then((r) => r.ok ? r.json() : null).then((g) => { live.cache.set(p.id, g); fill(g); })
+      .catch(() => fill(null));
+  }
+
+  function popupHtml(p) {
+    return `<div class="pop"><h3>${esc(p.name)}</h3>${catTag(p)}
+      <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
+      ${area(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
+      ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
+      ${p.hours ? `<p class="meta">Hours: ${esc(p.hours)}</p>` : ""}
+      ${p.phone ? `<p class="meta">Phone: ${esc(p.phone)}</p>` : ""}
+      ${p.website ? `<p class="meta"><a class="rate" href="${esc(p.website)}" target="_blank" rel="noopener">Website</a></p>` : ""}
+      <p class="meta">GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</p>
+      ${actions(p)}</div>`;
+  }
+
+  // ------------------------------------------------------------ filtering
+  const inArea = (p) => !state.area || (state.area.names ? (state.area.names.has(p.zone) || state.area.names.has(p.sub) || state.area.names.has(p.loc))
+    : p.lat >= state.area[0] && p.lng >= state.area[1] && p.lat <= state.area[2] && p.lng <= state.area[3]);
+  const inCat = (p) => state.cat === "all" || p.cat === state.cat;
+
+  function visible() {
+    const text = $("filterText").value.trim().toLowerCase();
+    const cu = $("cuisine").value;
+    const veg = $("fVeg").checked, jain = $("fJain").checked, non = $("fNon").checked, rated = $("fRated").checked;
+    return places.filter((p) => inArea(p) && inCat(p) &&
+      (!veg || p.pureVeg) && (!jain || p.jain) && (!non || p.nonVeg) && (!rated || p.rating) &&
+      (!cu || p.cuisine.includes(cu)) &&
+      (!text || (p.name + " " + p.address + " " + p.loc + " " + p.sub + " " + p.zone).toLowerCase().includes(text)));
+  }
+
+  function km(p, c) {
+    const R = 6371, rad = Math.PI / 180;
+    const a = Math.sin((p.lat - c.lat) * rad / 2) ** 2 + Math.cos(c.lat * rad) * Math.cos(p.lat * rad) * Math.sin((p.lng - c.lng) * rad / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+  const fmtKm = (d) => (d < 1 ? `${Math.round(d * 1000)} m` : `${d.toFixed(1)} km`);
+
+  function refreshCounts() {
+    let cafe = 0, rest = 0;
+    places.forEach((p) => { if (inArea(p)) p.cat === "cafe" ? cafe++ : rest++; });
+    $("nAll").textContent = (cafe + rest).toLocaleString("en-IN");
+    $("nCafe").textContent = cafe.toLocaleString("en-IN");
+    $("nRest").textContent = rest.toLocaleString("en-IN");
+    const counts = new Map();
+    places.forEach((p) => { if (inArea(p) && inCat(p)) p.cuisine.forEach((c) => counts.set(c, (counts.get(c) || 0) + 1)); });
+    const sel = $("cuisine"), keep = sel.value;
+    sel.innerHTML = `<option value="">All cuisines</option>` + [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .map(([c, n]) => `<option value="${esc(c)}">${esc(c)} (${n})</option>`).join("");
+    sel.value = counts.has(keep) ? keep : "";
+  }
+
+  let current = [];
+  function render(resetMarkers) {
+    const rows = visible();
+    current = rows;
+    if (resetMarkers !== false) {
+      cluster.clearLayers();
+      cluster.addLayers(rows.map((p) => markers[p.id]));
+    }
+    const ctr = map.getCenter();
+    const sort = $("sortBy").value;
+    rows.forEach((p) => { p.d = km(p, ctr); });
+    rows.sort(sort === "name" ? (a, b) => a.name.localeCompare(b.name)
+      : sort === "rating" ? (a, b) => (b.rating || 0) - (a.rating || 0) || a.d - b.d
+      : sort === "cheap" ? (a, b) => (a.priceTwo || 1e9) - (b.priceTwo || 1e9) || a.d - b.d
+      : sort === "info" ? (a, b) => b.info - a.info || a.d - b.d
+      : (a, b) => a.d - b.d);
+    const total = places.filter(inArea).length;
+    $("countLabel").textContent = `${rows.length.toLocaleString("en-IN")} of ${total.toLocaleString("en-IN")} places${state.areaName ? " in " + state.areaName : ""}`;
+    if (!rows.length) {
+      $("list").innerHTML = `<li class="empty">Nothing matches here. Try another cuisine, clear the name filter, or pick a wider area.</li>`;
+      return;
+    }
+    $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
+      <li data-id="${p.id}" class="pad${p.id === state.active ? " active" : ""}">
+        <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="dist">${fmtKm(p.d)}</span></div>
+        ${area(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
+        ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
+        ${actions(p)}
+      </li>`).join("") + (rows.length > state.shown
+      ? `<li class="more pad"><button type="button" class="linkbtn" id="moreBtn">Show ${Math.min(PAGE, rows.length - state.shown)} more of ${(rows.length - state.shown).toLocaleString("en-IN")} left</button></li>` : "");
+  }
+
+  function select(id, fly) {
+    if (state.active != null) markers[state.active].setIcon(icon(places[state.active]));
+    state.active = id;
+    markers[id].setIcon(icon(places[id], true));
+    document.querySelectorAll("#list li[data-id]").forEach((li) => li.classList.toggle("active", +li.dataset.id === id));
+    if (fly) cluster.zoomToShowLayer(markers[id], () => markers[id].openPopup());
+  }
+
+  // ------------------------------------------------------------ areas
+  const areas = new Map([...GEO.locs, ...GEO.suburbs, ...GEO.zones].map((a) => [a.name.toLowerCase(), a]));
+  const areaNames = [...new Set([...areas.values()].map((a) => a.name).concat(Object.values(GROUPS).map((g) => g.name)))].sort();
+  $("areaList").innerHTML = areaNames.map((n) => `<option value="${esc(n)}"></option>`).join("");
+
+  function setArea(names, name, btn) {
+    state.area = names ? { names: new Set(names) } : null; state.areaName = name; state.shown = PAGE;
+    document.querySelectorAll("#quick button").forEach((b) => b.classList.toggle("on", b === btn));
+    const inside = names ? places.filter(inArea) : [];
+    if (inside.length) {
+      const b = L.latLngBounds(inside.map((p) => [p.lat, p.lng]));
+      areaBox.setBounds(b.pad(0.04)).addTo(map);
+      map.fitBounds(areaBox.getBounds(), { padding: [24, 24] });
+    } else {
+      areaBox.remove();
+      map.fitBounds(MUMBAI);
+    }
+    refreshCounts();
+    render();
+  }
+
+  function showArea(q, btn) {
+    const key = q.trim().toLowerCase();
+    if (!key || key === "mumbai" || key === "all mumbai") return setArea(null, "", btn || document.querySelector('#quick [data-area=""]'));
+    const g = GROUPS[key];
+    const a = areas.get(key) || (!g && [...areas.values()].find((x) => x.name.toLowerCase().includes(key)));
+    const btnFor = (n) => btn || [...document.querySelectorAll("#quick [data-area]")].find((b) => b.dataset.area === n);
+    if (g) { $("place").value = g.name; return setArea(g.parts, g.name, btnFor(g.name)); }
+    if (!a) {
+      $("countLabel").textContent = `No area called “${q}”. Pick one from the suggestions.`;
+      return;
+    }
+    $("place").value = a.name;
+    setArea([a.name], a.name, btnFor(a.name));
+  }
+
+  $("searchForm").addEventListener("submit", (e) => { e.preventDefault(); showArea($("place").value); });
+  document.querySelectorAll("#quick [data-area]").forEach((b) => b.addEventListener("click", () => {
+    $("place").value = b.dataset.area;
+    showArea(b.dataset.area, b);
+  }));
+  $("viewBtn").addEventListener("click", (e) => {
+    const b = map.getBounds();
+    $("place").value = "";
+    areaBox.remove();
+    state.area = [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()];
+    state.areaName = "this map view"; state.shown = PAGE;
+    document.querySelectorAll("#quick button").forEach((x) => x.classList.toggle("on", x === e.currentTarget));
+    refreshCounts(); render();
+  });
+
+  // Near me (website only; the shareable page can't use location).
+  let meDot = null;
+  $("meBtn").addEventListener("click", (e) => {
+    const btn = e.currentTarget;
+    btn.textContent = "📍 Locating…";
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const ll = [pos.coords.latitude, pos.coords.longitude];
+      if (meDot) meDot.remove();
+      meDot = L.circleMarker(ll, { radius: 8, color: "#fff", weight: 3, fillColor: "#1a73e8", fillOpacity: 1 }).addTo(map).bindTooltip("You are here");
+      areaBox.remove();
+      state.area = null; state.areaName = "near you"; state.shown = PAGE;
+      document.querySelectorAll("#quick button").forEach((x) => x.classList.toggle("on", x === btn));
+      $("sortBy").value = "near";
+      map.setView(ll, 15);
+      btn.textContent = "📍 Near me";
+      refreshCounts(); render();
+    }, (err) => {
+      btn.textContent = "📍 Near me";
+      $("countLabel").textContent = err.code === 1 ? "Location is blocked. Allow location for this site to use Near me." : "Couldn't get your location. Try again outdoors or check location settings.";
+    }, { enableHighAccuracy: true, timeout: 15000 });
+  });
+
+  // ------------------------------------------------------------ controls
+  document.querySelectorAll(".seg [data-cat]").forEach((b) => b.addEventListener("click", () => {
+    state.cat = b.dataset.cat; state.shown = PAGE;
+    document.querySelectorAll(".seg [data-cat]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
+    refreshCounts(); render();
+  }));
+  ["fVeg", "fJain", "fNon", "fRated"].forEach((id) => $(id).addEventListener("change", () => { state.shown = PAGE; render(); }));
+  ["filterText", "cuisine"].forEach((id) => $(id).addEventListener("input", () => { state.shown = PAGE; render(); }));
+  $("sortBy").addEventListener("change", () => { state.shown = PAGE; render(false); });
+  let moveTimer;
+  map.on("moveend", () => {
+    if ($("sortBy").value !== "near") return;
+    clearTimeout(moveTimer);
+    moveTimer = setTimeout(() => render(false), 150);
+  });
+  $("list").addEventListener("click", (e) => {
+    if (e.target.id === "moreBtn") { state.shown += PAGE; return render(false); }
+    if (e.target.closest("a")) return;
+    const li = e.target.closest("li[data-id]");
+    if (li) select(+li.dataset.id, true);
+  });
+
+  // CSV through the viewer's download prompt, when this view offers it.
+  (async () => {
+    const dl = window.claude && (await window.claude.use("downloads").catch(() => null));
+    if (!dl) return;
+    const btn = $("csvBtn");
+    btn.hidden = false;
+    btn.addEventListener("click", async () => {
+      const cols = ["name", "kind", "cuisine", "address", "hours", "phone", "website", "lat", "lng"];
+      const q = (v) => `"${String(Array.isArray(v) ? v.join("; ") : v ?? "").replace(/"/g, '""')}"`;
+      const csv = "﻿" + [cols.join(","), ...current.map((p) => cols.map((k) => q(p[k])).join(","))].join("\r\n");
+      const slug = (state.areaName || "mumbai").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      try {
+        await dl.save({ filename: `${state.cat === "cafe" ? "cafes" : state.cat === "rest" ? "restaurants" : "cafes-restaurants"}-${slug}.csv`, data: csv });
+      } catch (err) { /* viewer declined the save */ }
+    });
+  })();
+
+  refreshCounts();
+  render();
+})();
+</script>
