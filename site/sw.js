@@ -1,6 +1,6 @@
-// Offline cache for the installed app. build/build.py stamps bf0d85102c on
+// Offline cache for the installed app. build/build.py stamps 8765ce09ae on
 // every build, so a new deploy replaces the old cache automatically.
-const CACHE = "cafe-finder-bf0d85102c";
+const CACHE = "cafe-finder-8765ce09ae";
 const CORE = ["./", "index.html", "data/places.js", "data/basemap.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon.svg"];
 
 self.addEventListener("install", (e) => {

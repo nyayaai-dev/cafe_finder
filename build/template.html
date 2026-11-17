@@ -227,20 +227,33 @@ button.ghost { background: var(--chip); color: var(--ink); }
   .pad { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .list { overflow: visible; }
 }
+/*__FEATURES_CSS__*/
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
+<a class="skip" href="#list">Skip to results</a>
 <div class="app">
-  <aside class="panel">
+  <aside class="panel" aria-label="Search and results">
+    <div class="grab" id="sheetHandle" role="button" tabindex="0" aria-label="Expand the list"><span></span></div>
+    <div class="sheet-scroll" id="sheetScroll">
+    <div id="browse">
     <header class="brand pad">
       <h1>Mumbai Cafe &amp; Restaurant Finder</h1>
       <p>Every named cafe and restaurant from Colaba to Mira Road, Thane, Bhiwandi, Kalyan and Panvel.</p>
+      <p class="stats"><b id="statPlaces"></b> places · <b id="statAreas"></b> areas &amp; stations · updated __SNAPSHOT__</p>
+      <div class="hero-actions">
+        <button type="button" id="surpriseBtn">🎲 Surprise me</button>
+        <button type="button" class="ghost" id="aboutBtn">About &amp; data</button>
+        <a class="ghost btnlink" id="areasLink" href="areas/" hidden>Browse by area</a>
+      </div>
     </header>
 
     <form id="searchForm" class="search pad" autocomplete="off">
-      <label for="place" hidden>Area</label>
-      <input id="place" list="areaList" placeholder="Any area or station: Charni Road, Vashi, Malad West…">
+      <label for="place" hidden>Search areas, cuisines and places</label>
+      <input id="place" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="suggestBox"
+        placeholder="Try “Bandra pizza”, “Jain Kala Ghoda”, a café name…" enterkeyhint="search">
       <datalist id="areaList"></datalist>
+      <ul id="suggestBox" role="listbox" aria-label="Suggestions" hidden></ul>
       <button type="submit">Show</button>
     </form>
     <div class="quick pad" id="quick">
@@ -265,6 +278,11 @@ button.ghost { background: var(--chip); color: var(--ink); }
       <button type="button" id="meBtn" hidden>📍 Near me</button>
       <button type="button" id="installBtn" hidden>⬇ Install app</button>
     </div>
+    <div class="moods pad" id="moods" role="group" aria-label="Mood"></div>
+    <section class="picks pad" id="picks" hidden aria-labelledby="picksTitle">
+      <h2 id="picksTitle">Top picks <span id="picksWhere" class="muted"></span></h2>
+      <div class="picks-row" id="picksRow"></div>
+    </section>
 
     <section class="filters pad">
       <div class="seg" role="radiogroup" aria-label="Category">
@@ -292,17 +310,26 @@ button.ghost { background: var(--chip); color: var(--ink); }
         <label><input type="checkbox" id="fFav"> ♥ Saved <small id="nFav" class="muted"></small></label>
       </div>
       <div class="row between">
-        <span id="countLabel" class="muted"></span>
+        <span id="countLabel" class="muted" aria-live="polite"></span>
+        <button id="shareListBtn" type="button" class="linkbtn" hidden>Share my saved list</button>
         <button id="csvBtn" type="button" class="linkbtn" hidden>Download CSV</button>
       </div>
     </section>
 
-    <ol id="list" class="list"></ol>
+    <div id="listBanner" class="banner pad" hidden role="status">
+      <span id="listBannerText"></span>
+      <button type="button" class="linkbtn" id="listSaveAll">♥ Save all</button>
+      <button type="button" class="linkbtn" id="listClose">Show everything</button>
+    </div>
+    <ol id="list" class="list" aria-label="Results"></ol>
     <div class="suggest pad">
       <span class="muted">Missing a cafe or restaurant?</span>
       <button type="button" class="linkbtn" id="suggestBtn">Suggest a place</button>
     </div>
     <p class="foot pad">Covers Colaba to Mira Road and Bhayandar, Thane, Bhiwandi, Kalyan and Dombivli, and Navi Mumbai to Panvel. Ratings and cost for two come from the listing named on each place (Zomato, Swiggy, EazyDiner, District, Justdial and others) and can differ between sites. Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, snapshot of __SNAPSHOT__, plus cafes from web listings checked the same day. Ratings open on Google Maps.</p>
+    </div>
+    <section id="detail" class="pad" hidden aria-label="Place details"></section>
+    </div>
   </aside>
   <main id="map" aria-label="Map of Mumbai cafes and restaurants"></main>
 </div>
@@ -328,9 +355,32 @@ button.ghost { background: var(--chip); color: var(--ink); }
   </form>
 </dialog>
 <div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="cmpTray" hidden><span>Compare <span id="cmpCount">0</span></span>
+  <button type="button" id="cmpView">View</button><button type="button" class="ghost" id="cmpClear">Clear</button></div>
+<dialog id="cmpDlg" class="dlg" aria-labelledby="cmpTitle">
+  <h2 id="cmpTitle">Compare places</h2>
+  <div class="cmp-wrap" id="cmpBody"></div>
+  <div class="dlg-actions"><button type="button" id="cmpClose">Done</button></div>
+</dialog>
+<dialog id="aboutDlg" class="dlg about" aria-labelledby="aboutTitle">
+  <h2 id="aboutTitle">About this finder</h2>
+  <p>Every named cafe and restaurant from Colaba to Mira Road and Bhayandar, Thane, Bhiwandi, Kalyan and Dombivli, and Navi Mumbai to Panvel, on one map.</p>
+  <ul>
+    <li><b>Places and opening hours</b> come from OpenStreetMap, refreshed on the 1st of every month. Last update: __SNAPSHOT__.</li>
+    <li><b>Ratings and cost for two</b> for popular areas come from the listing named on each place (Zomato, Swiggy, EazyDiner, District, Justdial and others). Sites often disagree, so treat them as a guide.</li>
+    <li><b>Pure veg, Jain and non-veg</b> show only where the data says so. Non-veg is sometimes inferred from the cuisine (seafood, kebab, biryani).</li>
+    <li><b>Open now</b> is worked out from listed hours in Mumbai time; places without hours aren't shown as open or closed.</li>
+    <li><b>Moods</b> such as Date night or Work-friendly are best guesses from cuisine, cost and chain names.</li>
+    <li><b>Your saved places</b> stay in this browser. Nothing is sent anywhere.</li>
+  </ul>
+  <p>Spotted a missing or closed place? Use “Suggest a place” at the bottom of the list.</p>
+  <p class="muted">Map data © OpenStreetMap contributors (ODbL).</p>
+  <div class="dlg-actions"><button type="button" id="aboutClose">Close</button></div>
+</dialog>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
 <!--DATA-->
 <script>/* filled in by build/build.py: RAW, GEO, MAPD (+ inline streets for the single-file page) */</script>
 <!--/DATA-->
@@ -384,34 +434,37 @@ button.ghost { background: var(--chip); color: var(--ink); }
     return out;
   }
   // Returns true (open), false (closed) or null (hours missing or in a format we don't read).
-  function openNow(hours) {
+  const DAYRULE = /^((?:(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)(?:\s*,\s*(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)*)?\s*(.*)$/;
+  // parseHours -> 7 entries (Su..Sa), each a list of [openMin, closeMin] (close > 1440 = after midnight),
+  // [] when closed, or null when the text isn't in a format we can read.
+  function parseHours(hours) {
     if (!hours) return null;
     const h = hours.trim();
-    if (h === "24/7") return true;
-    const { day, min } = nowIST();
-    const prev = (day + 6) % 7;
-    let st = null, matched = false;
+    if (h === "24/7") return Array.from({ length: 7 }, () => [[0, 1440]]);
+    const wk = Array.from({ length: 7 }, () => null);
     for (const ruleRaw of h.split(";")) {
       const rule = ruleRaw.trim();
       if (!rule) continue;
-      const m = rule.match(/^((?:(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)(?:\s*,\s*(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?)*)?\s*(.*)$/);
+      const m = rule.match(DAYRULE);
       if (!m) return null;
       const days = m[1] ? daySet(m[1].replace(/\s+/g, "")) : new Set([0, 1, 2, 3, 4, 5, 6]);
       if (!days) return null;
       const times = m[2].trim();
-      if (/^(off|closed)$/i.test(times)) { if (days.has(day)) { st = false; matched = true; } continue; }
+      if (/^(off|closed)$/i.test(times)) { days.forEach((d) => { wk[d] = []; }); continue; }
       const spans = times.split(",").map((t) => t.trim().match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})\+?$/));
       if (!spans.length || spans.some((x) => !x)) return null;
-      let open = false, applies = false;
-      for (const sp of spans) {
-        const a = +sp[1] * 60 + +sp[2]; let b = +sp[3] * 60 + +sp[4];
-        if (b <= a) b += 1440;                                   // runs past midnight
-        if (days.has(day)) { applies = true; if (min >= a && min < b) open = true; }
-        if (days.has(prev) && b > 1440 && min < b - 1440) { applies = true; open = true; }
-      }
-      if (applies) { st = open; matched = true; }
+      const list = spans.map((sp) => { const o = +sp[1] * 60 + +sp[2]; let c = +sp[3] * 60 + +sp[4]; if (c <= o) c += 1440; return [o, c]; });
+      days.forEach((d) => { wk[d] = list; });
     }
-    return matched ? st : false;
+    return wk.map((d) => d || []);
+  }
+  // Returns true (open), false (closed) or null (hours missing or unreadable).
+  function openNow(hours) {
+    const wk = parseHours(hours);
+    if (!wk) return null;
+    const { day, min } = nowIST();
+    const prev = (day + 6) % 7;
+    return wk[day].some(([o, c]) => min >= o && min < c) || wk[prev].some(([, c]) => c > 1440 && min < c - 1440);
   }
   const hoursLine = (p) => {
     if (!p.hours) return "";
@@ -563,9 +616,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
   const icon = (p, hi) => L.divIcon({ className: "", html: `<div class="dot ${p.cat}${p.rating ? " rated" : ""}${hi ? " hi" : ""}">${p.cat === "cafe" ? CUP : FORK}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
   const markers = places.map((p) => {
     const m = L.marker([p.lat, p.lng], { icon: icon(p), title: p.name, keyboard: false });
-    m.bindPopup(() => popupHtml(p), { maxWidth: 320 });
-    m.on("popupopen", () => liveLookup(p));
-    m.on("click", () => select(p.id, false));
+    m.bindTooltip(p.name, { direction: "top", offset: [0, -10] });
+    m.on("click", () => openDetail(p, { fly: false }));
     return m;
   });
 
@@ -669,6 +721,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     return places.filter((p) => inArea(p) && inCat(p) &&
       (!veg || p.pureVeg) && (!jain || p.jain) && (!non || p.nonVeg) && (!rated || p.rating) &&
       (!openOnly || openNow(p.hours) === true) && (!favOnly || favs.has(p.key)) &&
+      moodOk(p) && (!state.list || state.list.has(p.key)) &&
       (!cu || p.cuisine.includes(cu)) &&
       (!text || (p.name + " " + p.address + " " + p.loc + " " + p.sub + " " + p.zone).toLowerCase().includes(text)));
   }
@@ -702,7 +755,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
       cluster.clearLayers();
       cluster.addLayers(rows.map((p) => markers[p.id]));
     }
-    const ctr = map.getCenter();
+    const ctr = state.me || map.getCenter();
     const sort = $("sortBy").value;
     rows.forEach((p) => { p.d = km(p, ctr); });
     rows.sort(sort === "name" ? (a, b) => a.name.localeCompare(b.name)
@@ -710,6 +763,9 @@ button.ghost { background: var(--chip); color: var(--ink); }
       : sort === "cheap" ? (a, b) => (a.priceTwo || 1e9) - (b.priceTwo || 1e9) || a.d - b.d
       : sort === "info" ? (a, b) => b.info - a.info || a.d - b.d
       : (a, b) => a.d - b.d);
+    renderPicks(rows);
+    syncShareList();
+    if (heat) drawHeat();
     const total = places.filter(inArea).length;
     $("countLabel").textContent = `${rows.length.toLocaleString("en-IN")} of ${total.toLocaleString("en-IN")} places${state.areaName ? " in " + state.areaName : ""}`;
     if (!rows.length) {
@@ -717,8 +773,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
       return;
     }
     $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
-      <li data-id="${p.id}" class="pad${p.id === state.active ? " active" : ""}">
-        <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="right"><span class="dist">${fmtKm(p.d)}</span>${favBtn(p)}</span></div>
+      <li data-id="${p.id}" tabindex="0" aria-label="${esc(p.name)}, ${esc(p.kind)}" class="pad${p.id === state.active ? " active" : ""}">
+        <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
         ${area(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${cuisine(p)}${source(p)}
         ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
         ${actions(p)}
@@ -770,7 +826,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     setArea([a.name], a.name, btnFor(a.name));
   }
 
-  $("searchForm").addEventListener("submit", (e) => { e.preventDefault(); showArea($("place").value); });
+  $("searchForm").addEventListener("submit", (e) => { e.preventDefault(); $("suggestBox").hidden = true; smartSearch($("place").value); });
   document.querySelectorAll("#quick [data-area]").forEach((b) => b.addEventListener("click", () => {
     $("place").value = b.dataset.area;
     showArea(b.dataset.area, b);
@@ -792,12 +848,14 @@ button.ghost { background: var(--chip); color: var(--ink); }
     btn.textContent = "📍 Locating…";
     navigator.geolocation.getCurrentPosition((pos) => {
       const ll = [pos.coords.latitude, pos.coords.longitude];
+      state.me = { lat: ll[0], lng: ll[1] };
       if (meDot) meDot.remove();
       meDot = L.circleMarker(ll, { radius: 8, color: "#fff", weight: 3, fillColor: "#1a73e8", fillOpacity: 1 }).addTo(map).bindTooltip("You are here");
       areaBox.remove();
       state.area = null; state.areaName = "near you"; state.shown = PAGE;
       document.querySelectorAll("#quick button").forEach((x) => x.classList.toggle("on", x === btn));
       $("sortBy").value = "near";
+      $("sortBy").options[0].textContent = "Nearest to you";
       map.setView(ll, 15);
       btn.textContent = "📍 Near me";
       refreshCounts(); render();
@@ -826,7 +884,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     if (e.target.id === "moreBtn") { state.shown += PAGE; return render(false); }
     if (e.target.closest("a")) return;
     const li = e.target.closest("li[data-id]");
-    if (li) select(+li.dataset.id, true);
+    if (li) openDetail(places[+li.dataset.id]);
   });
 
   // CSV through the viewer's download prompt, when this view offers it.
@@ -856,6 +914,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
       b.classList.toggle("on", on); b.textContent = on ? "♥" : "♡"; b.setAttribute("aria-pressed", on);
     });
     syncFavCount();
+    syncShareList();
     toast(favs.has(key) ? "Saved" : "Removed from saved");
     if ($("fFav").checked) render(false);
   }
@@ -879,19 +938,13 @@ button.ghost { background: var(--chip); color: var(--ink); }
     catch (e) { window.prompt ? toast("Copy this link: " + url) : toast(url); }
   }
   function openFromHash() {
+    const lm = location.hash.match(/^#list-([a-z0-9-]+)$/);
+    if (lm) return showSharedList(lm[1].split("-"));
     const m = location.hash.match(/^#p-([a-z0-9]+)$/);
     if (!m || !byKey.has(m[1])) return;
-    const p = byKey.get(m[1]);
-    // Jump without animation (animations stall in background tabs), then open the popup.
-    select(p.id, false);
-    map.setView([p.lat, p.lng], 18, { animate: false });
-    const mk = markers[p.id];
-    const tryOpen = (n) => {
-      if (cluster.getVisibleParent(mk) === mk) mk.openPopup();
-      else if (n > 0) setTimeout(() => tryOpen(n - 1), 250);
-      else cluster.zoomToShowLayer(mk, () => mk.openPopup());
-    };
-    setTimeout(() => tryOpen(8), 150);
+    if (detailOpen && detailOpen.key === m[1]) return;
+    // Jump without animation (animations stall in background tabs).
+    openDetail(byKey.get(m[1]), { instant: true, keepHash: true });
   }
   window.addEventListener("hashchange", openFromHash);
 
@@ -945,9 +998,15 @@ button.ghost { background: var(--chip); color: var(--ink); }
   });
   window.addEventListener("appinstalled", () => { $("installBtn").hidden = true; toast("Installed. Open it from your home screen."); });
 
+/*__FEATURES_JS__*/
+
   syncFavCount();
   refreshCounts();
   render();
   openFromHash();
+  // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area pages).
+  const params = new URLSearchParams(location.search);
+  if (params.get("area")) { $("place").value = params.get("area"); showArea(params.get("area")); }
+  else if (params.get("q")) smartSearch(params.get("q"));
 })();
 </script>

@@ -230,13 +230,17 @@ SNAPSHOT = data.get("fetched_label") or "15 November 2026"
 mapbase = open(os.path.join(DATA_DIR, "map_base.json"), encoding="utf-8").read()
 streets = open(os.path.join(DATA_DIR, "map_minor.json"), encoding="utf-8").read()
 html = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
-html = html.replace("/*__VENDOR_CSS__*/", vendor).replace("__SNAPSHOT__", SNAPSHOT)
+parts = os.path.join(HERE, "parts")
+html = (html.replace("/*__VENDOR_CSS__*/", vendor)
+            .replace("/*__FEATURES_CSS__*/", open(os.path.join(parts, "features.css"), encoding="utf-8").read())
+            .replace("/*__FEATURES_JS__*/", open(os.path.join(parts, "features.js"), encoding="utf-8").read())
+            .replace("__SNAPSHOT__", SNAPSHOT))
 start, end = html.index("<!--DATA-->"), html.index("<!--/DATA-->") + len("<!--/DATA-->")
 
 if SINGLE:
     # Everything inline: the shareable page can't load other files.
     block = ('<script type="application/json" id="minor-streets">' + streets.replace("</", "<\\/") + "</script>\n"
-             "<script>\nconst RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\nconst MAPD = " + mapbase + ";\n</script>")
+             "<script>\nconst SITE_MODE = false;\nconst RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\nconst MAPD = " + mapbase + ";\n</script>")
     OUT = SINGLE
     page = html[:start] + block + html[end:]
     open(OUT, "w", encoding="utf-8").write(page.replace("<!--PWA-->", ""))
@@ -247,7 +251,7 @@ else:
         "const RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\n")
     open(os.path.join(SITE_DIR, "data", "basemap.js"), "w", encoding="utf-8").write("const MAPD = " + mapbase + ";\n")
     open(os.path.join(SITE_DIR, "data", "streets.json"), "w", encoding="utf-8").write(streets)
-    block = '<script src="data/places.js"></script>\n<script src="data/basemap.js"></script>'
+    block = '<script>const SITE_MODE = true;</script>\n<script src="data/places.js"></script>\n<script src="data/basemap.js"></script>'
     OUT = os.path.join(SITE_DIR, "index.html")
 
     # Installable app: manifest, icons and an offline cache (service worker).
@@ -268,15 +272,41 @@ else:
     json.dump(manifest, open(os.path.join(SITE_DIR, "manifest.webmanifest"), "w", encoding="utf-8"), indent=1)
     sw = open(os.path.join(HERE, "sw.template.js"), encoding="utf-8").read().replace("__VERSION__", version)
     open(os.path.join(SITE_DIR, "sw.js"), "w", encoding="utf-8").write(sw)
-    pwa = ('<link rel="manifest" href="manifest.webmanifest">\n'
+    cfg = json.load(open(os.path.join(HERE, "config.json"), encoding="utf-8"))
+    base_url = cfg["site_url"].rstrip("/") + "/"
+    share_desc = (f"Find {len(rows):,} cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: "
+                  "areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.")
+    gc = (cfg.get("goatcounter") or "").strip()
+    pwa = ('<meta property="og:type" content="website">\n'
+           f'<meta property="og:site_name" content="{cfg["site_name"]}">\n'
+           f'<meta property="og:title" content="{cfg["site_name"]}">\n'
+           f'<meta property="og:description" content="{share_desc}">\n'
+           f'<meta property="og:url" content="{base_url}">\n'
+           f'<meta property="og:image" content="{base_url}og.png">\n'
+           '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">\n'
+           '<meta name="twitter:card" content="summary_large_image">\n'
+           f'<link rel="canonical" href="{base_url}">\n'
+           '<link rel="preload" href="data/places.js" as="script">\n'
+           + (f'<script data-goatcounter="https://{gc}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>\n' if gc else "")
+           + '<link rel="manifest" href="manifest.webmanifest">\n'
            '<meta name="theme-color" content="#c2410c">\n'
            '<link rel="icon" href="icons/icon.svg" type="image/svg+xml">\n'
            '<link rel="apple-touch-icon" href="icons/icon-192.png">\n'
            '<meta name="apple-mobile-web-app-capable" content="yes">\n'
-           '<meta name="description" content="Find every cafe and restaurant from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">\n'
+           f'<meta name="description" content="{share_desc}">\n'
            "<script>if ('serviceWorker' in navigator && window.isSecureContext) "
            "addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>")
-    open(OUT, "w", encoding="utf-8").write((html[:start] + block + html[end:]).replace("<!--PWA-->", pwa))
+    # A real document shell: standards mode and a mobile viewport (the claude.ai page adds these itself).
+    shell = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+             '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n')
+    page = (html[:start] + block + html[end:]).replace("<!--PWA-->", pwa).replace('<meta charset="utf-8">\n', "", 1)
+    open(OUT, "w", encoding="utf-8").write(shell + page + "\n</html>\n")
+
+    # Area pages, sitemap and robots.txt for search engines; og.png is drawn on Windows by make_og.ps1.
+    sys.path.insert(0, HERE)
+    import make_pages
+    n_pages = make_pages.build_pages(SITE_DIR, rows, geo, SNAPSHOT, cfg)
+    print(f"{n_pages} area pages written")
 print(f"{len(rows)} places ({sum(r[21] for r in rows)} from web listings, {sum(1 for r in rows if r[17])} with ratings, {sum(1 for r in rows if r[13])} with cost for two, {sum(1 for r in rows if r[20] & 1)} pure veg, {sum(1 for r in rows if r[20] & 2)} jain, {sum(1 for r in rows if r[20] & 4)} non-veg) from {os.path.basename(src)}; "
       f"{len(ZLIST)} main areas, {len(SUBS)} neighbourhoods, {len(LOCS)} localities; groups: { {k: len(v) for k, v in groups.items()} }; "
       f"{os.path.getsize(OUT)/1024:.0f} KB")

@@ -13,6 +13,22 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
 - Suggest a missing place (opens a pre-filled GitHub issue)
 - Install it as a phone app; it works offline after the first visit
 - Data refreshes itself on the 1st of every month (GitHub Action)
+- Phone-first layout: full-screen map with a draggable bottom sheet
+- Place detail panel with weekly hours, nearby places and Compare (up to 3)
+- Smart search ("Bandra pizza", "Jain Kala Ghoda", a café name) with suggestions
+- Mood chips (Work-friendly, Date night, Under ₹500, Late night, Breakfast, Desserts),
+  Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
+- Area pages for search engines (`site/areas/`), sitemap, link-preview image (`site/og.png`)
+
+### Visitor stats (optional)
+
+Sign up free at goatcounter.com, pick a code (e.g. `mumbaicafes`), put it in
+`build/config.json` as `"goatcounter": "mumbaicafes"`, rebuild and publish.
+
+### Link-preview image
+
+`site/og.png` is drawn on Windows with
+`powershell -File build/make_og.ps1 -Places 2543 -Areas 1033` and committed.
 
 Live site: https://nyayaai-dev.github.io/cafe_finder/
 
