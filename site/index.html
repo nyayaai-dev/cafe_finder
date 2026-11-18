@@ -903,15 +903,15 @@ button {
 .tag.open { color: var(--veg); background: color-mix(in srgb, var(--veg) 14%, transparent) !important; font-weight: 600; }
 .tag.shut { color: var(--nonveg); background: color-mix(in srgb, var(--nonveg) 14%, transparent) !important; font-weight: 600; }
 .suggest { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding-block: 10px; border-top: 1px solid var(--line); font-size: 13px; }
-dialog#suggestDlg {
+dialog#suggestDlg, dialog#reportDlg {
   border: 1px solid var(--line); border-radius: 14px; padding: 20px; width: min(440px, calc(100vw - 32px));
   background: var(--panel); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.35);
 }
-dialog#suggestDlg::backdrop { background: rgba(0,0,0,.45); }
-#suggestForm { display: grid; gap: 6px; }
-#suggestForm h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
-#suggestForm label { font-size: 12px; font-weight: 600; margin-top: 6px; }
-#suggestForm textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical; }
+dialog#suggestDlg::backdrop, dialog#reportDlg::backdrop { background: rgba(0,0,0,.45); }
+#suggestForm, #reportForm {display: grid; gap: 6px; }
+#suggestForm h2, #reportForm h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
+#suggestForm label, #reportForm label { font-size: 12px; font-weight: 600; margin-top: 6px; }
+#suggestForm textarea, #reportForm textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical; }
 .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
 button.ghost { background: var(--chip); color: var(--ink); }
 #toast {
@@ -1099,6 +1099,28 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .about p, .about li { font-size: 13.5px; line-height: 1.55; }
 .about ul { padding-left: 18px; }
 
+/* report dialog */
+.rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }
+#reportForm .rp-opts label { font-weight: 400; font-size: 13.5px; margin: 0; display: flex; gap: 8px; align-items: center; }
+
+/* offline notice, loading and load errors */
+.net {
+  position: fixed; z-index: 2500; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top, 0px));
+  max-width: min(520px, calc(100vw - 24px)); background: #3a2f27; color: #fff; padding: 8px 14px; border-radius: 12px;
+  font-size: 12.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.3); text-align: center;
+}
+.skel { display: grid; gap: 8px; padding-block: 14px; border-bottom: 1px solid var(--line); }
+.skel i { display: block; height: 11px; border-radius: 6px; background: linear-gradient(90deg, var(--chip) 25%, var(--line) 50%, var(--chip) 75%); background-size: 200% 100%; animation: shimmer 1.3s linear infinite; }
+.skel i:first-child { width: 55%; height: 14px; }
+.skel i:nth-child(2) { width: 80%; }
+.skel i:nth-child(3) { width: 40%; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skel i { animation: none; } }
+#map:not(.leaflet-container) { display: grid; place-items: center; background: var(--map-land, #f2efe9); }
+#map:not(.leaflet-container):empty::after { content: "Loading map…"; color: var(--muted); font-size: 14px; font-weight: 600; }
+.loaderr { max-width: 32ch; text-align: center; color: var(--ink); font-weight: 600; padding: 16px; }
+
 /* ---------------------------------------------------------------- phone: full map + bottom sheet */
 @media (max-width: 760px) {
   html, body { height: 100%; overflow: hidden; }
@@ -1148,6 +1170,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
         <button type="button" id="surpriseBtn">🎲 Surprise me</button>
         <button type="button" class="ghost" id="aboutBtn">About &amp; data</button>
         <a class="ghost btnlink" id="areasLink" href="areas/" hidden>Browse by area</a>
+        <a class="ghost btnlink" id="foodLink" href="food/" hidden>Food guides</a>
       </div>
     </header>
 
@@ -1214,6 +1237,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
       </div>
       <div class="row between">
         <span id="countLabel" class="muted" aria-live="polite"></span>
+        <button id="shareViewBtn" type="button" class="linkbtn" hidden>Copy link to this view</button>
         <button id="shareListBtn" type="button" class="linkbtn" hidden>Share my saved list</button>
         <button id="csvBtn" type="button" class="linkbtn" hidden>Download CSV</button>
       </div>
@@ -1224,7 +1248,11 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
       <button type="button" class="linkbtn" id="listSaveAll">♥ Save all</button>
       <button type="button" class="linkbtn" id="listClose">Show everything</button>
     </div>
-    <ol id="list" class="list" aria-label="Results"></ol>
+    <ol id="list" class="list" aria-label="Results" aria-busy="true">
+      <li class="skel pad" aria-hidden="true"><i></i><i></i><i></i></li>
+      <li class="skel pad" aria-hidden="true"><i></i><i></i><i></i></li>
+      <li class="skel pad" aria-hidden="true"><i></i><i></i><i></i></li>
+    </ol>
     <div class="suggest pad">
       <span class="muted">Missing a cafe or restaurant?</span>
       <button type="button" class="linkbtn" id="suggestBtn">Suggest a place</button>
@@ -1257,6 +1285,29 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
     </div>
   </form>
 </dialog>
+<dialog id="reportDlg" aria-labelledby="rpTitle">
+  <form id="reportForm" method="dialog">
+    <h2 id="rpTitle">Report a problem</h2>
+    <p class="muted">With <b id="rpPlace"></b>. Sending opens a pre-filled GitHub issue (a free GitHub account is needed), or copy the details to share them another way.</p>
+    <fieldset class="rp-opts"><legend>What's wrong?</legend>
+      <label><input type="checkbox" name="rp" value="Closed permanently"> Closed permanently</label>
+      <label><input type="checkbox" name="rp" value="Wrong opening hours"> Wrong opening hours</label>
+      <label><input type="checkbox" name="rp" value="Wrong veg / Jain / non-veg label"> Wrong veg / Jain / non-veg label</label>
+      <label><input type="checkbox" name="rp" value="Wrong rating or cost for two"> Wrong rating or cost for two</label>
+      <label><input type="checkbox" name="rp" value="Pin in the wrong place"> Pin in the wrong place</label>
+      <label><input type="checkbox" name="rp" value="Wrong name, phone or menu link"> Wrong name, phone or menu link</label>
+    </fieldset>
+    <label for="rpNotes">What should it say? (optional)</label>
+    <textarea id="rpNotes" rows="3" maxlength="600" placeholder="e.g. Open till 1 am on weekends"></textarea>
+    <p id="rpMsg" class="muted" role="status"></p>
+    <div class="dlg-actions">
+      <button type="button" class="ghost" id="rpCancel">Cancel</button>
+      <button type="button" class="ghost" id="rpCopy">Copy details</button>
+      <button type="submit">Send on GitHub</button>
+    </div>
+  </form>
+</dialog>
+<div id="netBanner" class="net" role="status" hidden>You're offline. Saved data still works; directions, menus and ratings links need internet.</div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="cmpTray" hidden><span>Compare <span id="cmpCount">0</span></span>
   <button type="button" id="cmpView">View</button><button type="button" class="ghost" id="cmpClear">Clear</button></div>
@@ -1274,9 +1325,15 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
     <li><b>Pure veg, Jain and non-veg</b> show only where the data says so. Non-veg is sometimes inferred from the cuisine (seafood, kebab, biryani).</li>
     <li><b>Open now</b> is worked out from listed hours in Mumbai time; places without hours aren't shown as open or closed.</li>
     <li><b>Moods</b> such as Date night or Work-friendly are best guesses from cuisine, cost and chain names.</li>
-    <li><b>Your saved places</b> stay in this browser. Nothing is sent anywhere.</li>
   </ul>
-  <p>Spotted a missing or closed place? Use “Suggest a place” at the bottom of the list.</p>
+  <h3 class="d-sub">Privacy</h3>
+  <ul>
+    <li>No accounts, no ads and no tracking cookies.</li>
+    <li><b>Saved places</b> stay in this browser only. Clearing site data removes them.</li>
+    <li><b>Near me</b> uses your location only on your phone, to sort by distance. It is never sent anywhere.</li>
+    <li>Directions, menus and ratings open Google Maps, Zomato or Swiggy, which have their own privacy rules.</li>
+  </ul>
+  <p>Spotted a missing or closed place? Use “Suggest a place” at the bottom of the list, or “Report a problem” on any place.</p>
   <p class="muted">Map data © OpenStreetMap contributors (ODbL).</p>
   <div class="dlg-actions"><button type="button" id="aboutClose">Close</button></div>
 </dialog>
@@ -1293,6 +1350,14 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  // The map library or place data didn't arrive (offline on a first visit, or a blocked CDN).
+  if (typeof L === "undefined" || typeof RAW === "undefined") {
+    const msg = "The map couldn't load. Check your internet connection and reload the page.";
+    $("map").innerHTML = `<p class="loaderr">${msg}</p>`;
+    $("list").innerHTML = `<li class="empty">${msg}</li>`;
+    $("list").removeAttribute("aria-busy");
+    return;
+  }
 
   // [name, isRestaurant, kind, address, lat, lng, cuisine;list, hours, phone, website, menu]
   const places = RAW.map((r, i) => ({
@@ -1654,6 +1719,8 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   function render(resetMarkers) {
     const rows = visible();
     current = rows;
+    $("list").removeAttribute("aria-busy");
+    syncUrl();
     if (resetMarkers !== false) {
       cluster.clearLayers();
       cluster.addLayers(rows.map((p) => markers[p.id]));
@@ -1830,7 +1897,8 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   }
 
   // ------------------------------------------------------------ share links (#p-<key>)
-  const linkFor = (p) => location.href.split("#")[0] + "#p-" + p.key;
+  // Place links skip any filters in the address (website); the claude.ai page keeps its own address.
+  const linkFor = (p) => (typeof SITE_MODE !== "undefined" && SITE_MODE ? location.origin + location.pathname : location.href.split("#")[0]) + "#p-" + p.key;
   async function share(key) {
     const p = byKey.get(key); if (!p) return;
     const url = linkFor(p);
@@ -2049,7 +2117,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
       ${p.website ? `<p class="meta"><a class="rate" href="${esc(p.website)}" target="_blank" rel="noopener">Website ↗</a></p>` : ""}
       <p class="meta">GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</p>
       ${actions(p)}
-      <div class="actions"><button type="button" class="btn" data-cmp="${p.key}">⇄ Compare</button></div>
+      <div class="actions"><button type="button" class="btn" data-cmp="${p.key}">⇄ Compare</button><button type="button" class="btn ghost" data-report="${p.key}">⚑ Report a problem</button></div>
       ${near.length ? `<h3 class="d-sub">Nearby (within 500 m)</h3><ul class="near">${near.map(([d, q]) =>
         `<li><button type="button" data-open="${q.key}"><span class="dot-sm ${q.cat}"></span><span class="nm">${esc(q.name)}</span><span class="muted">${esc(q.kind)} · ${fmtKm(d)}</span></button></li>`).join("")}</ul>` : ""}`;
     $("browse").hidden = true;
@@ -2078,6 +2146,8 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
     if (o) { e.preventDefault(); return openDetail(byKey.get(o.dataset.open)); }
     const c = e.target.closest("[data-cmp]");
     if (c) { e.preventDefault(); return toggleCompare(c.dataset.cmp); }
+    const r = e.target.closest("[data-report]");
+    if (r) { e.preventDefault(); return openReport(byKey.get(r.dataset.report)); }
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && detailOpen && !document.querySelector("dialog[open]")) closeDetail(); });
 
@@ -2272,22 +2342,112 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   $("aboutClose").addEventListener("click", () => $("aboutDlg").close());
   $("statPlaces").textContent = places.length.toLocaleString("en-IN");
   $("statAreas").textContent = (GEO.locs.length + GEO.zones.length).toLocaleString("en-IN") + "+";
-  if (typeof SITE_MODE !== "undefined" && SITE_MODE) $("areasLink").hidden = false;
+  if (typeof SITE_MODE !== "undefined" && SITE_MODE) { $("areasLink").hidden = false; $("foodLink").hidden = false; }
 
   // ------------------------------------------------------------ keyboard on result cards
   $("list").addEventListener("keydown", (e) => {
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("li[data-id]")) { e.preventDefault(); openDetail(places[+e.target.dataset.id]); }
   });
 
+  // ------------------------------------------------------------ report a problem (pre-filled GitHub issue)
+  let reporting = null;
+  function openReport(p) {
+    if (!p) return;
+    reporting = p;
+    $("rpPlace").textContent = p.name;
+    $("reportForm").reset();
+    $("rpMsg").textContent = "";
+    $("reportDlg").showModal();
+  }
+  function report() {
+    const p = reporting;
+    const what = [...document.querySelectorAll('#reportForm [name="rp"]:checked')].map((x) => x.value);
+    const notes = $("rpNotes").value.trim();
+    return {
+      title: `Fix: ${p.name} (${p.loc === p.sub ? p.sub : p.loc + ", " + p.sub})${what.length ? " – " + what.join(", ") : ""}`,
+      body: `**Place:** ${p.name}\n**Area:** ${p.loc === p.sub ? p.sub : p.loc + ", " + p.sub}\n**Link:** ${linkFor(p)}\n**Key:** ${p.key} · GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}\n` +
+        `**What's wrong:** ${what.join("; ") || "-"}\n**Details:** ${notes || "-"}\n\n_Reported from the website._`,
+      ok: what.length > 0 || notes !== "",
+    };
+  }
+  $("rpCancel").addEventListener("click", () => $("reportDlg").close());
+  $("rpCopy").addEventListener("click", async () => {
+    const r = report();
+    try { await navigator.clipboard.writeText(`${r.title}\n\n${r.body.replace(/\*\*/g, "")}`); $("rpMsg").textContent = "Details copied. Paste them wherever you like to send them."; }
+    catch (e) { $("rpMsg").textContent = "Copying isn't allowed here. Use Send on GitHub instead."; }
+  });
+  $("reportForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const r = report();
+    if (!r.ok) { $("rpMsg").textContent = "Tick what's wrong or add a note."; return; }
+    const a = document.createElement("a");
+    a.href = `${REPO}/issues/new?` + new URLSearchParams({ title: r.title, body: r.body, labels: "data fix" });
+    a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+    $("rpMsg").textContent = "GitHub opened in a new tab. Press “Submit new issue” there to send it. Thank you!";
+  });
+
+  // ------------------------------------------------------------ filters in the link (website only)
+  // ?area=Bandra&cat=cafe&f=veg,open&mood=date&cuisine=Pizza&t=irani&sort=rating
+  const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE;
+  const FLAGS = [["veg", "fVeg"], ["jain", "fJain"], ["nonveg", "fNon"], ["rated", "fRated"], ["open", "fOpen"]];
+  function viewParams() {
+    const ps = new URLSearchParams();
+    if (state.area && state.area.names && state.areaName) ps.set("area", state.areaName);
+    if (state.cat !== "all") ps.set("cat", state.cat);
+    const f = FLAGS.filter(([, id]) => $(id).checked).map(([k]) => k);
+    if (f.length) ps.set("f", f.join(","));
+    if (state.mood) ps.set("mood", state.mood);
+    if ($("cuisine").value) ps.set("cuisine", $("cuisine").value);
+    const t = $("filterText").value.trim();
+    if (t) ps.set("t", t);
+    if ($("sortBy").value !== "near") ps.set("sort", $("sortBy").value);
+    return ps;
+  }
+  let urlTimer;
+  function syncUrl() {
+    if (!SITE || !state.urlReady) return;
+    clearTimeout(urlTimer);
+    urlTimer = setTimeout(() => {
+      const qs = viewParams().toString().replace(/%2C/g, ",");
+      $("shareViewBtn").hidden = !qs;
+      const url = location.pathname + (qs ? "?" + qs : "") + location.hash;
+      if (url !== location.pathname + location.search + location.hash) { try { history.replaceState(null, "", url); } catch (e) { /* too many updates */ } }
+    }, 250);
+  }
+  function applyUrl(ps) {
+    if (ps.get("q")) smartSearch(ps.get("q"));
+    else if (ps.get("area")) { $("place").value = ps.get("area"); showArea(ps.get("area")); }
+    const cat = ps.get("cat");
+    if (cat === "cafe" || cat === "rest") setCat(cat);
+    const f = (ps.get("f") || "").split(",");
+    FLAGS.forEach(([k, id]) => { if (f.includes(k)) $(id).checked = true; });
+    if (MOODS[ps.get("mood")]) setMood(ps.get("mood"));
+    const cu = ps.get("cuisine");
+    if (cu && [...$("cuisine").options].some((o) => o.value === cu)) $("cuisine").value = cu;
+    if (ps.get("t")) $("filterText").value = ps.get("t");
+    const so = ps.get("sort");
+    if (so && [...$("sortBy").options].some((o) => o.value === so)) $("sortBy").value = so;
+    state.urlReady = true;
+    state.shown = PAGE; render();
+  }
+  $("shareViewBtn").addEventListener("click", async () => {
+    const url = location.href.split("#")[0];
+    try { if (navigator.share) { await navigator.share({ title: document.title, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); toast("Link to this view copied"); } catch (e) { toast(url); }
+  });
+
+  // ------------------------------------------------------------ offline notice
+  const syncNet = () => { $("netBanner").hidden = navigator.onLine !== false; };
+  addEventListener("online", syncNet); addEventListener("offline", syncNet); syncNet();
+
 
   syncFavCount();
   refreshCounts();
   render();
   openFromHash();
-  // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area pages).
-  const params = new URLSearchParams(location.search);
-  if (params.get("area")) { $("place").value = params.get("area"); showArea(params.get("area")); }
-  else if (params.get("q")) smartSearch(params.get("q"));
+  // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area and food pages).
+  // Filters can also come in the link (?area=…&cat=…&f=veg,open&cuisine=…), see applyUrl.
+  applyUrl(new URLSearchParams(location.search));
 })();
 </script>
 

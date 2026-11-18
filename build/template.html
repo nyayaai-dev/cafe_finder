@@ -147,15 +147,15 @@ button {
 .tag.open { color: var(--veg); background: color-mix(in srgb, var(--veg) 14%, transparent) !important; font-weight: 600; }
 .tag.shut { color: var(--nonveg); background: color-mix(in srgb, var(--nonveg) 14%, transparent) !important; font-weight: 600; }
 .suggest { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding-block: 10px; border-top: 1px solid var(--line); font-size: 13px; }
-dialog#suggestDlg {
+dialog#suggestDlg, dialog#reportDlg {
   border: 1px solid var(--line); border-radius: 14px; padding: 20px; width: min(440px, calc(100vw - 32px));
   background: var(--panel); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.35);
 }
-dialog#suggestDlg::backdrop { background: rgba(0,0,0,.45); }
-#suggestForm { display: grid; gap: 6px; }
-#suggestForm h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
-#suggestForm label { font-size: 12px; font-weight: 600; margin-top: 6px; }
-#suggestForm textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical; }
+dialog#suggestDlg::backdrop, dialog#reportDlg::backdrop { background: rgba(0,0,0,.45); }
+#suggestForm, #reportForm {display: grid; gap: 6px; }
+#suggestForm h2, #reportForm h2 { margin: 0; font: 700 19px/1.2 var(--font-display); }
+#suggestForm label, #reportForm label { font-size: 12px; font-weight: 600; margin-top: 6px; }
+#suggestForm textarea, #reportForm textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; resize: vertical; }
 .dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; margin-top: 8px; }
 button.ghost { background: var(--chip); color: var(--ink); }
 #toast {
@@ -245,6 +245,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
         <button type="button" id="surpriseBtn">🎲 Surprise me</button>
         <button type="button" class="ghost" id="aboutBtn">About &amp; data</button>
         <a class="ghost btnlink" id="areasLink" href="areas/" hidden>Browse by area</a>
+        <a class="ghost btnlink" id="foodLink" href="food/" hidden>Food guides</a>
       </div>
     </header>
 
@@ -311,6 +312,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
       </div>
       <div class="row between">
         <span id="countLabel" class="muted" aria-live="polite"></span>
+        <button id="shareViewBtn" type="button" class="linkbtn" hidden>Copy link to this view</button>
         <button id="shareListBtn" type="button" class="linkbtn" hidden>Share my saved list</button>
         <button id="csvBtn" type="button" class="linkbtn" hidden>Download CSV</button>
       </div>
@@ -321,7 +323,11 @@ button.ghost { background: var(--chip); color: var(--ink); }
       <button type="button" class="linkbtn" id="listSaveAll">♥ Save all</button>
       <button type="button" class="linkbtn" id="listClose">Show everything</button>
     </div>
-    <ol id="list" class="list" aria-label="Results"></ol>
+    <ol id="list" class="list" aria-label="Results" aria-busy="true">
+      <li class="skel pad" aria-hidden="true"><i></i><i></i><i></i></li>
+      <li class="skel pad" aria-hidden="true"><i></i><i></i><i></i></li>
+      <li class="skel pad" aria-hidden="true"><i></i><i></i><i></i></li>
+    </ol>
     <div class="suggest pad">
       <span class="muted">Missing a cafe or restaurant?</span>
       <button type="button" class="linkbtn" id="suggestBtn">Suggest a place</button>
@@ -354,6 +360,29 @@ button.ghost { background: var(--chip); color: var(--ink); }
     </div>
   </form>
 </dialog>
+<dialog id="reportDlg" aria-labelledby="rpTitle">
+  <form id="reportForm" method="dialog">
+    <h2 id="rpTitle">Report a problem</h2>
+    <p class="muted">With <b id="rpPlace"></b>. Sending opens a pre-filled GitHub issue (a free GitHub account is needed), or copy the details to share them another way.</p>
+    <fieldset class="rp-opts"><legend>What's wrong?</legend>
+      <label><input type="checkbox" name="rp" value="Closed permanently"> Closed permanently</label>
+      <label><input type="checkbox" name="rp" value="Wrong opening hours"> Wrong opening hours</label>
+      <label><input type="checkbox" name="rp" value="Wrong veg / Jain / non-veg label"> Wrong veg / Jain / non-veg label</label>
+      <label><input type="checkbox" name="rp" value="Wrong rating or cost for two"> Wrong rating or cost for two</label>
+      <label><input type="checkbox" name="rp" value="Pin in the wrong place"> Pin in the wrong place</label>
+      <label><input type="checkbox" name="rp" value="Wrong name, phone or menu link"> Wrong name, phone or menu link</label>
+    </fieldset>
+    <label for="rpNotes">What should it say? (optional)</label>
+    <textarea id="rpNotes" rows="3" maxlength="600" placeholder="e.g. Open till 1 am on weekends"></textarea>
+    <p id="rpMsg" class="muted" role="status"></p>
+    <div class="dlg-actions">
+      <button type="button" class="ghost" id="rpCancel">Cancel</button>
+      <button type="button" class="ghost" id="rpCopy">Copy details</button>
+      <button type="submit">Send on GitHub</button>
+    </div>
+  </form>
+</dialog>
+<div id="netBanner" class="net" role="status" hidden>You're offline. Saved data still works; directions, menus and ratings links need internet.</div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <div id="cmpTray" hidden><span>Compare <span id="cmpCount">0</span></span>
   <button type="button" id="cmpView">View</button><button type="button" class="ghost" id="cmpClear">Clear</button></div>
@@ -371,9 +400,15 @@ button.ghost { background: var(--chip); color: var(--ink); }
     <li><b>Pure veg, Jain and non-veg</b> show only where the data says so. Non-veg is sometimes inferred from the cuisine (seafood, kebab, biryani).</li>
     <li><b>Open now</b> is worked out from listed hours in Mumbai time; places without hours aren't shown as open or closed.</li>
     <li><b>Moods</b> such as Date night or Work-friendly are best guesses from cuisine, cost and chain names.</li>
-    <li><b>Your saved places</b> stay in this browser. Nothing is sent anywhere.</li>
   </ul>
-  <p>Spotted a missing or closed place? Use “Suggest a place” at the bottom of the list.</p>
+  <h3 class="d-sub">Privacy</h3>
+  <ul>
+    <li>No accounts, no ads and no tracking cookies.</li>
+    <li><b>Saved places</b> stay in this browser only. Clearing site data removes them.</li>
+    <li><b>Near me</b> uses your location only on your phone, to sort by distance. It is never sent anywhere.</li>
+    <li>Directions, menus and ratings open Google Maps, Zomato or Swiggy, which have their own privacy rules.</li>
+  </ul>
+  <p>Spotted a missing or closed place? Use “Suggest a place” at the bottom of the list, or “Report a problem” on any place.</p>
   <p class="muted">Map data © OpenStreetMap contributors (ODbL).</p>
   <div class="dlg-actions"><button type="button" id="aboutClose">Close</button></div>
 </dialog>
@@ -390,6 +425,14 @@ button.ghost { background: var(--chip); color: var(--ink); }
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  // The map library or place data didn't arrive (offline on a first visit, or a blocked CDN).
+  if (typeof L === "undefined" || typeof RAW === "undefined") {
+    const msg = "The map couldn't load. Check your internet connection and reload the page.";
+    $("map").innerHTML = `<p class="loaderr">${msg}</p>`;
+    $("list").innerHTML = `<li class="empty">${msg}</li>`;
+    $("list").removeAttribute("aria-busy");
+    return;
+  }
 
   // [name, isRestaurant, kind, address, lat, lng, cuisine;list, hours, phone, website, menu]
   const places = RAW.map((r, i) => ({
@@ -751,6 +794,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
   function render(resetMarkers) {
     const rows = visible();
     current = rows;
+    $("list").removeAttribute("aria-busy");
+    syncUrl();
     if (resetMarkers !== false) {
       cluster.clearLayers();
       cluster.addLayers(rows.map((p) => markers[p.id]));
@@ -927,7 +972,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
   }
 
   // ------------------------------------------------------------ share links (#p-<key>)
-  const linkFor = (p) => location.href.split("#")[0] + "#p-" + p.key;
+  // Place links skip any filters in the address (website); the claude.ai page keeps its own address.
+  const linkFor = (p) => (typeof SITE_MODE !== "undefined" && SITE_MODE ? location.origin + location.pathname : location.href.split("#")[0]) + "#p-" + p.key;
   async function share(key) {
     const p = byKey.get(key); if (!p) return;
     const url = linkFor(p);
@@ -1004,9 +1050,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
   refreshCounts();
   render();
   openFromHash();
-  // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area pages).
-  const params = new URLSearchParams(location.search);
-  if (params.get("area")) { $("place").value = params.get("area"); showArea(params.get("area")); }
-  else if (params.get("q")) smartSearch(params.get("q"));
+  // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area and food pages).
+  // Filters can also come in the link (?area=…&cat=…&f=veg,open&cuisine=…), see applyUrl.
+  applyUrl(new URLSearchParams(location.search));
 })();
 </script>

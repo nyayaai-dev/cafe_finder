@@ -114,6 +114,28 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .about p, .about li { font-size: 13.5px; line-height: 1.55; }
 .about ul { padding-left: 18px; }
 
+/* report dialog */
+.rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
+.rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }
+#reportForm .rp-opts label { font-weight: 400; font-size: 13.5px; margin: 0; display: flex; gap: 8px; align-items: center; }
+
+/* offline notice, loading and load errors */
+.net {
+  position: fixed; z-index: 2500; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top, 0px));
+  max-width: min(520px, calc(100vw - 24px)); background: #3a2f27; color: #fff; padding: 8px 14px; border-radius: 12px;
+  font-size: 12.5px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.3); text-align: center;
+}
+.skel { display: grid; gap: 8px; padding-block: 14px; border-bottom: 1px solid var(--line); }
+.skel i { display: block; height: 11px; border-radius: 6px; background: linear-gradient(90deg, var(--chip) 25%, var(--line) 50%, var(--chip) 75%); background-size: 200% 100%; animation: shimmer 1.3s linear infinite; }
+.skel i:first-child { width: 55%; height: 14px; }
+.skel i:nth-child(2) { width: 80%; }
+.skel i:nth-child(3) { width: 40%; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .skel i { animation: none; } }
+#map:not(.leaflet-container) { display: grid; place-items: center; background: var(--map-land, #f2efe9); }
+#map:not(.leaflet-container):empty::after { content: "Loading map…"; color: var(--muted); font-size: 14px; font-weight: 600; }
+.loaderr { max-width: 32ch; text-align: center; color: var(--ink); font-weight: 600; padding: 16px; }
+
 /* ---------------------------------------------------------------- phone: full map + bottom sheet */
 @media (max-width: 760px) {
   html, body { height: 100%; overflow: hidden; }

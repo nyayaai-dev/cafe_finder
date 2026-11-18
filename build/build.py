@@ -305,8 +305,8 @@ else:
     # Area pages, sitemap and robots.txt for search engines; og.png is drawn on Windows by make_og.ps1.
     sys.path.insert(0, HERE)
     import make_pages
-    n_pages = make_pages.build_pages(SITE_DIR, rows, geo, SNAPSHOT, cfg)
-    print(f"{n_pages} area pages written")
+    n_pages, n_guides = make_pages.build_pages(SITE_DIR, rows, geo, SNAPSHOT, cfg)
+    print(f"{n_pages} area pages and {n_guides} food guides written")
 print(f"{len(rows)} places ({sum(r[21] for r in rows)} from web listings, {sum(1 for r in rows if r[17])} with ratings, {sum(1 for r in rows if r[13])} with cost for two, {sum(1 for r in rows if r[20] & 1)} pure veg, {sum(1 for r in rows if r[20] & 2)} jain, {sum(1 for r in rows if r[20] & 4)} non-veg) from {os.path.basename(src)}; "
       f"{len(ZLIST)} main areas, {len(SUBS)} neighbourhoods, {len(LOCS)} localities; groups: { {k: len(v) for k, v in groups.items()} }; "
       f"{os.path.getsize(OUT)/1024:.0f} KB")

@@ -19,6 +19,10 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
 - Mood chips (Work-friendly, Date night, Under ₹500, Late night, Breakfast, Desserts),
   Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
 - Area pages for search engines (`site/areas/`), sitemap, link-preview image (`site/og.png`)
+- Food guides by cuisine and area (`site/food/`, e.g. Pizza in Bandra, Jain food), linked from area pages
+- Filters live in the address, so any view can be shared (`?area=Bandra&cat=cafe&f=veg,open&cuisine=Pizza&mood=date&sort=rating`)
+- Report a problem on any place (pre-filled GitHub issue, label `data fix`)
+- Privacy page, custom 404 page, offline notice and loading placeholders
 
 ### Visitor stats (optional)
 

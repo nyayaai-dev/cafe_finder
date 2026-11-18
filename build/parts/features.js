@@ -146,7 +146,7 @@
       ${p.website ? `<p class="meta"><a class="rate" href="${esc(p.website)}" target="_blank" rel="noopener">Website ↗</a></p>` : ""}
       <p class="meta">GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</p>
       ${actions(p)}
-      <div class="actions"><button type="button" class="btn" data-cmp="${p.key}">⇄ Compare</button></div>
+      <div class="actions"><button type="button" class="btn" data-cmp="${p.key}">⇄ Compare</button><button type="button" class="btn ghost" data-report="${p.key}">⚑ Report a problem</button></div>
       ${near.length ? `<h3 class="d-sub">Nearby (within 500 m)</h3><ul class="near">${near.map(([d, q]) =>
         `<li><button type="button" data-open="${q.key}"><span class="dot-sm ${q.cat}"></span><span class="nm">${esc(q.name)}</span><span class="muted">${esc(q.kind)} · ${fmtKm(d)}</span></button></li>`).join("")}</ul>` : ""}`;
     $("browse").hidden = true;
@@ -175,6 +175,8 @@
     if (o) { e.preventDefault(); return openDetail(byKey.get(o.dataset.open)); }
     const c = e.target.closest("[data-cmp]");
     if (c) { e.preventDefault(); return toggleCompare(c.dataset.cmp); }
+    const r = e.target.closest("[data-report]");
+    if (r) { e.preventDefault(); return openReport(byKey.get(r.dataset.report)); }
   });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && detailOpen && !document.querySelector("dialog[open]")) closeDetail(); });
 
@@ -369,9 +371,100 @@
   $("aboutClose").addEventListener("click", () => $("aboutDlg").close());
   $("statPlaces").textContent = places.length.toLocaleString("en-IN");
   $("statAreas").textContent = (GEO.locs.length + GEO.zones.length).toLocaleString("en-IN") + "+";
-  if (typeof SITE_MODE !== "undefined" && SITE_MODE) $("areasLink").hidden = false;
+  if (typeof SITE_MODE !== "undefined" && SITE_MODE) { $("areasLink").hidden = false; $("foodLink").hidden = false; }
 
   // ------------------------------------------------------------ keyboard on result cards
   $("list").addEventListener("keydown", (e) => {
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("li[data-id]")) { e.preventDefault(); openDetail(places[+e.target.dataset.id]); }
   });
+
+  // ------------------------------------------------------------ report a problem (pre-filled GitHub issue)
+  let reporting = null;
+  function openReport(p) {
+    if (!p) return;
+    reporting = p;
+    $("rpPlace").textContent = p.name;
+    $("reportForm").reset();
+    $("rpMsg").textContent = "";
+    $("reportDlg").showModal();
+  }
+  function report() {
+    const p = reporting;
+    const what = [...document.querySelectorAll('#reportForm [name="rp"]:checked')].map((x) => x.value);
+    const notes = $("rpNotes").value.trim();
+    return {
+      title: `Fix: ${p.name} (${p.loc === p.sub ? p.sub : p.loc + ", " + p.sub})${what.length ? " – " + what.join(", ") : ""}`,
+      body: `**Place:** ${p.name}\n**Area:** ${p.loc === p.sub ? p.sub : p.loc + ", " + p.sub}\n**Link:** ${linkFor(p)}\n**Key:** ${p.key} · GPS ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}\n` +
+        `**What's wrong:** ${what.join("; ") || "-"}\n**Details:** ${notes || "-"}\n\n_Reported from the website._`,
+      ok: what.length > 0 || notes !== "",
+    };
+  }
+  $("rpCancel").addEventListener("click", () => $("reportDlg").close());
+  $("rpCopy").addEventListener("click", async () => {
+    const r = report();
+    try { await navigator.clipboard.writeText(`${r.title}\n\n${r.body.replace(/\*\*/g, "")}`); $("rpMsg").textContent = "Details copied. Paste them wherever you like to send them."; }
+    catch (e) { $("rpMsg").textContent = "Copying isn't allowed here. Use Send on GitHub instead."; }
+  });
+  $("reportForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const r = report();
+    if (!r.ok) { $("rpMsg").textContent = "Tick what's wrong or add a note."; return; }
+    const a = document.createElement("a");
+    a.href = `${REPO}/issues/new?` + new URLSearchParams({ title: r.title, body: r.body, labels: "data fix" });
+    a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+    $("rpMsg").textContent = "GitHub opened in a new tab. Press “Submit new issue” there to send it. Thank you!";
+  });
+
+  // ------------------------------------------------------------ filters in the link (website only)
+  // ?area=Bandra&cat=cafe&f=veg,open&mood=date&cuisine=Pizza&t=irani&sort=rating
+  const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE;
+  const FLAGS = [["veg", "fVeg"], ["jain", "fJain"], ["nonveg", "fNon"], ["rated", "fRated"], ["open", "fOpen"]];
+  function viewParams() {
+    const ps = new URLSearchParams();
+    if (state.area && state.area.names && state.areaName) ps.set("area", state.areaName);
+    if (state.cat !== "all") ps.set("cat", state.cat);
+    const f = FLAGS.filter(([, id]) => $(id).checked).map(([k]) => k);
+    if (f.length) ps.set("f", f.join(","));
+    if (state.mood) ps.set("mood", state.mood);
+    if ($("cuisine").value) ps.set("cuisine", $("cuisine").value);
+    const t = $("filterText").value.trim();
+    if (t) ps.set("t", t);
+    if ($("sortBy").value !== "near") ps.set("sort", $("sortBy").value);
+    return ps;
+  }
+  let urlTimer;
+  function syncUrl() {
+    if (!SITE || !state.urlReady) return;
+    clearTimeout(urlTimer);
+    urlTimer = setTimeout(() => {
+      const qs = viewParams().toString().replace(/%2C/g, ",");
+      $("shareViewBtn").hidden = !qs;
+      const url = location.pathname + (qs ? "?" + qs : "") + location.hash;
+      if (url !== location.pathname + location.search + location.hash) { try { history.replaceState(null, "", url); } catch (e) { /* too many updates */ } }
+    }, 250);
+  }
+  function applyUrl(ps) {
+    if (ps.get("q")) smartSearch(ps.get("q"));
+    else if (ps.get("area")) { $("place").value = ps.get("area"); showArea(ps.get("area")); }
+    const cat = ps.get("cat");
+    if (cat === "cafe" || cat === "rest") setCat(cat);
+    const f = (ps.get("f") || "").split(",");
+    FLAGS.forEach(([k, id]) => { if (f.includes(k)) $(id).checked = true; });
+    if (MOODS[ps.get("mood")]) setMood(ps.get("mood"));
+    const cu = ps.get("cuisine");
+    if (cu && [...$("cuisine").options].some((o) => o.value === cu)) $("cuisine").value = cu;
+    if (ps.get("t")) $("filterText").value = ps.get("t");
+    const so = ps.get("sort");
+    if (so && [...$("sortBy").options].some((o) => o.value === so)) $("sortBy").value = so;
+    state.urlReady = true;
+    state.shown = PAGE; render();
+  }
+  $("shareViewBtn").addEventListener("click", async () => {
+    const url = location.href.split("#")[0];
+    try { if (navigator.share) { await navigator.share({ title: document.title, url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
+    try { await navigator.clipboard.writeText(url); toast("Link to this view copied"); } catch (e) { toast(url); }
+  });
+
+  // ------------------------------------------------------------ offline notice
+  const syncNet = () => { $("netBanner").hidden = navigator.onLine !== false; };
+  addEventListener("online", syncNet); addEventListener("offline", syncNet); syncNet();
