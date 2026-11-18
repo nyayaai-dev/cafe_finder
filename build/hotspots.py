@@ -43,6 +43,12 @@ SRC = {
     "aw_mp": "https://magicpin.in/india/Mumbai/Lokhandwala-Complex,-Andheri-West/Restaurant/Cafe/",
     "thane_z": "https://www.zomato.com/mumbai/best-thane-cafe-restaurants",
     "thane_mp": "https://magicpin.in/india/Thane/Thane-West/Restaurant/Cafe/",
+    # Breakfast spots (checked 18 Nov 2026)
+    "bf_d": "https://www.district.in/blog/early-morning-breakfast-spots-in-mumbai",
+    "bf_lbb": "https://lbb.in/mumbai/where-to-try-the-best-breakfast-in-mumbai",
+    "bf_fpj": "https://www.freepressjournal.in/lifestyle/food-guide-where-to-eat-the-best-dosa-in-mumbai-head-to-these-affordable-restaurants-for-authentic-south-indian-breakfast",
+    "bf_hg": "https://homegrown.co.in/article/50661/you-really-need-bombays-18-best-cheap-local-breakfasts-from-misal-pav-to-akuri",
+    "bf_misal": "https://www.freepressjournal.in/ampstories/mumbai/mumbai-guide-craving-for-zan-zanit-misal-pav-check-out-best-spots-in-city",
 }
 
 # name, locality to geocode, kind ("cafe"/"rest"), rating, rating source, cost for two, cost source, source key, pure veg
@@ -186,4 +192,19 @@ H = [
     ("Frespresso", "Naupada, Thane", "cafe", None, None, 400, "travel blog", "thane_mp", None),
     ("FOO Asian Tapas", "Majiwada, Thane", "rest", 4.8, "Zomato", 3000, "Zomato", "thane_z", None),
     ("Moko", "Manpada, Thane", "rest", 4.6, "Zomato", 2500, "Zomato", "thane_z", None),
+    # Breakfast
+    ("Ram Ashray", "Bhandarkar Road, Matunga East", "rest", 4.7, "District", 200, "District", "bf_d", True),
+    ("Mani's", "Matunga East", "rest", 4.1, "District", 250, "District", "bf_d", True),
+    ("Cafe Madras", "Matunga East", "rest", 4.4, "District", 250, "District", "bf_d", True),
+    ("Benne Heritage Bangalore Dosa", "Pali Village, Bandra West", "rest", 4.3, "LBB", 500, "LBB", "bf_lbb", True),
+    ("Benne (Andheri)", "JVPD Scheme, Andheri West", "rest", None, None, 500, "Free Press Journal", "bf_fpj", True),
+    ("Kyani & Co.", "Marine Lines", "cafe", 4.1, "LBB", 300, "LBB", "bf_lbb", None),
+    ("Prakash Shakahari Upahar Kendra", "Gokhale Road, Dadar West", "rest", 4.3, "LBB", 150, "LBB", "bf_lbb", True),
+    ("A1 Bakery", "Bandra West", "cafe", 4.2, "LBB", 150, "LBB", "bf_lbb", None),
+    ("Kuckeliku Breakfast House", "Colaba", "cafe", 4.2, "LBB", 1300, "LBB", "bf_lbb", None),
+    ("VIG Refreshment", "Chembur", "rest", 4.0, "LBB", 300, "LBB", "bf_lbb", None),
+    ("Mi Marathi", "Vile Parle East", "rest", 4.1, "LBB", 300, "LBB", "bf_lbb", True),
+    ("Rajubhai Dhoklawala", "Kandivali West", "rest", 4.3, "LBB", 200, "LBB", "bf_lbb", True),
+    ("Vinay Health Home", "Girgaon", "rest", None, None, None, None, "bf_hg", True),
+    ("Mamledar Misal", "Court Naka, Thane West", "rest", None, None, None, None, "bf_misal", True),
 ]

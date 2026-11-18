@@ -482,12 +482,13 @@ button.ghost { background: var(--chip); color: var(--ink); }
   // [] when closed, or null when the text isn't in a format we can read.
   function parseHours(hours) {
     if (!hours) return null;
-    const h = hours.trim();
+    // Public-holiday parts ("Mo-Su,PH 05:00-21:00", "PH off") don't change a normal week.
+    const h = hours.trim().replace(/\s*,\s*PH\b|\bPH\s*,\s*/g, "");
     if (h === "24/7") return Array.from({ length: 7 }, () => [[0, 1440]]);
     const wk = Array.from({ length: 7 }, () => null);
     for (const ruleRaw of h.split(";")) {
       const rule = ruleRaw.trim();
-      if (!rule) continue;
+      if (!rule || /^PH\b/.test(rule)) continue;
       const m = rule.match(DAYRULE);
       if (!m) return null;
       const days = m[1] ? daySet(m[1].replace(/\s+/g, "")) : new Set([0, 1, 2, 3, 4, 5, 6]);

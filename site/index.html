@@ -7,7 +7,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mumbai Cafe & Restaurant Finder">
 <meta property="og:title" content="Mumbai Cafe & Restaurant Finder">
-<meta property="og:description" content="Find 2,543 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
+<meta property="og:description" content="Find 2,546 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
 <meta property="og:url" content="https://nyayaai-dev.github.io/cafe_finder/">
 <meta property="og:image" content="https://nyayaai-dev.github.io/cafe_finder/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Find 2,543 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
+<meta name="description" content="Find 2,546 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
 <script>if ('serviceWorker' in navigator && window.isSecureContext) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1407,12 +1407,13 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   // [] when closed, or null when the text isn't in a format we can read.
   function parseHours(hours) {
     if (!hours) return null;
-    const h = hours.trim();
+    // Public-holiday parts ("Mo-Su,PH 05:00-21:00", "PH off") don't change a normal week.
+    const h = hours.trim().replace(/\s*,\s*PH\b|\bPH\s*,\s*/g, "");
     if (h === "24/7") return Array.from({ length: 7 }, () => [[0, 1440]]);
     const wk = Array.from({ length: 7 }, () => null);
     for (const ruleRaw of h.split(";")) {
       const rule = ruleRaw.trim();
-      if (!rule) continue;
+      if (!rule || /^PH\b/.test(rule)) continue;
       const m = rule.match(DAYRULE);
       if (!m) return null;
       const days = m[1] ? daySet(m[1].replace(/\s+/g, "")) : new Set([0, 1, 2, 3, 4, 5, 6]);

@@ -115,5 +115,5 @@ The single-file version used for the claude.ai shareable link is built with
 ## Data and credits
 
 Map and place data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL.
-Hotspot ratings and cost for two come from the listing named on each place (Zomato, Swiggy,
+Hotspot ratings and cost for two come from the listing named on each place (Zomato, Swiggy, LBB,
 EazyDiner, District, Justdial and others), checked 15 November 2026.

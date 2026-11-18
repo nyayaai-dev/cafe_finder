@@ -89,6 +89,30 @@ for h in hot:
         added += 1
 print(f"hotspots: {enriched} map places given ratings/cost, {added} added from listings")
 
+# Classic Mumbai breakfast places: tag them "Breakfast" (Breakfast mood, food guides) and
+# mark the Udupi / Maharashtrian institutions pure veg. (name pattern, None or (lat0, lat1, lng0, lng1), pure veg)
+BREAKFAST = [
+    (r"^ram ?ashray", None, True), (r"^mani'?s", None, True), (r"^(cafe madras|madras cafe)", None, True),
+    (r"^cafe mysore", None, True), (r"^sharda bhavan", None, True), (r"^ayyappan idli", None, True),
+    (r"^anna idli", None, True), (r"^benne", None, True), (r"^prakash", (19.010, 19.032, 72.832, 72.852), True), (r"^aaswad", None, True),
+    (r"mamledar", None, True), (r"^vinay health", None, True), (r"^mi marathi", None, True), (r"^rajubhai", None, True),
+    (r"\bmisal\b", None, True), (r"\b(idli|udupi)\b", None, False), (r"\bdosa\b(?!.*plaza)", None, False),
+    (r"^(kyani|kayani)", None, False), (r"merwan", None, False), (r"^yazdani", None, False), (r"^a1 bakery", None, False),
+    (r"^kuckeliku", None, False), (r"^vig refresh", None, False),
+]
+tagged = 0
+for it in items:
+    for pat, where, veg in BREAKFAST:
+        if re.search(pat, it["name"], re.I) and (not where or (where[0] <= it["lat"] <= where[1] and where[2] <= it["lng"] <= where[3])):
+            cs = [c for c in it["cuisine"].split(";") if c]
+            if "Breakfast" not in cs:
+                it["cuisine"] = ";".join(cs + ["Breakfast"])
+            if veg:
+                it["diet"] = (it["diet"] | 1) & ~4
+            tagged += 1
+            break
+print(f"breakfast: {tagged} places tagged")
+
 # ---------------------------------------------------------------- localities
 region = json.load(open(os.path.join(DATA_DIR, "region.json"), encoding="utf-8"))
 
