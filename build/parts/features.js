@@ -412,21 +412,36 @@
     };
     rz.addEventListener("pointerup", end);
     rz.addEventListener("pointercancel", end);
-    rz.addEventListener("dblclick", () => setW(null, true));
+    // Default width: wide enough for the whole mood row (so 🍨 Desserts shows), at most 55% of
+    // the window. Narrower than that, the mood chips wrap to a second line instead.
+    const moods = $("moods"), scroller = $("sheetScroll");
+    const customW = () => typeof store.get("cf-panel-w", null) === "number";
+    function fitWidth() {
+      const btns = [...moods.children];
+      if (!btns.length) return null;
+      const cs = getComputedStyle(moods), gap = parseFloat(cs.columnGap) || 6;
+      const row = btns.reduce((s, b) => s + b.offsetWidth, 0) + gap * (btns.length - 1) + parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight);
+      const scrollbar = panel.offsetWidth - scroller.clientWidth;
+      return Math.min(Math.round(app.clientWidth * 0.55), Math.ceil(row + scrollbar + 4));
+    }
+    function autoW() { if (!sheet.mq.matches && !collapsed()) { const w = fitWidth(); if (w) setW(w); } }
+    rz.addEventListener("dblclick", () => { store.set("cf-panel-w", null); autoW(); });
     rz.addEventListener("keydown", (e) => {
       const step = e.shiftKey ? 80 : 24, w = panel.offsetWidth;
       const next = { ArrowLeft: w - step, ArrowRight: w + step, Home: MIN, End: max() }[e.key];
       if (next !== undefined) { e.preventDefault(); setW(next, true); }
       else if (e.key === "Enter") { e.preventDefault(); setCollapsed(true, true); cb.focus(); }
     });
-    cb.addEventListener("click", () => setCollapsed(!collapsed(), true));
+    cb.addEventListener("click", () => { setCollapsed(!collapsed(), true); if (!collapsed() && !customW()) autoW(); });
     addEventListener("resize", () => {
+      if (!customW()) return autoW();
       const w = parseInt(app.style.getPropertyValue("--panel-w"), 10);
       if (w > max()) setW(max()); else place();
     });
-    sheet.mq.addEventListener("change", () => { place(); refit(); });
+    sheet.mq.addEventListener("change", () => { if (!customW()) autoW(); place(); refit(); });
     const saved = store.get("cf-panel-w", null);
     if (typeof saved === "number") setW(saved);
+    else { autoW(); if (document.fonts) document.fonts.ready.then(() => { if (!customW()) autoW(); }); }
     if (store.get("cf-collapsed", false) === true) setCollapsed(true);
     place();
     if (!sheet.mq.matches && !store.get("cf-resize-tip", false)) {

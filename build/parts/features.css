@@ -29,7 +29,7 @@ a.ghost, button.ghost { background: var(--chip); color: var(--ink); }
 #suggestBox .tx > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* moods */
-.moods { display: flex; gap: 6px; overflow-x: auto; padding-block: 0 12px; scrollbar-width: none; }
+.moods { display: flex; flex-wrap: wrap; gap: 6px; padding-block: 0 12px; }   /* wraps so every mood stays visible */
 .moods::-webkit-scrollbar { display: none; }
 .moods button {
   flex: none; background: var(--panel); color: var(--ink); border: 1px solid var(--line); font-weight: 500; font-size: 12.5px;
@@ -189,6 +189,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   .quick { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 10px; }
   .quick::-webkit-scrollbar { display: none; }
   .quick button { flex: none; }
+  .moods { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }   /* phone: one swipeable row */
   .leaflet-top.leaflet-right { top: env(safe-area-inset-top, 0px); }
   .week { margin-left: 0; }
   body::before { display: none; }
