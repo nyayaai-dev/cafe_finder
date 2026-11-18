@@ -122,6 +122,7 @@
   }
   function openDetail(p, opts = {}) {
     if (!detailOpen) browseScroll = $("sheetScroll").scrollTop;
+    if (typeof resizer !== "undefined") resizer.show();
     detailOpen = p;
     select(p.id, false);
     if (opts.fly !== false) {
@@ -364,6 +365,72 @@
     map.on("dragstart", () => { if (sheet.mq.matches && sheet.state === "full") sheet.set("half"); });
     sheet.set("half");
     sheet.mq.addEventListener("change", () => { panel.style.transform = ""; if (sheet.mq.matches) sheet.set("half"); });
+  })();
+
+  // ------------------------------------------------------------ resizable list / map (desktop)
+  // Drag the divider (or use arrow keys) to change the list's width; ‹ hides the list for a full-width map.
+  const resizer = (function setupResizer() {
+    const app = document.querySelector(".app"), panel = document.querySelector(".panel");
+    const rz = $("resizer"), cb = $("collapseBtn");
+    const MIN = 300;
+    const max = () => Math.max(MIN, Math.min(900, Math.round(app.clientWidth * 0.7)));
+    const collapsed = () => app.classList.contains("collapsed");
+    let raf = 0;
+    const refit = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => map.invalidateSize({ pan: false })); };
+    function place() {
+      const w = collapsed() ? 0 : panel.offsetWidth;
+      rz.style.left = (w - 5) + "px";
+      cb.style.left = w + "px";
+      rz.setAttribute("aria-valuemin", MIN); rz.setAttribute("aria-valuemax", max()); rz.setAttribute("aria-valuenow", w);
+    }
+    function setW(w, save) {
+      if (w == null) app.style.removeProperty("--panel-w");
+      else app.style.setProperty("--panel-w", Math.min(max(), Math.max(MIN, Math.round(w))) + "px");
+      place(); refit();
+      if (save) store.set("cf-panel-w", w == null ? null : parseInt(app.style.getPropertyValue("--panel-w"), 10));
+    }
+    function setCollapsed(on, save) {
+      app.classList.toggle("collapsed", on);
+      cb.textContent = on ? "›" : "‹";
+      cb.setAttribute("aria-expanded", String(!on));
+      cb.setAttribute("aria-label", on ? "Show the list" : "Hide the list");
+      cb.title = on ? "Show the list" : "Hide the list";
+      place(); refit();
+      if (save) store.set("cf-collapsed", on);
+    }
+    let startX = 0, startW = 0, dragging = false;
+    rz.addEventListener("pointerdown", (e) => {
+      if (sheet.mq.matches || e.button !== 0) return;
+      dragging = true; startX = e.clientX; startW = panel.offsetWidth;
+      rz.setPointerCapture(e.pointerId); app.classList.add("resizing"); e.preventDefault();
+    });
+    rz.addEventListener("pointermove", (e) => { if (dragging) setW(startW + e.clientX - startX); });
+    const end = () => {
+      if (!dragging) return;
+      dragging = false; app.classList.remove("resizing");
+      store.set("cf-panel-w", panel.offsetWidth);
+    };
+    rz.addEventListener("pointerup", end);
+    rz.addEventListener("pointercancel", end);
+    rz.addEventListener("dblclick", () => setW(null, true));
+    rz.addEventListener("keydown", (e) => {
+      const step = e.shiftKey ? 80 : 24, w = panel.offsetWidth;
+      const next = { ArrowLeft: w - step, ArrowRight: w + step, Home: MIN, End: max() }[e.key];
+      if (next !== undefined) { e.preventDefault(); setW(next, true); }
+      else if (e.key === "Enter") { e.preventDefault(); setCollapsed(true, true); cb.focus(); }
+    });
+    cb.addEventListener("click", () => setCollapsed(!collapsed(), true));
+    addEventListener("resize", () => {
+      const w = parseInt(app.style.getPropertyValue("--panel-w"), 10);
+      if (w > max()) setW(max()); else place();
+    });
+    sheet.mq.addEventListener("change", () => { place(); refit(); });
+    const saved = store.get("cf-panel-w", null);
+    if (typeof saved === "number") setW(saved);
+    if (store.get("cf-collapsed", false) === true) setCollapsed(true);
+    place();
+    // Opening a place brings the list back so its details can show.
+    return { show() { if (collapsed() && !sheet.mq.matches) setCollapsed(false, true); } };
   })();
 
   // ------------------------------------------------------------ about

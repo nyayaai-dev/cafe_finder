@@ -14,6 +14,7 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
 - Install it as a phone app; it works offline after the first visit
 - Data refreshes itself on the 1st of every month (GitHub Action)
 - Phone-first layout: full-screen map with a draggable bottom sheet
+- Desktop: drag the divider (or use arrow keys) to resize the list and map; ‹ hides the list. Width is remembered
 - Place detail panel with weekly hours, nearby places and Compare (up to 3)
 - Smart search ("Bandra pizza", "Jain Kala Ghoda", a café name) with suggestions
 - Mood chips (Work-friendly, Date night, Under ₹500, Late night, Breakfast, Desserts),

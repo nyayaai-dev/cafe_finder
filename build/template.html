@@ -63,7 +63,7 @@ body {
   margin: 0; background: var(--bg); color: var(--ink);
   font: 14px/1.45 var(--font-body);
 }
-.app { display: grid; grid-template-columns: minmax(340px, 410px) 1fr; height: 100%; }
+.app { display: grid; grid-template-columns: var(--panel-w, minmax(340px, 410px)) 1fr; height: 100%; position: relative; }
 .panel {
   background: var(--panel); border-right: 1px solid var(--line);
   display: flex; flex-direction: column; min-height: 0; min-width: 0;
@@ -337,6 +337,9 @@ button.ghost { background: var(--chip); color: var(--ink); }
     <section id="detail" class="pad" hidden aria-label="Place details"></section>
     </div>
   </aside>
+  <div id="resizer" class="resizer" role="separator" aria-orientation="vertical" aria-controls="map" tabindex="0"
+       aria-label="Resize the list and map. Drag, or use the arrow keys. Double-click to reset." title="Drag to resize · double-click to reset"><span></span></div>
+  <button type="button" id="collapseBtn" class="collapse-btn" aria-expanded="true" aria-label="Hide the list" title="Hide the list">‹</button>
   <main id="map" aria-label="Map of Mumbai cafes and restaurants"></main>
 </div>
 

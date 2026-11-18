@@ -114,6 +114,26 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .about p, .about li { font-size: 13.5px; line-height: 1.55; }
 .about ul { padding-left: 18px; }
 
+/* resizable list / map (desktop) */
+.resizer { position: absolute; top: 0; bottom: 0; width: 10px; z-index: 1100; cursor: col-resize; touch-action: none; display: flex; justify-content: center; }
+.resizer span { width: 3px; height: 100%; background: transparent; transition: background .15s; }
+.resizer:hover span, .resizer:focus-visible span, .app.resizing .resizer span { background: var(--accent); }
+.resizer:focus-visible { outline: none; }
+.app.resizing { cursor: col-resize; user-select: none; }
+.app.resizing #map, .app.resizing .panel { pointer-events: none; }
+.collapse-btn {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 1101; width: 22px; height: 54px; padding: 0;
+  border: 1px solid var(--line); border-left: 0; border-radius: 0 10px 10px 0; background: var(--panel); color: var(--ink);
+  font: 700 18px/1 var(--font-body); box-shadow: 3px 0 10px rgba(0,0,0,.14); cursor: pointer;
+}
+.collapse-btn:hover { color: var(--accent); }
+.app.collapsed { grid-template-columns: 1fr; }
+.app.collapsed .panel, .app.collapsed .resizer { display: none; }
+@media (max-width: 760px) {
+  .resizer, .collapse-btn { display: none !important; }
+  .app.collapsed .panel { display: flex; }
+}
+
 /* report dialog */
 .rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
 .rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }
