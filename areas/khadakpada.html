@@ -38,6 +38,11 @@ ul.places li { background: var(--panel); border: 1px solid var(--line); border-r
 .areas li { break-inside: avoid; padding: 3px 0; }
 .areas .n { color: var(--muted); font-size: 13px; }
 footer { margin-top: 40px; font-size: 12px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0 0; }
+.chip { display: inline-block; text-decoration: none; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 99px; padding: 4px 11px; font-size: 13px; }
+.chip:hover { border-color: var(--cafe); color: var(--cafe); }
+h2 .n, .chip .n { color: var(--muted); font-size: 12px; font-weight: 400; }
+h2 a { color: inherit; text-decoration: none; }
 </style>
 </head><body><div class="wrap">
 <p class="crumbs"><a href="../">Map</a> › <a href="./">Areas</a> › Khadakpada</p>
@@ -45,8 +50,10 @@ footer { margin-top: 40px; font-size: 12px; color: var(--muted); }
 <p class="lede">Every named cafe and restaurant in Khadakpada, Mumbai, from OpenStreetMap and current listings. Tap a place to see it on the map with directions and menu links.</p>
 <div class="stats"><span><b>0</b>cafes</span><span><b>2</b>restaurants</span><span><b>0</b>with ratings</span><span><b>0</b>pure veg</span></div>
 <a class="cta" href="../?area=Khadakpada">Open Khadakpada on the map</a>
+<!--FOODLINKS-->
 
 <h2>Restaurants</h2><ul class="places"><li><a class="pn" href="../#p-zqmmq0">McDonald&#x27;s</a> <span class="tag rest">Fast food</span><span class="tag nonveg">Non-veg</span><div class="meta">Burger, Coffee Shop · Shelar Park Barave Road, Khadakpada Circle, Kalyan</div></li><li><a class="pn" href="../#p-rkkb3j">Sai-Bhaskar Fine Dine</a> <span class="tag rest">Restaurant</span><span class="tag nonveg">Non-veg</span><div class="meta">Vegetarian · Near Khadakpada</div></li></ul>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Cafes & restaurants in Khadakpada, Mumbai", "itemListElement": [{"@type": "ListItem", "position": 1, "item": {"@type": "Restaurant", "name": "McDonald's", "address": "Shelar Park Barave Road, Khadakpada Circle, Kalyan", "geo": {"@type": "GeoCoordinates", "latitude": 19.25331, "longitude": 73.13768}, "servesCuisine": ["Burger", "Coffee Shop"], "url": "https://nyayaai-dev.github.io/cafe_finder/#p-zqmmq0"}}, {"@type": "ListItem", "position": 2, "item": {"@type": "Restaurant", "name": "Sai-Bhaskar Fine Dine", "address": "Near Khadakpada", "geo": {"@type": "GeoCoordinates", "latitude": 19.25129, "longitude": 73.14275}, "servesCuisine": ["Vegetarian"], "url": "https://nyayaai-dev.github.io/cafe_finder/#p-rkkb3j"}}]}</script>
 <footer>Map and place data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.
-Ratings and cost for two come from the listing named on each place and can differ between sites.</footer></div></body></html>
+Ratings and cost for two come from the listing named on each place and can differ between sites.
+<a href="../privacy.html">Privacy</a> · <a href="../areas/">Areas</a> · <a href="../food/">Food guides</a></footer></div></body></html>

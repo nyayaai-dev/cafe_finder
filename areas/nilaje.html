@@ -38,6 +38,11 @@ ul.places li { background: var(--panel); border: 1px solid var(--line); border-r
 .areas li { break-inside: avoid; padding: 3px 0; }
 .areas .n { color: var(--muted); font-size: 13px; }
 footer { margin-top: 40px; font-size: 12px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0 0; }
+.chip { display: inline-block; text-decoration: none; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 99px; padding: 4px 11px; font-size: 13px; }
+.chip:hover { border-color: var(--cafe); color: var(--cafe); }
+h2 .n, .chip .n { color: var(--muted); font-size: 12px; font-weight: 400; }
+h2 a { color: inherit; text-decoration: none; }
 </style>
 </head><body><div class="wrap">
 <p class="crumbs"><a href="../">Map</a> › <a href="./">Areas</a> › Nilaje</p>
@@ -45,8 +50,10 @@ footer { margin-top: 40px; font-size: 12px; color: var(--muted); }
 <p class="lede">Every named cafe and restaurant in Nilaje, Mumbai, from OpenStreetMap and current listings. Tap a place to see it on the map with directions and menu links.</p>
 <div class="stats"><span><b>0</b>cafes</span><span><b>4</b>restaurants</span><span><b>0</b>with ratings</span><span><b>0</b>pure veg</span></div>
 <a class="cta" href="../?area=Nilaje">Open Nilaje on the map</a>
+<!--FOODLINKS-->
 
 <h2>Restaurants</h2><ul class="places"><li><a class="pn" href="../#p-vbit2v">Hotel Chetna हॉटेल चेतना</a> <span class="tag rest">Restaurant</span><div class="meta">Katai, Nilaje</div></li><li><a class="pn" href="../#p-a5khds">HOTEL Kushala Paradise हॉटेल कुशला पॅरेडाइज्</a> <span class="tag rest">Restaurant</span><div class="meta">Near Kole, Nilaje</div></li><li><a class="pn" href="../#p-1wkx9k3">Kinaara Garden Family Kitchen And Bar (K.G.F)</a> <span class="tag rest">Restaurant</span><span class="tag nonveg">Non-veg</span><div class="meta">Burger, Cake, Chicken, Chinese, Coffee Shop, Fish, Fish And Chips, Ice Cream, Indian, International, Japanese, Malaysian, Noodle, Pasta, Pizza, Salad, Sandwich, Seafood · Near Palava Phase 2, Nilaje</div></li><li><a class="pn" href="../#p-yjl1og">Veg sizzler</a> <span class="tag rest">Restaurant</span><div class="meta">Indian, Vegetarian · Kalyan-Dombivli, Palava Phase 2, Nilaje</div></li></ul>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Cafes & restaurants in Nilaje, Mumbai", "itemListElement": [{"@type": "ListItem", "position": 1, "item": {"@type": "Restaurant", "name": "Hotel Chetna हॉटेल चेतना", "address": "Katai, Nilaje", "geo": {"@type": "GeoCoordinates", "latitude": 19.17095, "longitude": 73.0814}, "url": "https://nyayaai-dev.github.io/cafe_finder/#p-vbit2v"}}, {"@type": "ListItem", "position": 2, "item": {"@type": "Restaurant", "name": "HOTEL Kushala Paradise हॉटेल कुशला पॅरेडाइज्", "address": "Near Kole, Nilaje", "geo": {"@type": "GeoCoordinates", "latitude": 19.17219, "longitude": 73.08422}, "url": "https://nyayaai-dev.github.io/cafe_finder/#p-a5khds"}}, {"@type": "ListItem", "position": 3, "item": {"@type": "Restaurant", "name": "Kinaara Garden Family Kitchen And Bar (K.G.F)", "address": "Near Palava Phase 2, Nilaje", "geo": {"@type": "GeoCoordinates", "latitude": 19.12745, "longitude": 73.12443}, "servesCuisine": ["Burger", "Cake", "Chicken", "Chinese", "Coffee Shop", "Fish", "Fish And Chips", "Ice Cream", "Indian", "International", "Japanese", "Malaysian", "Noodle", "Pasta", "Pizza", "Salad", "Sandwich", "Seafood"], "url": "https://nyayaai-dev.github.io/cafe_finder/#p-1wkx9k3"}}, {"@type": "ListItem", "position": 4, "item": {"@type": "Restaurant", "name": "Veg sizzler", "address": "Kalyan-Dombivli, Palava Phase 2, Nilaje", "geo": {"@type": "GeoCoordinates", "latitude": 19.15949, "longitude": 73.11436}, "servesCuisine": ["Indian", "Vegetarian"], "url": "https://nyayaai-dev.github.io/cafe_finder/#p-yjl1og"}}]}</script>
 <footer>Map and place data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.
-Ratings and cost for two come from the listing named on each place and can differ between sites.</footer></div></body></html>
+Ratings and cost for two come from the listing named on each place and can differ between sites.
+<a href="../privacy.html">Privacy</a> · <a href="../areas/">Areas</a> · <a href="../food/">Food guides</a></footer></div></body></html>

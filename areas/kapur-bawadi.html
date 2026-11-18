@@ -38,6 +38,11 @@ ul.places li { background: var(--panel); border: 1px solid var(--line); border-r
 .areas li { break-inside: avoid; padding: 3px 0; }
 .areas .n { color: var(--muted); font-size: 13px; }
 footer { margin-top: 40px; font-size: 12px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 14px 0 0; }
+.chip { display: inline-block; text-decoration: none; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 99px; padding: 4px 11px; font-size: 13px; }
+.chip:hover { border-color: var(--cafe); color: var(--cafe); }
+h2 .n, .chip .n { color: var(--muted); font-size: 12px; font-weight: 400; }
+h2 a { color: inherit; text-decoration: none; }
 </style>
 </head><body><div class="wrap">
 <p class="crumbs"><a href="../">Map</a> › <a href="./">Areas</a> › Kapur Bawadi</p>
@@ -45,8 +50,10 @@ footer { margin-top: 40px; font-size: 12px; color: var(--muted); }
 <p class="lede">Every named cafe and restaurant in Kapur Bawadi, Mumbai, from OpenStreetMap and current listings. Tap a place to see it on the map with directions and menu links.</p>
 <div class="stats"><span><b>0</b>cafes</span><span><b>2</b>restaurants</span><span><b>0</b>with ratings</span><span><b>0</b>pure veg</span></div>
 <a class="cta" href="../?area=Kapur%20Bawadi">Open Kapur Bawadi on the map</a>
+<!--FOODLINKS-->
 
 <h2>Restaurants</h2><ul class="places"><li><a class="pn" href="../#p-1jx27ic">Baba&#x27;s Kitchen</a> <span class="tag rest">Restaurant</span><span class="tag nonveg">Non-veg</span><div class="meta">Chinese, Vegetarian · opposite dalvi doctor Old Mumbai - Pune Road, Kharegaon</div></li><li><a class="pn" href="../#p-12eieh6">Pizza Hut</a> <span class="tag rest">Restaurant</span><div class="meta">Pizza · Kapurbawdi, Kapur Bawadi</div></li></ul>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "Cafes & restaurants in Kapur Bawadi, Mumbai", "itemListElement": [{"@type": "ListItem", "position": 1, "item": {"@type": "Restaurant", "name": "Baba's Kitchen", "address": "opposite dalvi doctor Old Mumbai - Pune Road, Kharegaon", "geo": {"@type": "GeoCoordinates", "latitude": 19.20484, "longitude": 73.00124}, "servesCuisine": ["Chinese", "Vegetarian"], "url": "https://nyayaai-dev.github.io/cafe_finder/#p-1jx27ic"}}, {"@type": "ListItem", "position": 2, "item": {"@type": "Restaurant", "name": "Pizza Hut", "address": "Kapurbawdi, Kapur Bawadi", "geo": {"@type": "GeoCoordinates", "latitude": 19.22111, "longitude": 72.97719}, "servesCuisine": ["Pizza"], "url": "https://nyayaai-dev.github.io/cafe_finder/#p-12eieh6"}}]}</script>
 <footer>Map and place data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>.
-Ratings and cost for two come from the listing named on each place and can differ between sites.</footer></div></body></html>
+Ratings and cost for two come from the listing named on each place and can differ between sites.
+<a href="../privacy.html">Privacy</a> · <a href="../areas/">Areas</a> · <a href="../food/">Food guides</a></footer></div></body></html>
