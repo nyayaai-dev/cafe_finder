@@ -88,6 +88,11 @@ for h in hot:
                           cuisine="", hours="", phone="", website="", menu="", diet=1 if h["pureVeg"] else 0, web=1, **extra))
         added += 1
 print(f"hotspots: {enriched} map places given ratings/cost, {added} added from listings")
+# Cuisines for places added from listings (the listing pages give them; OpenStreetMap doesn't have these places).
+HOT_CUISINE = {"Pongo": "Asian;Sushi;Chinese;Momos"}
+for it in items:
+    if it.get("web") and it["name"] in HOT_CUISINE and not it["cuisine"]:
+        it["cuisine"] = HOT_CUISINE[it["name"]]
 
 # Classic Mumbai breakfast places: tag them "Breakfast" (Breakfast mood, food guides) and
 # mark the Udupi / Maharashtrian institutions pure veg. (name pattern, None or (lat0, lat1, lng0, lng1), pure veg)

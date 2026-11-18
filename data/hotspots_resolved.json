@@ -3598,5 +3598,18 @@
   "pureVeg": null,
   "lat": 19.0335938,
   "lng": 73.018164
+ },
+ {
+  "name": "Pongo",
+  "loc": "Murad Mansion, 2nd Parsiwada, Opera House, Girgaon (delivery only per Zomato)",
+  "kind": "rest",
+  "rating": 4.0,
+  "ratingSrc": "Zomato",
+  "priceTwo": null,
+  "priceSrc": null,
+  "srcUrl": "https://www.zomato.com/mumbai/pongo-girgaum",
+  "pureVeg": null,
+  "lat": 18.9571,
+  "lng": 72.8172
  }
 ]

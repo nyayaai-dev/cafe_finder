@@ -63,6 +63,7 @@ SRC = {
     "ez_vpe": "https://www.eazydiner.com/mumbai/restaurants/vile-parle-east-western-suburbs",
     "ez_kan": "https://www.eazydiner.com/mumbai/restaurants/kandivali-west-western-suburbs",
     "ez_nerul": "https://www.eazydiner.com/mumbai/restaurants/nerul-navi-mumbai",
+    "pongo_z": "https://www.zomato.com/mumbai/pongo-girgaum",
 }
 
 # name, locality to geocode, kind ("cafe"/"rest"), rating, rating source, cost for two, cost source, source key, pure veg
@@ -365,4 +366,6 @@ H = [
     ('Vintage Coffee', 'Nerul, Navi Mumbai', "cafe", 5.0, "EazyDiner", 800, "EazyDiner", "ez_nerul", None),
     ('Manbhavan Premium Thali', 'Nerul, Navi Mumbai', "rest", 4.6, "EazyDiner", 700, "EazyDiner", "ez_nerul", True),
     ("Nando's (Nexus Seawoods)", 'Nerul, Navi Mumbai', "rest", 4.6, "EazyDiner", 2000, "EazyDiner", "ez_nerul", None),
+    # Added on request
+    ("Pongo", 'Murad Mansion, 2nd Parsiwada, Opera House, Girgaon (delivery only per Zomato)', "rest", 4.0, "Zomato", None, None, "pongo_z", None),
 ]
