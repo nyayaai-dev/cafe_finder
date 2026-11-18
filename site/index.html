@@ -819,7 +819,7 @@ body {
   margin: 0; background: var(--bg); color: var(--ink);
   font: 14px/1.45 var(--font-body);
 }
-.app { display: grid; grid-template-columns: var(--panel-w, minmax(340px, 410px)) 1fr; height: 100%; position: relative; }
+.app { display: grid; grid-template-columns: var(--panel-w, clamp(300px, 45vw, 410px)) 1fr; height: 100%; position: relative; }
 .panel {
   background: var(--panel); border-right: 1px solid var(--line);
   display: flex; flex-direction: column; min-height: 0; min-width: 0;
@@ -971,7 +971,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
 }
 .hide-labels .area-label, .hide-locs .loc-label { display: none; }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   html, body { height: auto; }
   .app { grid-template-columns: 1fr; height: auto; }
   #map {
@@ -1100,9 +1100,15 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .about ul { padding-left: 18px; }
 
 /* resizable list / map (desktop) */
-.resizer { position: absolute; top: 0; bottom: 0; width: 10px; z-index: 1100; cursor: col-resize; touch-action: none; display: flex; justify-content: center; }
-.resizer span { width: 3px; height: 100%; background: transparent; transition: background .15s; }
-.resizer:hover span, .resizer:focus-visible span, .app.resizing .resizer span { background: var(--accent); }
+.resizer { position: absolute; top: 0; bottom: 0; width: 14px; margin-left: -2px; z-index: 1100; cursor: col-resize; touch-action: none; display: flex; justify-content: center; }
+.resizer span { width: 2px; height: 100%; background: var(--line); transition: background .15s, width .15s; }
+.resizer::before {
+  content: ""; position: absolute; top: calc(50% - 74px); left: 3px; width: 8px; height: 40px; border-radius: 4px;
+  background: radial-gradient(circle, var(--muted) 1.2px, transparent 1.6px) center / 8px 8px repeat-y, var(--panel);
+  border: 1px solid var(--line); box-shadow: 0 1px 4px rgba(0,0,0,.18);
+}
+.resizer:hover span, .resizer:focus-visible span, .app.resizing .resizer span { background: var(--accent); width: 4px; }
+.resizer:hover::before, .app.resizing .resizer::before { border-color: var(--accent); }
 .resizer:focus-visible { outline: none; }
 .app.resizing { cursor: col-resize; user-select: none; }
 .app.resizing #map, .app.resizing .panel { pointer-events: none; }
@@ -1114,7 +1120,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .collapse-btn:hover { color: var(--accent); }
 .app.collapsed { grid-template-columns: 1fr; }
 .app.collapsed .panel, .app.collapsed .resizer { display: none; }
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   .resizer, .collapse-btn { display: none !important; }
   .app.collapsed .panel { display: flex; }
 }
@@ -1142,7 +1148,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .loaderr { max-width: 32ch; text-align: center; color: var(--ink); font-weight: 600; padding: 16px; }
 
 /* ---------------------------------------------------------------- phone: full map + bottom sheet */
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   html, body { height: 100%; overflow: hidden; }
   .app { display: block; height: 100%; }
   #map { position: fixed; inset: 0; height: auto; border: 0; z-index: 1; }
@@ -2319,7 +2325,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   // ------------------------------------------------------------ phone bottom sheet
   const sheet = {
     state: "half",
-    mq: matchMedia("(max-width: 760px)"),
+    mq: matchMedia("(max-width: 640px)"),
     set(s) {
       if (!this.mq.matches) return;
       this.state = s;
@@ -2367,7 +2373,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   const resizer = (function setupResizer() {
     const app = document.querySelector(".app"), panel = document.querySelector(".panel");
     const rz = $("resizer"), cb = $("collapseBtn");
-    const MIN = 300;
+    const MIN = 280;
     const max = () => Math.max(MIN, Math.min(900, Math.round(app.clientWidth * 0.7)));
     const collapsed = () => app.classList.contains("collapsed");
     let raf = 0;
@@ -2424,6 +2430,9 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
     if (typeof saved === "number") setW(saved);
     if (store.get("cf-collapsed", false) === true) setCollapsed(true);
     place();
+    if (!sheet.mq.matches && !store.get("cf-resize-tip", false)) {
+      setTimeout(() => { toast("Tip: drag the line between the list and the map to resize them"); store.set("cf-resize-tip", true); }, 2500);
+    }
     // Opening a place brings the list back so its details can show.
     return { show() { if (collapsed() && !sheet.mq.matches) setCollapsed(false, true); } };
   })();

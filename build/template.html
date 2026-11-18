@@ -63,7 +63,7 @@ body {
   margin: 0; background: var(--bg); color: var(--ink);
   font: 14px/1.45 var(--font-body);
 }
-.app { display: grid; grid-template-columns: var(--panel-w, minmax(340px, 410px)) 1fr; height: 100%; position: relative; }
+.app { display: grid; grid-template-columns: var(--panel-w, clamp(300px, 45vw, 410px)) 1fr; height: 100%; position: relative; }
 .panel {
   background: var(--panel); border-right: 1px solid var(--line);
   display: flex; flex-direction: column; min-height: 0; min-width: 0;
@@ -215,7 +215,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
 }
 .hide-labels .area-label, .hide-locs .loc-label { display: none; }
 
-@media (max-width: 760px) {
+@media (max-width: 640px) {
   html, body { height: auto; }
   .app { grid-template-columns: 1fr; height: auto; }
   #map {

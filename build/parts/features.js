@@ -324,7 +324,7 @@
   // ------------------------------------------------------------ phone bottom sheet
   const sheet = {
     state: "half",
-    mq: matchMedia("(max-width: 760px)"),
+    mq: matchMedia("(max-width: 640px)"),
     set(s) {
       if (!this.mq.matches) return;
       this.state = s;
@@ -372,7 +372,7 @@
   const resizer = (function setupResizer() {
     const app = document.querySelector(".app"), panel = document.querySelector(".panel");
     const rz = $("resizer"), cb = $("collapseBtn");
-    const MIN = 300;
+    const MIN = 280;
     const max = () => Math.max(MIN, Math.min(900, Math.round(app.clientWidth * 0.7)));
     const collapsed = () => app.classList.contains("collapsed");
     let raf = 0;
@@ -429,6 +429,9 @@
     if (typeof saved === "number") setW(saved);
     if (store.get("cf-collapsed", false) === true) setCollapsed(true);
     place();
+    if (!sheet.mq.matches && !store.get("cf-resize-tip", false)) {
+      setTimeout(() => { toast("Tip: drag the line between the list and the map to resize them"); store.set("cf-resize-tip", true); }, 2500);
+    }
     // Opening a place brings the list back so its details can show.
     return { show() { if (collapsed() && !sheet.mq.matches) setCollapsed(false, true); } };
   })();
