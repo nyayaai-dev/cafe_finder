@@ -819,7 +819,7 @@ body {
   margin: 0; background: var(--bg); color: var(--ink);
   font: 14px/1.45 var(--font-body);
 }
-.app { display: grid; grid-template-columns: minmax(340px, 410px) 1fr; height: 100%; }
+.app { display: grid; grid-template-columns: var(--panel-w, minmax(340px, 410px)) 1fr; height: 100%; position: relative; }
 .panel {
   background: var(--panel); border-right: 1px solid var(--line);
   display: flex; flex-direction: column; min-height: 0; min-width: 0;
@@ -1099,6 +1099,26 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .about p, .about li { font-size: 13.5px; line-height: 1.55; }
 .about ul { padding-left: 18px; }
 
+/* resizable list / map (desktop) */
+.resizer { position: absolute; top: 0; bottom: 0; width: 10px; z-index: 1100; cursor: col-resize; touch-action: none; display: flex; justify-content: center; }
+.resizer span { width: 3px; height: 100%; background: transparent; transition: background .15s; }
+.resizer:hover span, .resizer:focus-visible span, .app.resizing .resizer span { background: var(--accent); }
+.resizer:focus-visible { outline: none; }
+.app.resizing { cursor: col-resize; user-select: none; }
+.app.resizing #map, .app.resizing .panel { pointer-events: none; }
+.collapse-btn {
+  position: absolute; top: 50%; transform: translateY(-50%); z-index: 1101; width: 22px; height: 54px; padding: 0;
+  border: 1px solid var(--line); border-left: 0; border-radius: 0 10px 10px 0; background: var(--panel); color: var(--ink);
+  font: 700 18px/1 var(--font-body); box-shadow: 3px 0 10px rgba(0,0,0,.14); cursor: pointer;
+}
+.collapse-btn:hover { color: var(--accent); }
+.app.collapsed { grid-template-columns: 1fr; }
+.app.collapsed .panel, .app.collapsed .resizer { display: none; }
+@media (max-width: 760px) {
+  .resizer, .collapse-btn { display: none !important; }
+  .app.collapsed .panel { display: flex; }
+}
+
 /* report dialog */
 .rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
 .rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }
@@ -1262,6 +1282,9 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
     <section id="detail" class="pad" hidden aria-label="Place details"></section>
     </div>
   </aside>
+  <div id="resizer" class="resizer" role="separator" aria-orientation="vertical" aria-controls="map" tabindex="0"
+       aria-label="Resize the list and map. Drag, or use the arrow keys. Double-click to reset." title="Drag to resize · double-click to reset"><span></span></div>
+  <button type="button" id="collapseBtn" class="collapse-btn" aria-expanded="true" aria-label="Hide the list" title="Hide the list">‹</button>
   <main id="map" aria-label="Map of Mumbai cafes and restaurants"></main>
 </div>
 
@@ -2094,6 +2117,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   }
   function openDetail(p, opts = {}) {
     if (!detailOpen) browseScroll = $("sheetScroll").scrollTop;
+    if (typeof resizer !== "undefined") resizer.show();
     detailOpen = p;
     select(p.id, false);
     if (opts.fly !== false) {
@@ -2336,6 +2360,72 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
     map.on("dragstart", () => { if (sheet.mq.matches && sheet.state === "full") sheet.set("half"); });
     sheet.set("half");
     sheet.mq.addEventListener("change", () => { panel.style.transform = ""; if (sheet.mq.matches) sheet.set("half"); });
+  })();
+
+  // ------------------------------------------------------------ resizable list / map (desktop)
+  // Drag the divider (or use arrow keys) to change the list's width; ‹ hides the list for a full-width map.
+  const resizer = (function setupResizer() {
+    const app = document.querySelector(".app"), panel = document.querySelector(".panel");
+    const rz = $("resizer"), cb = $("collapseBtn");
+    const MIN = 300;
+    const max = () => Math.max(MIN, Math.min(900, Math.round(app.clientWidth * 0.7)));
+    const collapsed = () => app.classList.contains("collapsed");
+    let raf = 0;
+    const refit = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => map.invalidateSize({ pan: false })); };
+    function place() {
+      const w = collapsed() ? 0 : panel.offsetWidth;
+      rz.style.left = (w - 5) + "px";
+      cb.style.left = w + "px";
+      rz.setAttribute("aria-valuemin", MIN); rz.setAttribute("aria-valuemax", max()); rz.setAttribute("aria-valuenow", w);
+    }
+    function setW(w, save) {
+      if (w == null) app.style.removeProperty("--panel-w");
+      else app.style.setProperty("--panel-w", Math.min(max(), Math.max(MIN, Math.round(w))) + "px");
+      place(); refit();
+      if (save) store.set("cf-panel-w", w == null ? null : parseInt(app.style.getPropertyValue("--panel-w"), 10));
+    }
+    function setCollapsed(on, save) {
+      app.classList.toggle("collapsed", on);
+      cb.textContent = on ? "›" : "‹";
+      cb.setAttribute("aria-expanded", String(!on));
+      cb.setAttribute("aria-label", on ? "Show the list" : "Hide the list");
+      cb.title = on ? "Show the list" : "Hide the list";
+      place(); refit();
+      if (save) store.set("cf-collapsed", on);
+    }
+    let startX = 0, startW = 0, dragging = false;
+    rz.addEventListener("pointerdown", (e) => {
+      if (sheet.mq.matches || e.button !== 0) return;
+      dragging = true; startX = e.clientX; startW = panel.offsetWidth;
+      rz.setPointerCapture(e.pointerId); app.classList.add("resizing"); e.preventDefault();
+    });
+    rz.addEventListener("pointermove", (e) => { if (dragging) setW(startW + e.clientX - startX); });
+    const end = () => {
+      if (!dragging) return;
+      dragging = false; app.classList.remove("resizing");
+      store.set("cf-panel-w", panel.offsetWidth);
+    };
+    rz.addEventListener("pointerup", end);
+    rz.addEventListener("pointercancel", end);
+    rz.addEventListener("dblclick", () => setW(null, true));
+    rz.addEventListener("keydown", (e) => {
+      const step = e.shiftKey ? 80 : 24, w = panel.offsetWidth;
+      const next = { ArrowLeft: w - step, ArrowRight: w + step, Home: MIN, End: max() }[e.key];
+      if (next !== undefined) { e.preventDefault(); setW(next, true); }
+      else if (e.key === "Enter") { e.preventDefault(); setCollapsed(true, true); cb.focus(); }
+    });
+    cb.addEventListener("click", () => setCollapsed(!collapsed(), true));
+    addEventListener("resize", () => {
+      const w = parseInt(app.style.getPropertyValue("--panel-w"), 10);
+      if (w > max()) setW(max()); else place();
+    });
+    sheet.mq.addEventListener("change", () => { place(); refit(); });
+    const saved = store.get("cf-panel-w", null);
+    if (typeof saved === "number") setW(saved);
+    if (store.get("cf-collapsed", false) === true) setCollapsed(true);
+    place();
+    // Opening a place brings the list back so its details can show.
+    return { show() { if (collapsed() && !sheet.mq.matches) setCollapsed(false, true); } };
   })();
 
   // ------------------------------------------------------------ about
