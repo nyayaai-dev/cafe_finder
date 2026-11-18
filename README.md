@@ -115,6 +115,12 @@ The single-file version used for the claude.ai shareable link is built with
 
 ## Data and credits
 
+`build/cleanup.py` runs during every build: it tidies names typed in all lowercase or ALL CAPS,
+drops non-places (caterers, test entries), merges the same place entered twice, and marks pure veg
+and Jain food from names and cuisines (sweet shops, Udupi places, thalis, juice centres, Shiv Sagar,
+Rajdhani and similar). It never marks a place veg if anything suggests it serves meat.
+
+
 Map and place data © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL.
-Hotspot ratings and cost for two come from the listing named on each place (Zomato, Swiggy, LBB,
+Hotspot ratings and cost for two come from the listing named on each place (Zomato, Swiggy, EazyDiner, LBB, LBB,
 EazyDiner, District, Justdial and others), checked 15 November 2026.

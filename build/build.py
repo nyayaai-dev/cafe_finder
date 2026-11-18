@@ -113,6 +113,11 @@ for it in items:
             break
 print(f"breakfast: {tagged} places tagged")
 
+# Tidy names, drop non-places, merge duplicates, mark veg / Jain (build/cleanup.py).
+sys.path.insert(0, HERE)
+import cleanup  # noqa: E402
+items = cleanup.run(items)
+
 # ---------------------------------------------------------------- localities
 region = json.load(open(os.path.join(DATA_DIR, "region.json"), encoding="utf-8"))
 
