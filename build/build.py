@@ -318,8 +318,14 @@ else:
            '<link rel="apple-touch-icon" href="icons/icon-192.png">\n'
            '<meta name="apple-mobile-web-app-capable" content="yes">\n'
            f'<meta name="description" content="{share_desc}">\n'
-           "<script>if ('serviceWorker' in navigator && window.isSecureContext) "
-           "addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));</script>")
+           # Check for a new version on every visit; if one takes over right after the page
+           # opens, reload once so the visitor sees it (not later, so nothing is interrupted).
+           "<script>if ('serviceWorker' in navigator && window.isSecureContext) {"
+           "const t0 = Date.now(), had = !!navigator.serviceWorker.controller;"
+           "navigator.serviceWorker.addEventListener('controllerchange', () => {"
+           "if (had && Date.now() - t0 < 20000 && !window.__cfReloaded) { window.__cfReloaded = true; location.reload(); } });"
+           "addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })"
+           ".then((r) => r.update()).catch(() => {})); }</script>")
     # A real document shell: standards mode and a mobile viewport (the claude.ai page adds these itself).
     shell = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
              '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n')

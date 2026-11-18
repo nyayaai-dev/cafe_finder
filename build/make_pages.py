@@ -268,7 +268,7 @@ def build_pages(site_dir, rows, geo, snapshot, cfg):
     per_area = {}
     for name, rs in area_rows.items():
         for t, n in sorted(((t, sum(1 for r in rs if t in topics_for(r))) for t in {x for r in rs for x in topics_for(r)}),
-                           key=lambda x: -x[1]):
+                           key=lambda x: (-x[1], x[0])):
             if n >= AREA_MIN:
                 per_area.setdefault(name, []).append((t, n))
     for name, items in per_area.items():
@@ -278,8 +278,8 @@ def build_pages(site_dir, rows, geo, snapshot, cfg):
             related = [(f"{topic_title(o)} in {name}", f"{slug(o)}-in-{slug(name)}.html", c) for o, c in items if o != t][:10]
             guide_page(t, name, [r for r in rs_all if t in topics_for(r)], fname, related)
             guides.append((t, name, fname, n))
-    for t, rs in sorted(city.items(), key=lambda kv: -len(kv[1])):
-        related = sorted([(a, f, n) for tt, a, f, n in guides if tt == t], key=lambda x: -x[2])
+    for t, rs in sorted(city.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        related = sorted([(a, f, n) for tt, a, f, n in guides if tt == t], key=lambda x: (-x[2], x[0]))
         guide_page(t, "", rs, f"{slug(t)}.html", [(f"{a}", f, n) for a, f, n in related])
         guides.append((t, "", f"{slug(t)}.html", len(rs)))
 
@@ -294,8 +294,8 @@ def build_pages(site_dir, rows, geo, snapshot, cfg):
     title = "Food guides: cuisines by area, Mumbai to Thane and Navi Mumbai"
     desc = f"{len(guides)} guides to pizza, Chinese, coffee, vegetarian, Jain food and more, area by area. Updated {snapshot}."
     sections = []
-    for t, rs in sorted(city.items(), key=lambda kv: -len(kv[1])):
-        subs = sorted([(a, f, n) for tt, a, f, n in guides if tt == t and a], key=lambda x: -x[2])
+    for t, rs in sorted(city.items(), key=lambda kv: (-len(kv[1]), kv[0])):
+        subs = sorted([(a, f, n) for tt, a, f, n in guides if tt == t and a], key=lambda x: (-x[2], x[0]))
         sub_html = " ".join(f'<a class="chip" href="{f}">{ESC(a)} <span class="n">{n}</span></a>' for a, f, n in subs)
         sections.append(f'<h2><a href="{slug(t)}.html">{ESC(topic_title(t))}</a> <span class="n">{len(rs)}</span></h2>'
                         + (f'<p class="chips">{sub_html}</p>' if sub_html else ""))
