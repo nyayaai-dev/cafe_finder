@@ -3,7 +3,7 @@
 
 Called by build.py in website mode with the built rows and geo data. Each page
 lists the area's places with a link straight to that place on the map."""
-import html, json, os, re
+import html, json, math, os, re
 
 ESC = html.escape
 
@@ -131,7 +131,38 @@ def topic_link(t, area):
     return "../?" + urlencode(q)
 
 
-def build_pages(site_dir, rows, geo, snapshot, cfg):
+ICON = {"rail": "🚆", "metro": "Ⓜ️", "mono": "🚝"}
+
+
+def nearest_station(lat, lng, transit):
+    """Closest train / metro / monorail station: (station, road km, minutes, 'walk' or 'auto')."""
+    best = None
+    for st in transit:
+        if abs(st["lat"] - lat) > 0.1 or abs(st["lng"] - lng) > 0.1:
+            continue
+        d = math.hypot((st["lat"] - lat) * 111.0, (st["lng"] - lng) * 111.0 * math.cos(math.radians(lat)))
+        if best is None or d < best[1]:
+            best = (st, d)
+    if not best:
+        return None
+    road = best[1] * 1.3
+    if road <= 2:
+        return best[0], road, max(1, round(road / 4.8 * 60)), "walk"
+    return best[0], road, round(road / 18 * 60 + 3), "auto"
+
+
+def station_text(lat, lng, transit):
+    n = nearest_station(lat, lng, transit)
+    if not n:
+        return ""
+    st, road, mins, how = n
+    kind = {"rail": "station", "metro": "metro", "mono": "monorail"}[st["type"]]
+    lines = f" ({', '.join(st['lines'])})" if st["lines"] and st["type"] != "mono" else ""
+    dist = f"{round(road * 1000)} m" if road < 1 else f"{road:.1f} km"
+    return f"{ICON[st['type']]} {st['name']} {kind}{lines} · {dist} · {'' if how == 'walk' else '~'}{mins} min {'walk' if how == 'walk' else 'by auto'}"
+
+
+def build_pages(site_dir, rows, geo, snapshot, cfg, transit=()):
     base = cfg["site_url"].rstrip("/") + "/"
     image = base + "og.png"
     out = os.path.join(site_dir, "areas")
@@ -171,8 +202,10 @@ def build_pages(site_dir, rows, geo, snapshot, cfg):
             bits.append(f"≈ ₹{price:,} for two")
         if cuisine:
             bits.append(ESC(", ".join(cuisine)))
+        st = station_text(lat, lng, transit)
         return (f'<li><a class="pn" href="../#p-{key}">{ESC(name)}</a> {"".join(tags)}'
-                f'<div class="meta">{" · ".join(bits) + " · " if bits else ""}{ESC(address)}</div></li>')
+                f'<div class="meta">{" · ".join(bits) + " · " if bits else ""}{ESC(address)}</div>'
+                f'{f"<div class=meta>{ESC(st)}</div>" if st else ""}</li>')
 
     sitemap = [base]
     index_rows = []

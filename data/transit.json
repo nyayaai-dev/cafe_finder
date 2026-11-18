@@ -1,0 +1,1839 @@
+[
+{
+"name": "Aarey",
+"type": "metro",
+"lat": 19.16932,
+"lng": 72.85879,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Aarey JVLR",
+"type": "metro",
+"lat": 19.13043,
+"lng": 72.88435,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Acharya Atre Chowk",
+"type": "metro",
+"lat": 18.99782,
+"lng": 72.81772,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Airport Road",
+"type": "metro",
+"lat": 19.11013,
+"lng": 72.87417,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Akurli",
+"type": "metro",
+"lat": 19.19816,
+"lng": 72.86049,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Anand Nagar",
+"type": "metro",
+"lat": 19.25721,
+"lng": 72.86635,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Andheri",
+"type": "metro",
+"lat": 19.12056,
+"lng": 72.84884,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Andheri (West)",
+"type": "metro",
+"lat": 19.12913,
+"lng": 72.83143,
+"lines": [
+"Line 1",
+"Line 2A"
+]
+},
+{
+"name": "Asalpha",
+"type": "metro",
+"lat": 19.09642,
+"lng": 72.89488,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Azad Nagar",
+"type": "metro",
+"lat": 19.12691,
+"lng": 72.83765,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Bandra Colony",
+"type": "metro",
+"lat": 19.06996,
+"lng": 72.84936,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Bandra Kurla Complex",
+"type": "metro",
+"lat": 19.06066,
+"lng": 72.85468,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Bangur Nagar",
+"type": "metro",
+"lat": 19.16247,
+"lng": 72.83487,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Belpada",
+"type": "metro",
+"lat": 19.02527,
+"lng": 73.05494,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Borivali (West)",
+"type": "metro",
+"lat": 19.23139,
+"lng": 72.84086,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "CBD Belapur",
+"type": "metro",
+"lat": 19.0206,
+"lng": 73.04027,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Central Park",
+"type": "metro",
+"lat": 19.05361,
+"lng": 73.076,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Chakala - J.B. Nagar",
+"type": "metro",
+"lat": 19.11204,
+"lng": 72.86762,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Chhatrapati Shivaji Maharaj International Airport - T1",
+"type": "metro",
+"lat": 19.0939,
+"lng": 72.85358,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Chhatrapati Shivaji Maharaj International Airport - T2",
+"type": "metro",
+"lat": 19.10233,
+"lng": 72.87447,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Chhatrapati Shivaji Maharaj Terminus",
+"type": "metro",
+"lat": 18.94083,
+"lng": 72.83186,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Churchgate",
+"type": "metro",
+"lat": 18.93149,
+"lng": 72.82694,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Cuffe Parade",
+"type": "metro",
+"lat": 18.91357,
+"lng": 72.82072,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "D. N. Nagar",
+"type": "metro",
+"lat": 19.12829,
+"lng": 72.83019,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Dadar",
+"type": "metro",
+"lat": 19.02362,
+"lng": 72.83922,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Dahanukarwadi",
+"type": "metro",
+"lat": 19.20623,
+"lng": 72.83481,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Dahisar (East)",
+"type": "metro",
+"lat": 19.2507,
+"lng": 72.86667,
+"lines": [
+"Line 2A",
+"Line 7",
+"Line 9"
+]
+},
+{
+"name": "Deonar",
+"type": "metro",
+"lat": 19.04483,
+"lng": 72.9175,
+"lines": [
+"Line 2B"
+]
+},
+{
+"name": "Devipada",
+"type": "metro",
+"lat": 19.22404,
+"lng": 72.86433,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Dharavi",
+"type": "metro",
+"lat": 19.04626,
+"lng": 72.84974,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Diamond Garden",
+"type": "metro",
+"lat": 19.05172,
+"lng": 72.90184,
+"lines": [
+"Line 2B"
+]
+},
+{
+"name": "Dindoshi",
+"type": "metro",
+"lat": 19.17976,
+"lng": 72.8583,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Eksar",
+"type": "metro",
+"lat": 19.24038,
+"lng": 72.84345,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Ghatkopar",
+"type": "metro",
+"lat": 19.0867,
+"lng": 72.90807,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Girgaon",
+"type": "metro",
+"lat": 18.9521,
+"lng": 72.82221,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Goregaon (East)",
+"type": "metro",
+"lat": 19.15245,
+"lng": 72.8566,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Goregaon (West)",
+"type": "metro",
+"lat": 19.15302,
+"lng": 72.83567,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Grant Road",
+"type": "metro",
+"lat": 18.96322,
+"lng": 72.81804,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Gundavali",
+"type": "metro",
+"lat": 19.11451,
+"lng": 72.85516,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Hutatma Chowk",
+"type": "metro",
+"lat": 18.93418,
+"lng": 72.8325,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Jagannath Shankar Sheth Metro",
+"type": "metro",
+"lat": 18.96999,
+"lng": 72.82118,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Jagruti Nagar",
+"type": "metro",
+"lat": 19.09258,
+"lng": 72.90191,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Jogeshwari (East)",
+"type": "metro",
+"lat": 19.14295,
+"lng": 72.85519,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Kalbadevi",
+"type": "metro",
+"lat": 18.94633,
+"lng": 72.82719,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Kandarpada",
+"type": "metro",
+"lat": 19.25663,
+"lng": 72.8505,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Kandivali (West)",
+"type": "metro",
+"lat": 19.214,
+"lng": 72.83731,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Kashigaon",
+"type": "metro",
+"lat": 19.27767,
+"lng": 72.88024,
+"lines": [
+"Line 9"
+]
+},
+{
+"name": "Kendriya Vihar",
+"type": "metro",
+"lat": 19.03767,
+"lng": 73.06408,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Khargar Village",
+"type": "metro",
+"lat": 19.04311,
+"lng": 73.0743,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Kurar",
+"type": "metro",
+"lat": 19.1873,
+"lng": 72.85845,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Lower Malad",
+"type": "metro",
+"lat": 19.1731,
+"lng": 72.83648,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Lower Oshiwara",
+"type": "metro",
+"lat": 19.1407,
+"lng": 72.83171,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "MIDC - Andheri",
+"type": "metro",
+"lat": 19.11735,
+"lng": 72.8736,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Magathane",
+"type": "metro",
+"lat": 19.2168,
+"lng": 72.8668,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Mahalaxmi",
+"type": "metro",
+"lat": 18.97947,
+"lng": 72.8254,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Malad (West)",
+"type": "metro",
+"lat": 19.18529,
+"lng": 72.83586,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Mandale",
+"type": "metro",
+"lat": 19.04959,
+"lng": 72.93866,
+"lines": [
+"Line 2B"
+]
+},
+{
+"name": "Mandapeshwar - I.C. Colony",
+"type": "metro",
+"lat": 19.24959,
+"lng": 72.8458,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Mankhurd",
+"type": "metro",
+"lat": 19.04922,
+"lng": 72.93123,
+"lines": [
+"Line 2B"
+]
+},
+{
+"name": "Marol Naka",
+"type": "metro",
+"lat": 19.1085,
+"lng": 72.87858,
+"lines": [
+"Line 1",
+"Line 3"
+]
+},
+{
+"name": "Miragaon",
+"type": "metro",
+"lat": 19.27101,
+"lng": 72.8807,
+"lines": [
+"Line 9"
+]
+},
+{
+"name": "Mogra",
+"type": "metro",
+"lat": 19.12844,
+"lng": 72.85546,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Oshiwara",
+"type": "metro",
+"lat": 19.14604,
+"lng": 72.83395,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Ovaripada",
+"type": "metro",
+"lat": 19.24315,
+"lng": 72.86414,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "Panchanand",
+"type": "metro",
+"lat": 19.07454,
+"lng": 73.09077,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Pandurang Wadi",
+"type": "metro",
+"lat": 19.25973,
+"lng": 72.87249,
+"lines": [
+"Line 9"
+]
+},
+{
+"name": "Pendhar",
+"type": "metro",
+"lat": 19.07221,
+"lng": 73.09784,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Pethpada",
+"type": "metro",
+"lat": 19.06382,
+"lng": 73.07737,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Poisar",
+"type": "metro",
+"lat": 19.20377,
+"lng": 72.86332,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "RBI Colony",
+"type": "metro",
+"lat": 19.02298,
+"lng": 73.04794,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Rashtriya Udyan",
+"type": "metro",
+"lat": 19.23461,
+"lng": 72.86314,
+"lines": [
+"Line 7"
+]
+},
+{
+"name": "SBI-Dadar Metro",
+"type": "metro",
+"lat": 19.02465,
+"lng": 72.83993,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "SEEPZ",
+"type": "metro",
+"lat": 19.126,
+"lng": 72.87373,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Sahar Road",
+"type": "metro",
+"lat": 19.1022,
+"lng": 72.86524,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Saki Naka",
+"type": "metro",
+"lat": 19.10354,
+"lng": 72.88796,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Santacruz",
+"type": "metro",
+"lat": 19.07929,
+"lng": 72.84712,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Science Centre",
+"type": "metro",
+"lat": 18.99089,
+"lng": 72.82135,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Sector-34",
+"type": "metro",
+"lat": 19.07365,
+"lng": 73.08181,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Shimpoli",
+"type": "metro",
+"lat": 19.22283,
+"lng": 72.84094,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Shitala Devi Mandir",
+"type": "metro",
+"lat": 19.03846,
+"lng": 72.84196,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Shivaji Chowk (Chembur)",
+"type": "metro",
+"lat": 19.04794,
+"lng": 72.90698,
+"lines": [
+"Line 2B"
+]
+},
+{
+"name": "Siddhivinayak Temple",
+"type": "metro",
+"lat": 19.01589,
+"lng": 72.83092,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Utsav Chowk",
+"type": "metro",
+"lat": 19.03258,
+"lng": 73.05906,
+"lines": [
+"NM Metro Line 1"
+]
+},
+{
+"name": "Valnai-Meeth Chowky",
+"type": "metro",
+"lat": 19.19683,
+"lng": 72.83378,
+"lines": [
+"Line 2A"
+]
+},
+{
+"name": "Versova",
+"type": "metro",
+"lat": 19.13025,
+"lng": 72.82138,
+"lines": [
+"Line 1"
+]
+},
+{
+"name": "Vidhan Bhavan",
+"type": "metro",
+"lat": 18.92478,
+"lng": 72.82549,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Western Express Highway",
+"type": "metro",
+"lat": 19.11586,
+"lng": 72.85642,
+"lines": [
+"Line 1",
+"Line 7"
+]
+},
+{
+"name": "Worli",
+"type": "metro",
+"lat": 19.00861,
+"lng": 72.81927,
+"lines": [
+"Line 3"
+]
+},
+{
+"name": "Acharya Atre Nagar",
+"type": "mono",
+"lat": 19.02365,
+"lng": 72.8638,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Ambedkar Nagar",
+"type": "mono",
+"lat": 19.00159,
+"lng": 72.84423,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Antop Hill",
+"type": "mono",
+"lat": 19.03018,
+"lng": 72.86695,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Bhakti Park",
+"type": "mono",
+"lat": 19.02897,
+"lng": 72.87757,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Bharat Petroleum",
+"type": "mono",
+"lat": 19.03528,
+"lng": 72.89556,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Chembur",
+"type": "mono",
+"lat": 19.06121,
+"lng": 72.89759,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Dadar East",
+"type": "mono",
+"lat": 19.01625,
+"lng": 72.85223,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Fertilizer Township",
+"type": "mono",
+"lat": 19.04388,
+"lng": 72.89346,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Guru Tegh Bahadur Nagar",
+"type": "mono",
+"lat": 19.03669,
+"lng": 72.87079,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Lower Parel",
+"type": "mono",
+"lat": 18.99312,
+"lng": 72.83147,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Mint Colony",
+"type": "mono",
+"lat": 18.99451,
+"lng": 72.84331,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Mysore Colony",
+"type": "mono",
+"lat": 19.02772,
+"lng": 72.89144,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Naigaon",
+"type": "mono",
+"lat": 19.00954,
+"lng": 72.84787,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Sant Gadge Maharaj Chowk",
+"type": "mono",
+"lat": 18.98309,
+"lng": 72.82859,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "VNP & RC Marg Junction",
+"type": "mono",
+"lat": 19.05264,
+"lng": 72.89428,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Wadala Bridge",
+"type": "mono",
+"lat": 19.01748,
+"lng": 72.85932,
+"lines": [
+"Monorail"
+]
+},
+{
+"name": "Airoli",
+"type": "rail",
+"lat": 19.15852,
+"lng": 72.9994,
+"lines": [
+"Trans-Harbour"
+]
+},
+{
+"name": "Ambarnath",
+"type": "rail",
+"lat": 19.21006,
+"lng": 73.18469,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Ambivli",
+"type": "rail",
+"lat": 19.26829,
+"lng": 73.17225,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Andheri",
+"type": "rail",
+"lat": 19.1197,
+"lng": 72.84642,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Baman-Dongri",
+"type": "rail",
+"lat": 18.97517,
+"lng": 73.0244,
+"lines": [
+"Nerul–Uran"
+]
+},
+{
+"name": "Bandra",
+"type": "rail",
+"lat": 19.05498,
+"lng": 72.84022,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Bandra Terminus",
+"type": "rail",
+"lat": 19.0627,
+"lng": 72.8413,
+"lines": [
+"Long-distance terminus"
+]
+},
+{
+"name": "Bhandup",
+"type": "rail",
+"lat": 19.14276,
+"lng": 72.93765,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Bhayandar",
+"type": "rail",
+"lat": 19.31018,
+"lng": 72.8527,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Bhivandi Road",
+"type": "rail",
+"lat": 19.26887,
+"lng": 73.04631,
+"lines": [
+"Vasai–Diva"
+]
+},
+{
+"name": "Borivali",
+"type": "rail",
+"lat": 19.22907,
+"lng": 72.85736,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Byculla",
+"type": "rail",
+"lat": 18.97662,
+"lng": 72.83279,
+"lines": [
+"Central"
+]
+},
+{
+"name": "CBD Belapur",
+"type": "rail",
+"lat": 19.01901,
+"lng": 73.03913,
+"lines": [
+"Harbour",
+"Nerul–Uran",
+"Trans-Harbour"
+]
+},
+{
+"name": "Charni Road",
+"type": "rail",
+"lat": 18.95184,
+"lng": 72.81824,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Chembur",
+"type": "rail",
+"lat": 19.06263,
+"lng": 72.90114,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Chinchpokli",
+"type": "rail",
+"lat": 18.9872,
+"lng": 72.83267,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Chuna Bhatti",
+"type": "rail",
+"lat": 19.05177,
+"lng": 72.8691,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Churchgate",
+"type": "rail",
+"lat": 18.93548,
+"lng": 72.82717,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Cotton Green",
+"type": "rail",
+"lat": 18.98719,
+"lng": 72.8439,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Currey Road",
+"type": "rail",
+"lat": 18.99375,
+"lng": 72.83286,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Dadar",
+"type": "rail",
+"lat": 19.01738,
+"lng": 72.84303,
+"lines": [
+"Central",
+"Western"
+]
+},
+{
+"name": "Dahisar",
+"type": "rail",
+"lat": 19.24936,
+"lng": 72.85963,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Dativali",
+"type": "rail",
+"lat": 19.1871,
+"lng": 73.05918,
+"lines": [
+"Vasai–Diva"
+]
+},
+{
+"name": "Digha Gaon",
+"type": "rail",
+"lat": 19.18078,
+"lng": 72.99443,
+"lines": [
+"Trans-Harbour"
+]
+},
+{
+"name": "Diva Junction",
+"type": "rail",
+"lat": 19.18876,
+"lng": 73.04142,
+"lines": [
+"Central",
+"Vasai–Diva"
+]
+},
+{
+"name": "Dockyard Road",
+"type": "rail",
+"lat": 18.9663,
+"lng": 72.8443,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Dombivli",
+"type": "rail",
+"lat": 19.21805,
+"lng": 73.08614,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Ghansoli",
+"type": "rail",
+"lat": 19.11631,
+"lng": 73.00702,
+"lines": [
+"Trans-Harbour"
+]
+},
+{
+"name": "Ghatkopar",
+"type": "rail",
+"lat": 19.08569,
+"lng": 72.90837,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Goregaon",
+"type": "rail",
+"lat": 19.16487,
+"lng": 72.84955,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Govandi",
+"type": "rail",
+"lat": 19.05537,
+"lng": 72.91507,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Grant Road",
+"type": "rail",
+"lat": 18.96335,
+"lng": 72.81583,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Guru Tegh Bahadur Nagar",
+"type": "rail",
+"lat": 19.038,
+"lng": 72.86435,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Jogeshwari",
+"type": "rail",
+"lat": 19.14115,
+"lng": 72.84942,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Juinagar",
+"type": "rail",
+"lat": 19.05587,
+"lng": 73.01825,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Kalamboli",
+"type": "rail",
+"lat": 19.03447,
+"lng": 73.11497,
+"lines": [
+"Diva–Panvel"
+]
+},
+{
+"name": "Kalva",
+"type": "rail",
+"lat": 19.19522,
+"lng": 72.99633,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Kalyan Junction",
+"type": "rail",
+"lat": 19.23582,
+"lng": 73.13081,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Kaman Road",
+"type": "rail",
+"lat": 19.33666,
+"lng": 72.91908,
+"lines": [
+"Vasai–Diva"
+]
+},
+{
+"name": "Kandivali",
+"type": "rail",
+"lat": 19.20411,
+"lng": 72.85174,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Kanjur Marg",
+"type": "rail",
+"lat": 19.12865,
+"lng": 72.92804,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Khandeshwar",
+"type": "rail",
+"lat": 19.0076,
+"lng": 73.095,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Khar Road",
+"type": "rail",
+"lat": 19.06824,
+"lng": 72.84004,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Kharbhav",
+"type": "rail",
+"lat": 19.29832,
+"lng": 72.98447,
+"lines": [
+"Vasai–Diva"
+]
+},
+{
+"name": "Kharghar",
+"type": "rail",
+"lat": 19.02584,
+"lng": 73.0593,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Kharkopar",
+"type": "rail",
+"lat": 18.95989,
+"lng": 73.01413,
+"lines": [
+"Nerul–Uran"
+]
+},
+{
+"name": "King's Circle",
+"type": "rail",
+"lat": 19.03168,
+"lng": 72.85774,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Kopar",
+"type": "rail",
+"lat": 19.21242,
+"lng": 73.07886,
+"lines": [
+"Central",
+"Vasai–Diva"
+]
+},
+{
+"name": "Koparkhairne",
+"type": "rail",
+"lat": 19.10325,
+"lng": 73.01131,
+"lines": [
+"Trans-Harbour"
+]
+},
+{
+"name": "Kurla",
+"type": "rail",
+"lat": 19.06528,
+"lng": 72.87938,
+"lines": [
+"Central",
+"Harbour"
+]
+},
+{
+"name": "Lokmanya Tilak Terminus",
+"type": "rail",
+"lat": 19.06947,
+"lng": 72.89198,
+"lines": [
+"Long-distance terminus"
+]
+},
+{
+"name": "Lower Parel",
+"type": "rail",
+"lat": 18.99568,
+"lng": 72.83028,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Mahalaxmi",
+"type": "rail",
+"lat": 18.98252,
+"lng": 72.82422,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Mahim Junction",
+"type": "rail",
+"lat": 19.04066,
+"lng": 72.8466,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Malad",
+"type": "rail",
+"lat": 19.18672,
+"lng": 72.84859,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Mankhurd",
+"type": "rail",
+"lat": 19.04821,
+"lng": 72.93171,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Mansarovar",
+"type": "rail",
+"lat": 19.0167,
+"lng": 73.0805,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Marine Lines",
+"type": "rail",
+"lat": 18.94576,
+"lng": 72.82372,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Masjid",
+"type": "rail",
+"lat": 18.95229,
+"lng": 72.83818,
+"lines": [
+"Central",
+"Harbour"
+]
+},
+{
+"name": "Matunga",
+"type": "rail",
+"lat": 19.02744,
+"lng": 72.85015,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Matunga Road",
+"type": "rail",
+"lat": 19.02781,
+"lng": 72.84668,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Mira Road",
+"type": "rail",
+"lat": 19.2817,
+"lng": 72.85607,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Mulund",
+"type": "rail",
+"lat": 19.17214,
+"lng": 72.9567,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Mumbai CSMT",
+"type": "rail",
+"lat": 18.94049,
+"lng": 72.83579,
+"lines": [
+"Central",
+"Harbour"
+]
+},
+{
+"name": "Mumbai Central",
+"type": "rail",
+"lat": 18.96959,
+"lng": 72.81932,
+"lines": [
+"Western"
+]
+},
+{
+"name": "Mumbra",
+"type": "rail",
+"lat": 19.18994,
+"lng": 73.02308,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Nahur",
+"type": "rail",
+"lat": 19.15464,
+"lng": 72.94665,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Navade Road",
+"type": "rail",
+"lat": 19.05385,
+"lng": 73.10303,
+"lines": [
+"Diva–Panvel"
+]
+},
+{
+"name": "Nerul",
+"type": "rail",
+"lat": 19.03358,
+"lng": 73.01816,
+"lines": [
+"Harbour",
+"Nerul–Uran",
+"Trans-Harbour"
+]
+},
+{
+"name": "Nilaje",
+"type": "rail",
+"lat": 19.15443,
+"lng": 73.08036,
+"lines": [
+"Diva–Panvel"
+]
+},
+{
+"name": "Panvel",
+"type": "rail",
+"lat": 18.98942,
+"lng": 73.12269,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Parel",
+"type": "rail",
+"lat": 19.00948,
+"lng": 72.83766,
+"lines": [
+"Central",
+"Western"
+]
+},
+{
+"name": "Prabhadevi",
+"type": "rail",
+"lat": 19.00747,
+"lng": 72.8359,
+"lines": [
+"Central",
+"Western"
+]
+},
+{
+"name": "Rabale",
+"type": "rail",
+"lat": 19.13664,
+"lng": 73.00278,
+"lines": [
+"Trans-Harbour"
+]
+},
+{
+"name": "Ram Mandir",
+"type": "rail",
+"lat": 19.15102,
+"lng": 72.85015,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Reay Road",
+"type": "rail",
+"lat": 18.97755,
+"lng": 72.8441,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Sandhurst Road",
+"type": "rail",
+"lat": 18.96092,
+"lng": 72.83937,
+"lines": [
+"Central",
+"Harbour"
+]
+},
+{
+"name": "Sanpada",
+"type": "rail",
+"lat": 19.06599,
+"lng": 73.00953,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Santa Cruz",
+"type": "rail",
+"lat": 19.08152,
+"lng": 72.84176,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Seawoods",
+"type": "rail",
+"lat": 19.02182,
+"lng": 73.01916,
+"lines": [
+"Harbour",
+"Nerul–Uran",
+"Trans-Harbour"
+]
+},
+{
+"name": "Sewri",
+"type": "rail",
+"lat": 18.99878,
+"lng": 72.85442,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Shahad",
+"type": "rail",
+"lat": 19.24358,
+"lng": 73.15807,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Sion",
+"type": "rail",
+"lat": 19.04652,
+"lng": 72.86328,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Taloje Panchanand",
+"type": "rail",
+"lat": 19.07915,
+"lng": 73.08786,
+"lines": [
+"Diva–Panvel"
+]
+},
+{
+"name": "Targhar",
+"type": "rail",
+"lat": 18.98994,
+"lng": 73.03433,
+"lines": [
+"Nerul–Uran"
+]
+},
+{
+"name": "Thakurli",
+"type": "rail",
+"lat": 19.22628,
+"lng": 73.09802,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Thane",
+"type": "rail",
+"lat": 19.18648,
+"lng": 72.97577,
+"lines": [
+"Central",
+"Trans-Harbour"
+]
+},
+{
+"name": "Tilak Nagar",
+"type": "rail",
+"lat": 19.06579,
+"lng": 72.89047,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Turbhe",
+"type": "rail",
+"lat": 19.07615,
+"lng": 73.0177,
+"lines": [
+"Trans-Harbour"
+]
+},
+{
+"name": "Ulhasnagar",
+"type": "rail",
+"lat": 19.21788,
+"lng": 73.16308,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Vadala Road",
+"type": "rail",
+"lat": 19.01614,
+"lng": 72.85891,
+"lines": [
+"Harbour"
+]
+},
+{
+"name": "Vashi",
+"type": "rail",
+"lat": 19.06329,
+"lng": 72.99876,
+"lines": [
+"Harbour",
+"Trans-Harbour"
+]
+},
+{
+"name": "Vidyavihar",
+"type": "rail",
+"lat": 19.07954,
+"lng": 72.89712,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Vikhroli",
+"type": "rail",
+"lat": 19.11148,
+"lng": 72.92802,
+"lines": [
+"Central"
+]
+},
+{
+"name": "Vile Parle",
+"type": "rail",
+"lat": 19.09991,
+"lng": 72.844,
+"lines": [
+"Harbour",
+"Western"
+]
+},
+{
+"name": "Vithalwadi",
+"type": "rail",
+"lat": 19.22842,
+"lng": 73.14911,
+"lines": [
+"Central"
+]
+}
+]

@@ -271,10 +271,16 @@ html = (html.replace("/*__VENDOR_CSS__*/", vendor)
             .replace("__SNAPSHOT__", SNAPSHOT))
 start, end = html.index("<!--DATA-->"), html.index("<!--/DATA-->") + len("<!--/DATA-->")
 
+# Railway / metro / monorail stations (build/fetch_transit.py): [name, 0 rail | 1 metro | 2 mono, lat, lng, "Line;Line"]
+TYPES = {"rail": 0, "metro": 1, "mono": 2}
+transit_src = json.load(open(os.path.join(DATA_DIR, "transit.json"), encoding="utf-8"))
+transit = [[s["name"], TYPES[s["type"]], s["lat"], s["lng"], ";".join(s["lines"])] for s in transit_src]
+TRANSIT_JS = "const TRANSIT = " + js(transit) + ";\n"
+
 if SINGLE:
     # Everything inline: the shareable page can't load other files.
     block = ('<script type="application/json" id="minor-streets">' + streets.replace("</", "<\\/") + "</script>\n"
-             "<script>\nconst SITE_MODE = false;\nconst RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\nconst MAPD = " + mapbase + ";\n</script>")
+             "<script>\nconst SITE_MODE = false;\nconst RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\n" + TRANSIT_JS + "const MAPD = " + mapbase + ";\n</script>")
     OUT = SINGLE
     page = html[:start] + block + html[end:]
     open(OUT, "w", encoding="utf-8").write(page.replace("<!--PWA-->", ""))
@@ -282,7 +288,7 @@ else:
     # Website: data in separate, cacheable files; streets load on first zoom-in.
     os.makedirs(os.path.join(SITE_DIR, "data"), exist_ok=True)
     open(os.path.join(SITE_DIR, "data", "places.js"), "w", encoding="utf-8").write(
-        "const RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\n")
+        "const RAW = " + js(rows) + ";\nconst GEO = " + js(geo) + ";\n" + TRANSIT_JS)
     open(os.path.join(SITE_DIR, "data", "basemap.js"), "w", encoding="utf-8").write("const MAPD = " + mapbase + ";\n")
     open(os.path.join(SITE_DIR, "data", "streets.json"), "w", encoding="utf-8").write(streets)
     block = '<script>const SITE_MODE = true;</script>\n<script src="data/places.js"></script>\n<script src="data/basemap.js"></script>'
@@ -345,7 +351,7 @@ else:
     # Area pages, sitemap and robots.txt for search engines; og.png is drawn on Windows by make_og.ps1.
     sys.path.insert(0, HERE)
     import make_pages
-    n_pages, n_guides = make_pages.build_pages(SITE_DIR, rows, geo, SNAPSHOT, cfg)
+    n_pages, n_guides = make_pages.build_pages(SITE_DIR, rows, geo, SNAPSHOT, cfg, transit_src)
     print(f"{n_pages} area pages and {n_guides} food guides written")
 print(f"{len(rows)} places ({sum(r[21] for r in rows)} from web listings, {sum(1 for r in rows if r[17])} with ratings, {sum(1 for r in rows if r[13])} with cost for two, {sum(1 for r in rows if r[20] & 1)} pure veg, {sum(1 for r in rows if r[20] & 2)} jain, {sum(1 for r in rows if r[20] & 4)} non-veg) from {os.path.basename(src)}; "
       f"{len(ZLIST)} main areas, {len(SUBS)} neighbourhoods, {len(LOCS)} localities; groups: { {k: len(v) for k, v in groups.items()} }; "

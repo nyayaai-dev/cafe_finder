@@ -88,6 +88,7 @@
     $("cmpBody").innerHTML = `<table class="cmp"><thead><tr><th></th>${ps.map((p) => `<th scope="col">${esc(p.name)}</th>`).join("")}</tr></thead><tbody>
       ${row("Type", (p) => esc(p.kind))}
       ${row("Area", (p) => esc(p.loc === p.sub ? p.sub : p.loc + ", " + p.sub))}
+      ${row("Station", (p) => { const c = closestStation(p); return c ? stationBit(c) : `<span class="muted">Not found</span>`; })}
       ${row("Rating", (p) => p.rating ? `<b class="stars">★ ${p.rating.toFixed(1)}</b> <span class="muted">${esc(p.ratingSrc)}</span>` : `<a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">See on Google</a>`)}
       ${row("For two", (p) => p.priceTwo ? `≈ ₹${p.priceTwo.toLocaleString("en-IN")}` : `<span class="muted">Not listed</span>`)}
       ${row("Food", (p) => p.pureVeg ? `<span class="tag veg">Pure veg</span>` : p.nonVeg ? `<span class="tag nonveg">Non-veg</span>` : `<span class="muted">Not listed</span>`)}
@@ -141,7 +142,7 @@
       <h2 class="d-name" tabindex="-1" id="detailName">${esc(p.name)}</h2>
       <div class="d-tags">${catTag(p)}</div>
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
-      ${area(p)}${rating(p)}${price(p)}${food(p)}${weeklyHours(p)}${cuisine(p)}${source(p)}
+      ${area(p)}${transit(p, true)}${rating(p)}${price(p)}${food(p)}${weeklyHours(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
       ${p.phone ? `<p class="meta">Phone: <span class="sel">${esc(p.phone)}</span></p>` : ""}
       ${p.website ? `<p class="meta"><a class="rate" href="${esc(p.website)}" target="_blank" rel="noopener">Website ↗</a></p>` : ""}
@@ -245,6 +246,7 @@
     [/\bjain\b/, () => { $("fJain").checked = true; }],
     [/\bnon ?veg\b/, () => { $("fNon").checked = true; $("fVeg").checked = false; }],
     [/\bopen( now)?\b/, () => { $("fOpen").checked = true; }],
+    [/\bnear (a |the )?(station|metro|train)\b/, () => { $("fNear").checked = true; }],
     [/\bcafe?s?\b|\bcoffee\b/, () => setCat("cafe")],
     [/\brestaurants?\b|\bdinner\b|\blunch\b/, () => setCat("rest")],
     [/\bcheap\b|\bbudget\b/, () => setMood("budget")],
@@ -503,7 +505,7 @@
   // ------------------------------------------------------------ filters in the link (website only)
   // ?area=Bandra&cat=cafe&f=veg,open&mood=date&cuisine=Pizza&t=irani&sort=rating
   const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE;
-  const FLAGS = [["veg", "fVeg"], ["jain", "fJain"], ["nonveg", "fNon"], ["rated", "fRated"], ["open", "fOpen"]];
+  const FLAGS = [["veg", "fVeg"], ["jain", "fJain"], ["nonveg", "fNon"], ["rated", "fRated"], ["open", "fOpen"], ["station", "fNear"]];
   function viewParams() {
     const ps = new URLSearchParams();
     if (state.area && state.area.names && state.areaName) ps.set("area", state.areaName);

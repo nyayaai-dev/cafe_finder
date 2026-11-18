@@ -19,6 +19,8 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
 - Smart search ("Bandra pizza", "Jain Kala Ghoda", a café name) with suggestions
 - Mood chips (Work-friendly, Date night, Under ₹500, Late night, Breakfast, Desserts),
   Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
+- Nearest train, metro and monorail station for every place, with line, distance and walk or auto time;
+  "Near a station" filter (about an 8-minute walk). Stations: `py build/fetch_transit.py` (data/transit.json)
 - Area pages for search engines (`site/areas/`), sitemap, link-preview image (`site/og.png`)
 - Food guides by cuisine and area (`site/food/`, e.g. Pizza in Bandra, Jain food), linked from area pages
 - Filters live in the address, so any view can be shared (`?area=Bandra&cat=cafe&f=veg,open&cuisine=Pizza&mood=date&sort=rating`)

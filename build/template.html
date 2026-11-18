@@ -308,6 +308,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
         <label><input type="checkbox" id="fNon"> Non-veg</label>
         <label><input type="checkbox" id="fRated"> Has rating</label>
         <label><input type="checkbox" id="fOpen"> Open now</label>
+        <label><input type="checkbox" id="fNear"> 🚆 Near a station</label>
         <label><input type="checkbox" id="fFav"> ♥ Saved <small id="nFav" class="muted"></small></label>
       </div>
       <div class="row between">
@@ -697,6 +698,40 @@ button.ghost { background: var(--chip); color: var(--ink); }
   const rating = (p) => p.rating
     ? `<div class="line"><span class="lbl">Rating</span><b class="stars">★ ${p.rating.toFixed(1)}</b><a class="muted" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">per ${esc(p.ratingSrc)}</a><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google ↗</a></div>`
     : `<div class="line"><span class="lbl">Rating</span><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">★ See rating on Google</a></div>`;
+
+  // ------------------------------------------------------------ nearest station (train, metro, monorail)
+  // Distances are straight-line x 1.3 for streets; up to 2 km is shown as a walk (4.8 km/h),
+  // further as an auto / taxi ride (about 18 km/h in city traffic, plus 3 min to get one).
+  const STATIONS = (typeof TRANSIT !== "undefined" ? TRANSIT : []).map(([name, t, lat, lng, lines]) =>
+    ({ name, type: ["rail", "metro", "mono"][t], lat, lng, lines: lines ? lines.split(";") : [] }));
+  const T_ICON = { rail: "🚆", metro: "Ⓜ️", mono: "🚝" }, T_WORD = { rail: "Train", metro: "Metro", mono: "Monorail" };
+  function nearestStations(p) {
+    if (p._st) return p._st;
+    const best = {};
+    for (const s of STATIONS) {
+      if (Math.abs(s.lat - p.lat) > 0.1 || Math.abs(s.lng - p.lng) > 0.1) continue;
+      const d = km(p, s);
+      if (!best[s.type] || d < best[s.type].d) best[s.type] = { s, d };
+    }
+    return (p._st = best);
+  }
+  const roadKm = (d) => d * 1.3;
+  function commute(d) {
+    const r = roadKm(d);
+    return r <= 2 ? `${fmtKm(r)} · ${Math.max(1, Math.round(r / 4.8 * 60))} min walk` : `${fmtKm(r)} · ~${Math.round(r / 18 * 60 + 3)} min by auto`;
+  }
+  const lineTxt = (s) => (s.type !== "mono" && s.lines.length ? ` (${s.lines.join(", ")})` : "");
+  const stationBit = (x) => `${T_ICON[x.s.type]} <b>${esc(x.s.name)}</b><span class="muted">${esc(lineTxt(x.s))} · ${commute(x.d)}</span>`;
+  const closestStation = (p) => Object.values(nearestStations(p)).sort((a, b) => a.d - b.d)[0];
+  const nearStation = (p) => { const c = closestStation(p); return !!c && roadKm(c.d) <= 0.65; };   // about an 8-minute walk
+  // Card: the closest station of any kind. Detail (all = true): nearest train, plus metro / monorail within 4 km.
+  function transit(p, all) {
+    const b = nearestStations(p);
+    if (!all) { const c = closestStation(p); return c ? `<div class="line"><span class="lbl">Station</span><span>${stationBit(c)}</span></div>` : ""; }
+    const rows = ["rail", "metro", "mono"].map((k) => b[k]).filter((x) => x && (x.s.type === "rail" || x.d <= 4));
+    return rows.length ? `<div class="line top"><span class="lbl">Getting there</span><span class="stations">${rows.map((x) =>
+      `<span><span class="tw">${T_WORD[x.s.type]}</span> ${stationBit(x)}</span>`).join("")}</span></div>` : "";
+  }
   const cuisine = (p) => `<div class="line"><span class="lbl">Cuisine</span>${p.cuisine.length ? p.cuisine.map((c) => `<span class="tag">${esc(c)}</span>`).join("") : `<span class="muted">Not listed</span>`}</div>`;
   const actions = (p) => `<div class="actions">
       <a class="btn go" href="${esc(directions(p))}" target="_blank" rel="noopener">➤ Directions</a>
@@ -746,7 +781,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
   function popupHtml(p) {
     return `<div class="pop"><h3>${esc(p.name)} ${favBtn(p)}</h3>${catTag(p)}
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
-      ${area(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
+      ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
       ${hoursLine(p)}
       ${p.phone ? `<p class="meta">Phone: ${esc(p.phone)}</p>` : ""}
@@ -764,10 +799,10 @@ button.ghost { background: var(--chip); color: var(--ink); }
     const text = $("filterText").value.trim().toLowerCase();
     const cu = $("cuisine").value;
     const veg = $("fVeg").checked, jain = $("fJain").checked, non = $("fNon").checked, rated = $("fRated").checked;
-    const openOnly = $("fOpen").checked, favOnly = $("fFav").checked;
+    const openOnly = $("fOpen").checked, favOnly = $("fFav").checked, nearOnly = $("fNear").checked;
     return places.filter((p) => inArea(p) && inCat(p) &&
       (!veg || p.pureVeg) && (!jain || p.jain) && (!non || p.nonVeg) && (!rated || p.rating) &&
-      (!openOnly || openNow(p.hours) === true) && (!favOnly || favs.has(p.key)) &&
+      (!openOnly || openNow(p.hours) === true) && (!favOnly || favs.has(p.key)) && (!nearOnly || nearStation(p)) &&
       moodOk(p) && (!state.list || state.list.has(p.key)) &&
       (!cu || p.cuisine.includes(cu)) &&
       (!text || (p.name + " " + p.address + " " + p.loc + " " + p.sub + " " + p.zone).toLowerCase().includes(text)));
@@ -824,7 +859,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
       <li data-id="${p.id}" tabindex="0" aria-label="${esc(p.name)}, ${esc(p.kind)}" class="pad${p.id === state.active ? " active" : ""}">
         <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
-        ${area(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${cuisine(p)}${source(p)}
+        ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${cuisine(p)}${source(p)}
         ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
         ${actions(p)}
       </li>`).join("") + (rows.length > state.shown
@@ -920,7 +955,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     document.querySelectorAll(".seg [data-cat]").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
     refreshCounts(); render();
   }));
-  ["fVeg", "fJain", "fNon", "fRated", "fOpen", "fFav"].forEach((id) => $(id).addEventListener("change", () => { state.shown = PAGE; render(); }));
+  ["fVeg", "fJain", "fNon", "fRated", "fOpen", "fNear", "fFav"].forEach((id) => $(id).addEventListener("change", () => { state.shown = PAGE; render(); }));
   ["filterText", "cuisine"].forEach((id) => $(id).addEventListener("input", () => { state.shown = PAGE; render(); }));
   $("sortBy").addEventListener("change", () => { state.shown = PAGE; render(false); });
   let moveTimer;
