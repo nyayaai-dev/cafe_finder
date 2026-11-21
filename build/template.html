@@ -247,6 +247,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
         <a class="ghost btnlink" id="areasLink" href="areas/" hidden>Browse by area</a>
         <a class="ghost btnlink" id="foodLink" href="food/" hidden>Food guides</a>
         <a class="ghost btnlink" id="appLink" href="install.html" hidden>📲 Get the app</a>
+        <label class="langpick" translate="no"><span aria-hidden="true">🌐</span><select id="langSel" aria-label="Language / भाषा"></select></label>
       </div>
     </header>
 
@@ -784,7 +785,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     return r <= 2 ? `${fmtKm(r)} · ${Math.max(1, Math.round(r / 4.8 * 60))} min walk` : `${fmtKm(r)} · ~${Math.round(r / 18 * 60 + 3)} min by auto`;
   }
   const lineTxt = (s) => (s.type !== "mono" && s.lines.length ? ` (${s.lines.join(", ")})` : "");
-  const stationBit = (x) => `${T_ICON[x.s.type]} <b>${esc(x.s.name)}</b><span class="muted">${esc(lineTxt(x.s))} · ${commute(x.d)}</span>`;
+  const stationBit = (x) => `${T_ICON[x.s.type]} <b class="pname">${esc(x.s.name)}</b><span class="muted">${esc(lineTxt(x.s))} · ${commute(x.d)}</span>`;
   const closestStation = (p) => Object.values(nearestStations(p)).sort((a, b) => a.d - b.d)[0];
   const nearStation = (p) => { const c = closestStation(p); return !!c && roadKm(c.d) <= 0.65; };   // about an 8-minute walk
   // Card: the closest station of any kind. Detail (all = true): nearest train, plus metro / monorail within 4 km.
@@ -842,7 +843,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
   }
 
   function popupHtml(p) {
-    return `<div class="pop"><h3>${esc(p.name)} ${favBtn(p)}</h3>${catTag(p)}
+    return `<div class="pop"><h3><span class="pname">${esc(p.name)}</span> ${favBtn(p)}</h3>${catTag(p)}
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
       ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
@@ -921,7 +922,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     }
     $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
       <li data-id="${p.id}" tabindex="0" aria-label="${esc(p.name)}, ${esc(p.kind)}" class="pad${p.id === state.active ? " active" : ""}">
-        <div class="name"><span>${esc(p.name)} ${catTag(p)}${friendTag(p)}${facIcons(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
+        <div class="name"><span><span class="pname">${esc(p.name)}</span> ${catTag(p)}${friendTag(p)}${facIcons(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
         ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${crowdLine(p)}${cuisine(p)}${source(p)}
         ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
         ${actions(p)}
@@ -1063,7 +1064,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     });
     syncFavCount();
     syncShareList();
-    toast(favs.has(key) ? "Saved" : "Removed from saved");
+    toast(favs.has(key) ? "Saved to your list" : "Removed from saved");
     if ($("fFav").checked) render(false);
   }
 
@@ -1156,5 +1157,6 @@ button.ghost { background: var(--chip); color: var(--ink); }
   // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area and food pages).
   // Filters can also come in the link (?area=…&cat=…&f=veg,open&cuisine=…), see applyUrl.
   applyUrl(new URLSearchParams(location.search));
+  if (startLang !== "en") setLang(startLang, false);
 })();
 </script>

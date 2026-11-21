@@ -1145,6 +1145,12 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   .grab span { width: 48px; }
 }
 
+/* language picker */
+.langpick { display: inline-flex; align-items: center; gap: 4px; background: var(--chip); border-radius: 8px; padding: 0 4px 0 8px; font-size: 13px; }
+.langpick select { border: 0; background: transparent; color: var(--ink); font: 600 13px var(--font-body); padding: 7px 4px; cursor: pointer; }
+:root[lang="hi"], :root[lang="mr"] { --font-body: "Inter", "Noto Sans Devanagari", system-ui, sans-serif; }
+:root[lang="hi"] body, :root[lang="mr"] body { line-height: 1.55; }
+
 /* report dialog */
 .rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
 .rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }
@@ -1287,6 +1293,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
         <a class="ghost btnlink" id="areasLink" href="areas/" hidden>Browse by area</a>
         <a class="ghost btnlink" id="foodLink" href="food/" hidden>Food guides</a>
         <a class="ghost btnlink" id="appLink" href="install.html" hidden>📲 Get the app</a>
+        <label class="langpick" translate="no"><span aria-hidden="true">🌐</span><select id="langSel" aria-label="Language / भाषा"></select></label>
       </div>
     </header>
 
@@ -1824,7 +1831,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     return r <= 2 ? `${fmtKm(r)} · ${Math.max(1, Math.round(r / 4.8 * 60))} min walk` : `${fmtKm(r)} · ~${Math.round(r / 18 * 60 + 3)} min by auto`;
   }
   const lineTxt = (s) => (s.type !== "mono" && s.lines.length ? ` (${s.lines.join(", ")})` : "");
-  const stationBit = (x) => `${T_ICON[x.s.type]} <b>${esc(x.s.name)}</b><span class="muted">${esc(lineTxt(x.s))} · ${commute(x.d)}</span>`;
+  const stationBit = (x) => `${T_ICON[x.s.type]} <b class="pname">${esc(x.s.name)}</b><span class="muted">${esc(lineTxt(x.s))} · ${commute(x.d)}</span>`;
   const closestStation = (p) => Object.values(nearestStations(p)).sort((a, b) => a.d - b.d)[0];
   const nearStation = (p) => { const c = closestStation(p); return !!c && roadKm(c.d) <= 0.65; };   // about an 8-minute walk
   // Card: the closest station of any kind. Detail (all = true): nearest train, plus metro / monorail within 4 km.
@@ -1882,7 +1889,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   }
 
   function popupHtml(p) {
-    return `<div class="pop"><h3>${esc(p.name)} ${favBtn(p)}</h3>${catTag(p)}
+    return `<div class="pop"><h3><span class="pname">${esc(p.name)}</span> ${favBtn(p)}</h3>${catTag(p)}
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
       ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
@@ -1961,7 +1968,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     }
     $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
       <li data-id="${p.id}" tabindex="0" aria-label="${esc(p.name)}, ${esc(p.kind)}" class="pad${p.id === state.active ? " active" : ""}">
-        <div class="name"><span>${esc(p.name)} ${catTag(p)}${friendTag(p)}${facIcons(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
+        <div class="name"><span><span class="pname">${esc(p.name)}</span> ${catTag(p)}${friendTag(p)}${facIcons(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
         ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${crowdLine(p)}${cuisine(p)}${source(p)}
         ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
         ${actions(p)}
@@ -2103,7 +2110,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     });
     syncFavCount();
     syncShareList();
-    toast(favs.has(key) ? "Saved" : "Removed from saved");
+    toast(favs.has(key) ? "Saved to your list" : "Removed from saved");
     if ($("fFav").checked) render(false);
   }
 
@@ -2282,7 +2289,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     const ctr = state.me || map.getCenter();
     const row = (label, f) => `<tr><th scope="row">${label}</th>${ps.map((p) => `<td>${f(p)}</td>`).join("")}</tr>`;
     const o = (p) => { const v = openNow(p.hours); return v === true ? `<span class="tag open">Open now</span>` : v === false ? `<span class="tag shut">Closed now</span>` : `<span class="muted">Hours not listed</span>`; };
-    $("cmpBody").innerHTML = `<table class="cmp"><thead><tr><th></th>${ps.map((p) => `<th scope="col">${esc(p.name)}</th>`).join("")}</tr></thead><tbody>
+    $("cmpBody").innerHTML = `<table class="cmp"><thead><tr><th></th>${ps.map((p) => `<th scope="col" class="pname">${esc(p.name)}</th>`).join("")}</tr></thead><tbody>
       ${row("Type", (p) => esc(p.kind))}
       ${row("Area", (p) => esc(p.loc === p.sub ? p.sub : p.loc + ", " + p.sub))}
       ${row("Station", (p) => { const c = closestStation(p); return c ? stationBit(c) : `<span class="muted">Not found</span>`; })}
@@ -2460,6 +2467,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   function setMood(m) { if (state.mood !== m) document.querySelector(`#moods [data-mood="${m}"]`).click(); }
 
   function smartSearch(raw) {
+    raw = deva(raw);
     let q = " " + norm(raw) + " ";
     if (!q.trim()) return showArea("");
     // An exact place name opens that place; a chain name (several branches) lists them all.
@@ -2488,6 +2496,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   const box = $("suggestBox");
   let sugItems = [], sugIdx = -1;
   function suggestions(raw) {
+    raw = deva(raw);
     const q = norm(raw);
     if (q.length < 2) return [];
     const out = [];
@@ -2505,7 +2514,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     $("place").setAttribute("aria-expanded", !box.hidden);
     box.innerHTML = sugItems.map((s, i) => `<li role="option" id="sug-${i}" class="${i === sugIdx ? "on" : ""}" data-i="${i}" aria-selected="${i === sugIdx}">
       <span class="ic">${s.kind === "dish" ? s.icon : s.kind === "area" ? "📍" : s.kind === "cuisine" ? "🍽" : s.kind === "query" ? "🔎" : s.cat === "cafe" ? "☕" : "🍴"}</span>
-      <span class="tx"><span>${esc(s.label)}</span><small class="muted">${esc(s.sub)}</small></span></li>`).join("");
+      <span class="tx"><span class="${s.kind === "place" || s.kind === "area" || s.kind === "query" ? "pname" : ""}">${esc(s.label)}</span><small class="muted">${esc(s.sub)}</small></span></li>`).join("");
     if (sugIdx >= 0) $("place").setAttribute("aria-activedescendant", "sug-" + sugIdx); else $("place").removeAttribute("aria-activedescendant");
   }
   function pickSuggestion(s) {
@@ -2796,6 +2805,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     if (t) ps.set("t", t);
     if ($("sortBy").value !== "near") ps.set("sort", $("sortBy").value);
     discoverParams(ps);
+    if (I18N.L >= 0) ps.set("lang", document.documentElement.lang);
     return ps;
   }
   let urlTimer;
@@ -3148,6 +3158,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     [/\bmeaty|meat|non ?veg|chicken|mutton\b/, { dishes: ["kebab", "biryani", "friedchicken", "northindian"], why: "meaty" }],
   ];
   function foodMatch(text) {
+    text = deva(text);
     const q = " " + norm(text) + " ";
     const why = [], dishes = new Map(), hard = {};
     const d = findDish(text);
@@ -3374,6 +3385,519 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   document.querySelectorAll("dialog [data-close]").forEach((b) => b.addEventListener("click", () => b.closest("dialog").close()));
   syncDiscoverBanner();
 
+  // ================================================================== languages: English / हिन्दी / मराठी
+  // The interface is written in English; this layer swaps text for Hindi or Marathi as it
+  // appears on screen (static markup, redrawn lists, messages), so the rest of the code
+  // stays unchanged. Place names, addresses and area names stay as they are.
+
+  const LANGS = [["en", "English"], ["hi", "हिन्दी"], ["mr", "मराठी"]];
+  // English text -> [Hindi, Marathi]
+  const D = {
+    // header, search, quick areas
+    "Mumbai Cafe & Restaurant Finder": ["मुंबई कैफ़े और रेस्टोरेंट फ़ाइंडर", "मुंबई कॅफे आणि रेस्टॉरंट फाइंडर"],
+    "Surprise me": ["सरप्राइज़ करें", "सरप्राईज करा"],
+    "About & data": ["जानकारी और डेटा", "माहिती आणि डेटा"],
+    "Browse by area": ["इलाके के अनुसार देखें", "भागानुसार पाहा"],
+    "Food guides": ["फ़ूड गाइड", "फूड गाईड"],
+    "Get the app": ["ऐप पाएँ", "ॲप मिळवा"],
+    "Show": ["दिखाएँ", "दाखवा"],
+    "Everywhere": ["हर जगह", "सगळीकडे"],
+    "This map view": ["इस नक्शे में", "या नकाशात"],
+    "Near me": ["मेरे पास", "माझ्या जवळ"],
+    "Locating…": ["जगह ढूँढ रहे हैं…", "ठिकाण शोधत आहोत…"],
+    "Install app": ["ऐप इंस्टॉल करें", "ॲप इन्स्टॉल करा"],
+    "Search areas, cuisines and places": ["इलाके, व्यंजन और जगहें खोजें", "भाग, खाद्यप्रकार आणि ठिकाणे शोधा"],
+    "Suggestions": ["सुझाव", "सूचना"],
+    "Try “Bandra pizza”, “Jain Kala Ghoda”, a café name…": ["आज़माएँ “बांद्रा पिज़्ज़ा”, “जैन काला घोड़ा”, किसी कैफ़े का नाम…", "वापरून पाहा “वांद्रे पिझ्झा”, “जैन काळा घोडा”, कॅफेचे नाव…"],
+    "Mood": ["मूड", "मूड"],
+    "Discover": ["खोजें", "शोधा"],
+    "Language": ["भाषा", "भाषा"],
+    // moods
+    "Work / study": ["काम / पढ़ाई", "काम / अभ्यास"],
+    "Celebration": ["जश्न", "सेलिब्रेशन"],
+    "Business meeting": ["बिज़नेस मीटिंग", "बिझनेस मीटिंग"],
+    "Family outing": ["परिवार के साथ", "कुटुंबासोबत"],
+    "Party": ["पार्टी", "पार्टी"],
+    "Date night": ["डेट नाइट", "डेट नाईट"],
+    "Under ₹500": ["₹500 से कम", "₹500 पेक्षा कमी"],
+    "Late night": ["देर रात", "रात्री उशिरा"],
+    "Breakfast": ["नाश्ता", "नाश्ता"],
+    "Desserts": ["मिठाई और डेज़र्ट", "गोड पदार्थ"],
+    // discover tools
+    "Food Match": ["फ़ूड मैच", "फूड मॅच"],
+    "Dish finder": ["व्यंजन खोजें", "पदार्थ शोधा"],
+    "Budget": ["बजट", "बजेट"],
+    "Trending": ["ट्रेंडिंग", "ट्रेंडिंग"],
+    "Hidden gems": ["छुपे रत्न", "लपलेली रत्ने"],
+    "Friends' picks": ["दोस्तों की पसंद", "मित्रांची पसंती"],
+    "Friends": ["दोस्त", "मित्र"],
+    "AR view": ["AR व्यू", "AR व्ह्यू"],
+    "Clear": ["हटाएँ", "काढा"],
+    "Top picks": ["टॉप पसंद", "टॉप निवडी"],
+    "across the city": ["पूरे शहर में", "संपूर्ण शहरात"],
+    // filters
+    "Category": ["श्रेणी", "प्रकार"],
+    "All": ["सभी", "सर्व"],
+    "Cafes": ["कैफ़े", "कॅफे"],
+    "Restaurants": ["रेस्टोरेंट", "रेस्टॉरंट"],
+    "Filter by name or street": ["नाम या सड़क से छाँटें", "नाव किंवा रस्त्याने निवडा"],
+    "Cuisine": ["व्यंजन", "खाद्यप्रकार"],
+    "All cuisines": ["सभी व्यंजन", "सर्व खाद्यप्रकार"],
+    "Sort by": ["क्रम", "क्रम"],
+    "Nearest to map centre": ["नक्शे के बीच से सबसे पास", "नकाशाच्या मध्याजवळ"],
+    "Nearest to you": ["आपसे सबसे पास", "तुमच्या सर्वात जवळ"],
+    "Top rated (where a rating is listed)": ["सबसे ऊँची रेटिंग (जहाँ रेटिंग है)", "सर्वोत्तम रेटिंग (जिथे रेटिंग आहे)"],
+    "Lowest cost for two": ["दो लोगों का सबसे कम खर्च", "दोघांसाठी सर्वात कमी खर्च"],
+    "Name A–Z": ["नाम A–Z", "नाव A–Z"],
+    "Most details listed": ["सबसे ज़्यादा जानकारी", "सर्वाधिक माहिती"],
+    "Pure veg": ["शुद्ध शाकाहारी", "शुद्ध शाकाहारी"],
+    "Jain food": ["जैन भोजन", "जैन जेवण"],
+    "Non-veg": ["मांसाहारी", "मांसाहारी"],
+    "Has rating": ["रेटिंग वाले", "रेटिंग असलेले"],
+    "Open now": ["अभी खुला", "आत्ता उघडे"],
+    "Near a station": ["स्टेशन के पास", "स्टेशनजवळ"],
+    "Wi-Fi": ["वाई-फ़ाई", "वाय-फाय"],
+    "Outdoor seating": ["बाहर बैठने की जगह", "बाहेर बसण्याची सोय"],
+    "Parking nearby": ["पास में पार्किंग", "जवळ पार्किंग"],
+    "Saved": ["सेव किए", "सेव्ह केलेले"],
+    "Copy link to this view": ["इस व्यू का लिंक कॉपी करें", "या दृश्याची लिंक कॉपी करा"],
+    "Share my saved list": ["मेरी सेव सूची शेयर करें", "माझी सेव्ह यादी शेअर करा"],
+    "Download CSV": ["CSV डाउनलोड करें", "CSV डाउनलोड करा"],
+    "Save all": ["सब सेव करें", "सर्व सेव्ह करा"],
+    "Show everything": ["सब दिखाएँ", "सर्व दाखवा"],
+    "Keep as their picks": ["उनकी पसंद के रूप में रखें", "त्यांची पसंती म्हणून ठेवा"],
+    "Results": ["नतीजे", "निकाल"],
+    "Missing a cafe or restaurant?": ["कोई कैफ़े या रेस्टोरेंट छूट गया?", "एखादे कॅफे किंवा रेस्टॉरंट राहिले?"],
+    "Suggest a place": ["जगह सुझाएँ", "ठिकाण सुचवा"],
+    "Nothing matches here. Try another cuisine, clear the name filter, or pick a wider area.": ["यहाँ कुछ नहीं मिला। दूसरा व्यंजन चुनें, नाम फ़िल्टर हटाएँ या बड़ा इलाका चुनें।", "इथे काही सापडले नाही. दुसरा खाद्यप्रकार निवडा, नावाचा फिल्टर काढा किंवा मोठा भाग निवडा."],
+    // place card and detail
+    "Area": ["इलाका", "भाग"],
+    "Station": ["स्टेशन", "स्टेशन"],
+    "Getting there": ["कैसे पहुँचें", "कसे पोहोचाल"],
+    "Train": ["ट्रेन", "लोकल"],
+    "Metro": ["मेट्रो", "मेट्रो"],
+    "Monorail": ["मोनोरेल", "मोनोरेल"],
+    "Rating": ["रेटिंग", "रेटिंग"],
+    "See rating on Google": ["Google पर रेटिंग देखें", "Google वर रेटिंग पाहा"],
+    "For two": ["दो लोगों के लिए", "दोघांसाठी"],
+    "for two": ["दो लोगों के लिए", "दोघांसाठी"],
+    "Food": ["भोजन", "जेवण"],
+    "Veg": ["शाकाहारी", "शाकाहारी"],
+    "Veg options": ["शाकाहारी विकल्प", "शाकाहारी पर्याय"],
+    "Serves veg": ["शाकाहारी मिलता है", "शाकाहारी मिळते"],
+    "Veg / non-veg not listed": ["शाकाहारी/मांसाहारी की जानकारी नहीं", "शाकाहारी/मांसाहारी माहिती नाही"],
+    "Hours": ["समय", "वेळ"],
+    "Closed now": ["अभी बंद", "आत्ता बंद"],
+    "Hours not listed": ["समय की जानकारी नहीं", "वेळेची माहिती नाही"],
+    "Closed": ["बंद", "बंद"],
+    "Now": ["अभी", "आत्ता"],
+    "How busy": ["कितनी भीड़", "किती गर्दी"],
+    "Facilities": ["सुविधाएँ", "सुविधा"],
+    "Not listed": ["जानकारी नहीं", "माहिती नाही"],
+    "Source": ["स्रोत", "स्रोत"],
+    "Web listing": ["वेब लिस्टिंग", "वेब लिस्टिंग"],
+    "Directions": ["रास्ता", "दिशा"],
+    "Menu": ["मेन्यू", "मेनू"],
+    "Menu · Zomato": ["मेन्यू · Zomato", "मेनू · Zomato"],
+    "Share": ["शेयर करें", "शेअर करा"],
+    "Compare": ["तुलना करें", "तुलना करा"],
+    "Comparing": ["तुलना में", "तुलनेत"],
+    "Report a problem": ["गलती बताएँ", "चूक कळवा"],
+    "Results ": ["नतीजे", "निकाल"],
+    "Website ↗": ["वेबसाइट ↗", "वेबसाइट ↗"],
+    "Phone:": ["फ़ोन:", "फोन:"],
+    "Not found": ["नहीं मिला", "सापडले नाही"],
+    "Checking Google…": ["Google पर देख रहे हैं…", "Google वर पाहत आहोत…"],
+    "Mon": ["सोम", "सोम"], "Tue": ["मंगल", "मंगळ"], "Wed": ["बुध", "बुध"], "Thu": ["गुरु", "गुरु"], "Fri": ["शुक्र", "शुक्र"], "Sat": ["शनि", "शनि"], "Sun": ["रवि", "रवि"],
+    "Quiet": ["शांत", "शांत"], "Not too busy": ["ज़्यादा भीड़ नहीं", "फार गर्दी नाही"], "Busy": ["भीड़", "गर्दी"], "Very busy": ["बहुत भीड़", "खूप गर्दी"],
+    "Quiet now": ["अभी शांत", "आत्ता शांत"], "Not too busy now": ["अभी ज़्यादा भीड़ नहीं", "आत्ता फार गर्दी नाही"], "Busy now": ["अभी भीड़", "आत्ता गर्दी"], "Very busy now": ["अभी बहुत भीड़", "आत्ता खूप गर्दी"],
+    "typical for this hour": ["इस समय का सामान्य अनुमान", "या वेळेचा नेहमीचा अंदाज"],
+    "quietest today around": ["आज सबसे शांत लगभग", "आज सर्वात शांत सुमारे"],
+    "Expect a 15–30 min wait at the door": ["दरवाज़े पर 15–30 मिनट इंतज़ार हो सकता है", "दारात 15–30 मिनिटे थांबावे लागू शकते"],
+    "Possible short wait (5–15 min)": ["थोड़ा इंतज़ार हो सकता है (5–15 मिनट)", "थोडे थांबावे लागू शकते (5–15 मिनिटे)"],
+    "Estimated from typical Mumbai patterns for this kind of place, its popularity and listed hours. Not live.": ["मुंबई में ऐसी जगहों के सामान्य पैटर्न, लोकप्रियता और समय से अनुमान। लाइव नहीं।", "मुंबईतील अशा ठिकाणांचा नेहमीचा कल, लोकप्रियता आणि वेळेवरून अंदाज. थेट माहिती नाही."],
+    "Indoor seating": ["अंदर बैठने की जगह", "आत बसण्याची सोय"],
+    "AC": ["एसी", "एसी"],
+    "Wheelchair access": ["व्हीलचेयर से पहुँच", "व्हीलचेअरने प्रवेश"],
+    "Takeaway": ["पार्सल", "पार्सल"],
+    "Delivery": ["डिलीवरी", "डिलिव्हरी"],
+    "Public parking nearby": ["पास में सार्वजनिक पार्किंग", "जवळ सार्वजनिक पार्किंग"],
+    "EV charging nearby": ["पास में EV चार्जिंग", "जवळ EV चार्जिंग"],
+    "Not recorded yet. Know them? Use “Report a problem”.": ["अभी दर्ज नहीं। आपको पता है? “गलती बताएँ” दबाएँ।", "अजून नोंद नाही. माहिती आहे? “चूक कळवा” वापरा."],
+    "Nearby (within 500 m)": ["आस-पास (500 मीटर के अंदर)", "जवळपास (500 मीटरच्या आत)"],
+    // kinds of place
+    "Cafe": ["कैफ़े", "कॅफे"],
+    "Restaurant": ["रेस्टोरेंट", "रेस्टॉरंट"],
+    "Fast food": ["फ़ास्ट फ़ूड", "फास्ट फूड"],
+    "Tea shop": ["चाय की दुकान", "चहाचे दुकान"],
+    "Bakery cafe": ["बेकरी कैफ़े", "बेकरी कॅफे"],
+    "Dessert & ice cream": ["मिठाई और आइसक्रीम", "गोड पदार्थ आणि आईस्क्रीम"],
+    "Food court": ["फ़ूड कोर्ट", "फूड कोर्ट"],
+    "Cafe & restaurant": ["कैफ़े और रेस्टोरेंट", "कॅफे आणि रेस्टॉरंट"],
+    "Coffee shop": ["कॉफ़ी शॉप", "कॉफी शॉप"],
+    // cuisines (common)
+    "Indian": ["भारतीय", "भारतीय"], "North Indian": ["उत्तर भारतीय", "उत्तर भारतीय"], "South Indian": ["दक्षिण भारतीय", "दक्षिण भारतीय"],
+    "Chinese": ["चाइनीज़", "चायनीज"], "Pizza": ["पिज़्ज़ा", "पिझ्झा"], "Burger": ["बर्गर", "बर्गर"], "Sandwich": ["सैंडविच", "सँडविच"],
+    "Coffee Shop": ["कॉफ़ी शॉप", "कॉफी शॉप"], "Vegetarian": ["शाकाहारी", "शाकाहारी"], "Italian": ["इटैलियन", "इटालियन"],
+    "Ice Cream": ["आइसक्रीम", "आईस्क्रीम"], "Tea": ["चाय", "चहा"], "Juice": ["जूस", "ज्यूस"], "Seafood": ["सीफ़ूड", "सीफूड"],
+    "Chicken": ["चिकन", "चिकन"], "Dessert": ["डेज़र्ट", "गोड पदार्थ"], "Mexican": ["मैक्सिकन", "मेक्सिकन"], "Asian": ["एशियाई", "आशियाई"],
+    "Kebab": ["कबाब", "कबाब"], "Pasta": ["पास्ता", "पास्ता"], "American": ["अमेरिकन", "अमेरिकन"], "Japanese": ["जापानी", "जपानी"],
+    "Lebanese": ["लेबनानी", "लेबनीज"], "Mughlai": ["मुग़लई", "मुघलाई"], "Cake": ["केक", "केक"], "Thai": ["थाई", "थाई"],
+    "Regional": ["क्षेत्रीय", "प्रादेशिक"], "Bakery": ["बेकरी", "बेकरी"], "Biryani": ["बिरयानी", "बिर्याणी"], "Gujarati": ["गुजराती", "गुजराती"],
+    "Maharashtrian": ["महाराष्ट्रीयन", "महाराष्ट्रीय"], "Street Food": ["स्ट्रीट फ़ूड", "स्ट्रीट फूड"], "Momos": ["मोमोज़", "मोमोज"],
+    "Vegetarian only": ["केवल शाकाहारी", "फक्त शाकाहारी"], "Fast Food": ["फ़ास्ट फ़ूड", "फास्ट फूड"], "Bubble Tea": ["बबल टी", "बबल टी"],
+    "Salad": ["सलाद", "सॅलड"], "Coffee": ["कॉफ़ी", "कॉफी"], "Continental": ["कॉन्टिनेंटल", "कॉन्टिनेंटल"],
+    // dishes
+    "Benne dosa": ["बेन्ने डोसा", "बेण्णे डोसा"], "Burgers": ["बर्गर", "बर्गर"], "Dosa": ["डोसा", "डोसा"], "Idli": ["इडली", "इडली"],
+    "Filter coffee": ["फ़िल्टर कॉफ़ी", "फिल्टर कॉफी"], "Vada pav": ["वड़ा पाव", "वडापाव"], "Pav bhaji": ["पाव भाजी", "पावभाजी"],
+    "Misal pav": ["मिसल पाव", "मिसळ पाव"], "Sushi": ["सुशी", "सुशी"], "Ramen & Korean": ["रामेन और कोरियन", "रामेन आणि कोरियन"],
+    "Noodles & Chinese": ["नूडल्स और चाइनीज़", "नूडल्स आणि चायनीज"], "Shawarma": ["शावरमा", "शावरमा"], "Kebabs": ["कबाब", "कबाब"],
+    "Seafood & fish thali": ["सीफ़ूड और फ़िश थाली", "सीफूड आणि मासे थाळी"], "Thali": ["थाली", "थाळी"],
+    "Butter chicken & North Indian": ["बटर चिकन और उत्तर भारतीय", "बटर चिकन आणि उत्तर भारतीय"], "Sandwiches": ["सैंडविच", "सँडविच"],
+    "Tacos & Mexican": ["टैको और मैक्सिकन", "टाको आणि मेक्सिकन"], "Chaat & pani puri": ["चाट और पानी पूरी", "चाट आणि पाणीपुरी"],
+    "Rolls & frankies": ["रोल और फ़्रैंकी", "रोल आणि फ्रँकी"], "Fried chicken": ["फ़्राइड चिकन", "फ्राईड चिकन"],
+    "Bun maska & Irani chai": ["बन मस्का और ईरानी चाय", "बन मस्का आणि इराणी चहा"], "Matcha": ["माचा", "माचा"],
+    "Cloud coffee": ["क्लाउड कॉफ़ी", "क्लाउड कॉफी"], "Chai": ["चाय", "चहा"], "Ice cream": ["आइसक्रीम", "आईस्क्रीम"],
+    "Cakes & pastries": ["केक और पेस्ट्री", "केक आणि पेस्ट्री"], "Dubai chocolate": ["दुबई चॉकलेट", "दुबई चॉकलेट"],
+    "Waffles & pancakes": ["वफ़ल और पैनकेक", "वॅफल आणि पॅनकेक"], "Juice & shakes": ["जूस और शेक", "ज्यूस आणि शेक"],
+    "Salads & healthy": ["सलाद और हेल्दी", "सॅलड आणि आरोग्यदायी"], "Breakfast & brunch": ["नाश्ता और ब्रंच", "नाश्ता आणि ब्रंच"],
+    // map controls, sheet, misc
+    "Heatmap": ["हीटमैप", "हीटमॅप"],
+    "Show list": ["सूची दिखाएँ", "यादी दाखवा"],
+    "Show map": ["नक्शा दिखाएँ", "नकाशा दाखवा"],
+    "Show the list": ["सूची दिखाएँ", "यादी दाखवा"],
+    "Show the map": ["नक्शा दिखाएँ", "नकाशा दाखवा"],
+    "Hide the list": ["सूची छिपाएँ", "यादी लपवा"],
+    "Expand the list": ["सूची बड़ी करें", "यादी मोठी करा"],
+    "Shrink the list": ["सूची छोटी करें", "यादी लहान करा"],
+    "Skip to results": ["सीधे नतीजों पर जाएँ", "थेट निकालांवर जा"],
+    "Search and results": ["खोज और नतीजे", "शोध आणि निकाल"],
+    "Place details": ["जगह की जानकारी", "ठिकाणाची माहिती"],
+    "Map of Mumbai cafes and restaurants": ["मुंबई के कैफ़े और रेस्टोरेंट का नक्शा", "मुंबईतील कॅफे आणि रेस्टॉरंटचा नकाशा"],
+    "Show places near you": ["आपके पास की जगहें दिखाएँ", "तुमच्या जवळची ठिकाणे दाखवा"],
+    "Pick a random place": ["कोई भी जगह चुनें", "कोणतेही ठिकाण निवडा"],
+    "Show where places cluster": ["जगहें कहाँ ज़्यादा हैं, दिखाएँ", "ठिकाणे कुठे जास्त आहेत ते दाखवा"],
+    "Drag to resize · double-click to reset": ["आकार बदलने के लिए खींचें · रीसेट के लिए डबल-क्लिक", "आकार बदलण्यासाठी ओढा · रीसेटसाठी डबल-क्लिक"],
+    "Resize the list and map. Drag, or use the arrow keys. Double-click to reset.": ["सूची और नक्शे का आकार बदलें। खींचें या ऐरो कुंजियाँ दबाएँ। रीसेट के लिए डबल-क्लिक।", "यादी आणि नकाशाचा आकार बदला. ओढा किंवा ॲरो की वापरा. रीसेटसाठी डबल-क्लिक."],
+    "Close": ["बंद करें", "बंद करा"],
+    "Done": ["हो गया", "झाले"],
+    "Cancel": ["रद्द करें", "रद्द करा"],
+    "Save": ["सेव करें", "सेव्ह करा"],
+    "View": ["देखें", "पाहा"],
+    // dialogs: compare, about
+    "Compare places": ["जगहों की तुलना", "ठिकाणांची तुलना"],
+    "Type": ["प्रकार", "प्रकार"],
+    "Distance": ["दूरी", "अंतर"],
+    "Jain": ["जैन", "जैन"],
+    "About this finder": ["इस फ़ाइंडर के बारे में", "या फाइंडरबद्दल"],
+    "Privacy": ["गोपनीयता", "गोपनीयता"],
+    // suggest / report
+    "Suggest a missing place": ["छूटी हुई जगह सुझाएँ", "राहिलेले ठिकाण सुचवा"],
+    "Name": ["नाम", "नाव"],
+    "Area or street": ["इलाका या सड़क", "भाग किंवा रस्ता"],
+    "Dessert / bakery": ["डेज़र्ट / बेकरी", "गोड पदार्थ / बेकरी"],
+    "Anything else (veg/Jain, cost for two, Google Maps link)": ["कुछ और (शाकाहारी/जैन, दो लोगों का खर्च, Google Maps लिंक)", "आणखी काही (शाकाहारी/जैन, दोघांचा खर्च, Google Maps लिंक)"],
+    "Copy details": ["जानकारी कॉपी करें", "माहिती कॉपी करा"],
+    "Send on GitHub": ["GitHub पर भेजें", "GitHub वर पाठवा"],
+    "e.g. Kala Ghoda Cafe": ["जैसे Kala Ghoda Cafe", "उदा. Kala Ghoda Cafe"],
+    "e.g. Rope Walk Lane, Kala Ghoda": ["जैसे Rope Walk Lane, Kala Ghoda", "उदा. Rope Walk Lane, Kala Ghoda"],
+    "What's wrong?": ["क्या गलत है?", "काय चुकले आहे?"],
+    "Closed permanently": ["हमेशा के लिए बंद", "कायमचे बंद"],
+    "Wrong opening hours": ["खुलने का समय गलत", "उघडण्याची वेळ चुकीची"],
+    "Wrong veg / Jain / non-veg label": ["शाकाहारी / जैन / मांसाहारी जानकारी गलत", "शाकाहारी / जैन / मांसाहारी माहिती चुकीची"],
+    "Wrong rating or cost for two": ["रेटिंग या खर्च गलत", "रेटिंग किंवा खर्च चुकीचा"],
+    "Pin in the wrong place": ["नक्शे पर गलत जगह", "नकाशावर चुकीच्या ठिकाणी"],
+    "Wrong name, phone or menu link": ["नाम, फ़ोन या मेन्यू लिंक गलत", "नाव, फोन किंवा मेनू लिंक चुकीची"],
+    "What should it say? (optional)": ["सही जानकारी क्या है? (वैकल्पिक)", "योग्य माहिती काय आहे? (ऐच्छिक)"],
+    "e.g. Open till 1 am on weekends": ["जैसे वीकेंड पर रात 1 बजे तक खुला", "उदा. वीकेंडला रात्री 1 पर्यंत उघडे"],
+    "Add a name and an area so we can find it.": ["नाम और इलाका लिखें ताकि हम इसे ढूँढ सकें।", "नाव आणि भाग लिहा म्हणजे आम्हाला ते सापडेल."],
+    "Tick what's wrong or add a note.": ["क्या गलत है वह चुनें या कुछ लिखें।", "काय चुकले ते निवडा किंवा नोंद लिहा."],
+    "Details copied. Paste them wherever you like to send them.": ["जानकारी कॉपी हो गई। जहाँ भेजना हो वहाँ पेस्ट करें।", "माहिती कॉपी झाली. पाठवायची तिथे पेस्ट करा."],
+    "GitHub opened in a new tab. Press “Submit new issue” there to send it.": ["GitHub नए टैब में खुला है। भेजने के लिए “Submit new issue” दबाएँ।", "GitHub नवीन टॅबमध्ये उघडले आहे. पाठवण्यासाठी “Submit new issue” दाबा."],
+    "GitHub opened in a new tab. Press “Submit new issue” there to send it. Thank you!": ["GitHub नए टैब में खुला है। भेजने के लिए “Submit new issue” दबाएँ। धन्यवाद!", "GitHub नवीन टॅबमध्ये उघडले आहे. पाठवण्यासाठी “Submit new issue” दाबा. धन्यवाद!"],
+    // Food Match / dish / budget / trending / friends / AR
+    "Match": ["खोजें", "शोधा"],
+    "e.g. spicy veg dinner in Dadar under 400": ["जैसे spicy veg dinner in Dadar under 400", "उदा. spicy veg dinner in Dadar under 400"],
+    "Looking for:": ["खोज रहे हैं:", "शोधत आहोत:"],
+    "anything good nearby": ["आस-पास कुछ अच्छा", "जवळपास काहीतरी चांगले"],
+    "Budget planner": ["बजट प्लानर", "बजेट प्लॅनर"],
+    "Total budget (₹)": ["कुल बजट (₹)", "एकूण बजेट (₹)"],
+    "People": ["लोग", "लोक"],
+    "Meal": ["भोजन", "जेवण"],
+    "Any": ["कोई भी", "कोणतेही"],
+    "Lunch": ["दोपहर का खाना", "दुपारचे जेवण"],
+    "Dinner": ["रात का खाना", "रात्रीचे जेवण"],
+    "Snack": ["नाश्ता-पानी", "खाऊ"],
+    "Show all on the map": ["सब नक्शे पर दिखाएँ", "सर्व नकाशावर दाखवा"],
+    "Enter a budget": ["बजट लिखें", "बजेट लिहा"],
+    "Nothing fits yet. Raise the budget or widen the area.": ["अभी कुछ फ़िट नहीं। बजट बढ़ाएँ या इलाका बड़ा करें।", "अजून काही बसत नाही. बजेट वाढवा किंवा भाग मोठा करा."],
+    "Trending dishes": ["ट्रेंडिंग व्यंजन", "ट्रेंडिंग पदार्थ"],
+    "Places featured in current food guides and listings (checked November 2026), best rated first.": ["मौजूदा फ़ूड गाइड और लिस्टिंग में शामिल जगहें (नवंबर 2026 में जाँचीं), बेहतरीन रेटिंग पहले।", "सध्याच्या फूड गाईड आणि लिस्टिंगमधील ठिकाणे (नोव्हेंबर 2026 मध्ये तपासली), सर्वोत्तम रेटिंग आधी."],
+    "None within 6 km. Move the map to a busier area.": ["6 किमी के अंदर कोई नहीं। नक्शा किसी व्यस्त इलाके पर ले जाएँ।", "6 किमीच्या आत काही नाही. नकाशा गर्दीच्या भागाकडे न्या."],
+    "None found nearby.": ["पास में कुछ नहीं मिला।", "जवळपास काही सापडले नाही."],
+    "Your name": ["आपका नाम", "तुमचे नाव"],
+    "shown on lists you share": ["आपकी शेयर की सूचियों पर दिखेगा", "तुम्ही शेअर केलेल्या यादीवर दिसेल"],
+    "Share my list": ["मेरी सूची शेयर करें", "माझी यादी शेअर करा"],
+    "Lists from friends": ["दोस्तों की सूचियाँ", "मित्रांच्या याद्या"],
+    "Remove": ["हटाएँ", "काढा"],
+    "No friends' lists yet. When a friend sends you their list, tap “Keep as their picks”.": ["अभी दोस्तों की कोई सूची नहीं। जब कोई दोस्त अपनी सूची भेजे, तो “उनकी पसंद के रूप में रखें” दबाएँ।", "अजून मित्रांची यादी नाही. मित्राने यादी पाठवली की “त्यांची पसंती म्हणून ठेवा” दाबा."],
+    "Finding your location…": ["आपकी जगह ढूँढ रहे हैं…", "तुमचे ठिकाण शोधत आहोत…"],
+    "Move your phone in a figure-8 to calibrate the compass.": ["कम्पास ठीक करने के लिए फ़ोन को 8 के आकार में घुमाएँ।", "होकायंत्र जुळवण्यासाठी फोन 8 च्या आकारात फिरवा."],
+    "No places in this direction within 800 m. Turn around slowly.": ["इस दिशा में 800 मीटर के अंदर कोई जगह नहीं। धीरे-धीरे घूमें।", "या दिशेला 800 मीटरमध्ये ठिकाण नाही. हळूहळू फिरा."],
+    // main areas (names in Devanagari; the map labels stay as mapped)
+    "Colaba": ["कोलाबा", "कुलाबा"], "Kala Ghoda": ["काला घोड़ा", "काळा घोडा"], "Churchgate": ["चर्चगेट", "चर्चगेट"], "Lower Parel": ["लोअर परेल", "लोअर परळ"],
+    "Bandra": ["बांद्रा", "वांद्रे"], "Khar": ["खार", "खार"], "Juhu": ["जुहू", "जुहू"], "Santacruz": ["सांताक्रूज़", "सांताक्रूझ"], "Andheri": ["अंधेरी", "अंधेरी"],
+    "Powai": ["पवई", "पवई"], "Malad → Dahisar": ["मलाड → दहिसर", "मालाड → दहिसर"], "Malad to Dahisar": ["मलाड से दहिसर", "मालाड ते दहिसर"], "Mira Road": ["मीरा रोड", "मीरा रोड"],
+    "Mira Road & Bhayandar": ["मीरा रोड और भायंदर", "मीरा रोड आणि भाईंदर"], "Navi Mumbai": ["नवी मुंबई", "नवी मुंबई"], "Thane": ["ठाणे", "ठाणे"], "Kalyan": ["कल्याण", "कल्याण"],
+    "Kalyan & Dombivli": ["कल्याण और डोंबिवली", "कल्याण आणि डोंबिवली"], "Bhiwandi": ["भिवंडी", "भिवंडी"], "Dadar": ["दादर", "दादर"], "Matunga": ["माटुंगा", "माटुंगा"],
+    "Vashi": ["वाशी", "वाशी"], "Borivali": ["बोरीवली", "बोरिवली"], "Ghatkopar": ["घाटकोपर", "घाटकोपर"], "Chembur": ["चेंबूर", "चेंबूर"], "Kurla": ["कुर्ला", "कुर्ला"],
+    "Mulund": ["मुलुंड", "मुलुंड"], "Worli": ["वर्ली", "वरळी"], "Girgaon": ["गिरगांव", "गिरगाव"], "Charni Road": ["चर्नी रोड", "चर्नी रोड"], "Fort": ["फ़ोर्ट", "फोर्ट"],
+    "Panvel": ["पनवेल", "पनवेल"], "Kharghar": ["खारघर", "खारघर"], "Nerul": ["नेरुल", "नेरुळ"], "Goregaon": ["गोरेगांव", "गोरेगाव"], "Malad": ["मलाड", "मालाड"],
+    "Kandivali": ["कांदिवली", "कांदिवली"], "Vile Parle": ["विले पार्ले", "विलेपार्ले"], "Dombivli": ["डोंबिवली", "डोंबिवली"], "this map view": ["इस नक्शे में", "या नकाशात"],
+    // more cuisines
+    "Italian Pizza": ["इटैलियन पिज़्ज़ा", "इटालियन पिझ्झा"], "Barbecue": ["बार्बेक्यू", "बार्बेक्यू"], "International": ["इंटरनेशनल", "आंतरराष्ट्रीय"],
+    "Grill": ["ग्रिल", "ग्रिल"], "Local": ["स्थानीय", "स्थानिक"], "Soup": ["सूप", "सूप"], "Fish": ["मछली", "मासे"], "Mediterranean": ["मेडिटेरेनियन", "भूमध्य"],
+    "Tex-Mex": ["टेक्स-मेक्स", "टेक्स-मेक्स"], "Donut": ["डोनट", "डोनट"], "Momo": ["मोमो", "मोमो"], "Pancake": ["पैनकेक", "पॅनकेक"], "Chaat": ["चाट", "चाट"],
+    "Fine Dining": ["फ़ाइन डाइनिंग", "फाईन डायनिंग"], "French": ["फ़्रेंच", "फ्रेंच"], "Fries": ["फ़्राइज़", "फ्राईज"], "Frozen Yogurt": ["फ़्रोज़न योगर्ट", "फ्रोझन योगर्ट"],
+    "Noodle": ["नूडल्स", "नूडल्स"], "Noodles": ["नूडल्स", "नूडल्स"], "Brunch": ["ब्रंच", "ब्रंच"], "Persian": ["ईरानी", "इराणी"], "Korean": ["कोरियन", "कोरियन"],
+    "Milkshake": ["मिल्कशेक", "मिल्कशेक"], "Waffle": ["वफ़ल", "वॅफल"], "Goan": ["गोवा का", "गोवन"], "Punjabi": ["पंजाबी", "पंजाबी"], "Shake": ["शेक", "शेक"],
+    "Pastry": ["पेस्ट्री", "पेस्ट्री"], "Chocolate": ["चॉकलेट", "चॉकलेट"], "Ramen": ["रामेन", "रामेन"], "Curry": ["करी", "करी"], "Salads": ["सलाद", "सॅलड"],
+    "Sweets": ["मिठाई", "मिठाई"], "Bhel Puri": ["भेल पूरी", "भेळपुरी"], "Samosa": ["समोसा", "समोसा"], "Frankies": ["फ़्रैंकी", "फ्रँकी"], "Maggi": ["मैगी", "मॅगी"],
+    "Healthy Food": ["हेल्दी फ़ूड", "आरोग्यदायी अन्न"], "Kebabs": ["कबाब", "कबाब"], "Udupi": ["उडुपी", "उडुपी"], "Malvani": ["मालवणी", "मालवणी"], "Konkan": ["कोंकणी", "कोकणी"],
+    // Food Match "Looking for" words
+    "a cafe": ["कैफ़े", "कॅफे"], "a restaurant": ["रेस्टोरेंट", "रेस्टॉरंट"], "spicy": ["तीखा", "तिखट"], "cheesy": ["चीज़ी", "चीझी"],
+    "something sweet": ["कुछ मीठा", "काहीतरी गोड"], "light / healthy": ["हल्का / हेल्दी", "हलके / आरोग्यदायी"], "comfort food": ["घर जैसा खाना", "घरच्यासारखे जेवण"],
+    "crispy": ["कुरकुरा", "कुरकुरीत"], "something cold": ["कुछ ठंडा", "काहीतरी थंड"], "quick bite": ["झटपट कुछ", "झटपट खाऊ"],
+    "street food": ["स्ट्रीट फ़ूड", "स्ट्रीट फूड"], "caffeine": ["कैफ़ीन", "कॅफिन"], "coastal": ["तटीय", "कोकणी"], "meaty": ["मांसाहारी", "मांसाहारी"],
+    "veg": ["शाकाहारी", "शाकाहारी"], "open now": ["अभी खुला", "आत्ता उघडे"], "budget-friendly": ["बजट में", "बजेटमध्ये"],
+    "near a station": ["स्टेशन के पास", "स्टेशनजवळ"], "quiet now": ["अभी शांत", "आत्ता शांत"], "outdoor seating": ["बाहर बैठने की जगह", "बाहेर बसण्याची सोय"],
+    "parking nearby": ["पास में पार्किंग", "जवळ पार्किंग"], "Yes": ["हाँ", "हो"],
+    // messages
+    "Removed from saved": ["सेव से हटाया", "सेव्हमधून काढले"],
+    "Link copied": ["लिंक कॉपी हो गया", "लिंक कॉपी झाली"],
+    "List link copied": ["सूची का लिंक कॉपी हो गया", "यादीची लिंक कॉपी झाली"],
+    "Link to this view copied": ["इस व्यू का लिंक कॉपी हो गया", "या दृश्याची लिंक कॉपी झाली"],
+    "Saved to your list": ["आपकी सूची में सेव हो गया", "तुमच्या यादीत सेव्ह झाले"],
+    "Save some places with ♥ first": ["पहले ♥ से कुछ जगहें सेव करें", "आधी ♥ ने काही ठिकाणे सेव्ह करा"],
+    "Compare up to 3 places": ["एक बार में 3 जगहों तक तुलना करें", "एका वेळी 3 ठिकाणांपर्यंत तुलना करा"],
+    "Nothing matches your filters. Clear some and try again.": ["आपके फ़िल्टर से कुछ नहीं मिला। कुछ हटाकर फिर कोशिश करें।", "तुमच्या फिल्टरनुसार काही नाही. काही काढून पुन्हा प्रयत्न करा."],
+    "Heatmap on: brighter means more places": ["हीटमैप चालू: जितना चमकीला, उतनी ज़्यादा जगहें", "हीटमॅप चालू: जितका उजळ, तितकी जास्त ठिकाणे"],
+    "Heatmap isn't available offline": ["ऑफ़लाइन हीटमैप उपलब्ध नहीं", "ऑफलाइन हीटमॅप उपलब्ध नाही"],
+    "Installed. Open it from your home screen.": ["इंस्टॉल हो गया। होम स्क्रीन से खोलें।", "इन्स्टॉल झाले. होम स्क्रीनवरून उघडा."],
+    "Name saved: your shared lists will show it": ["नाम सेव हो गया: आपकी शेयर सूचियों पर दिखेगा", "नाव सेव्ह झाले: तुमच्या शेअर यादीवर दिसेल"],
+    "Tip: drag the line between the list and the map to resize them": ["टिप: सूची और नक्शे के बीच की लाइन खींचकर आकार बदलें", "टीप: यादी आणि नकाशामधील रेषा ओढून आकार बदला"],
+    "Location is blocked. Allow location for this site to use Near me.": ["लोकेशन बंद है। “मेरे पास” के लिए इस साइट को लोकेशन की अनुमति दें।", "लोकेशन बंद आहे. “माझ्या जवळ” साठी या साइटला लोकेशनची परवानगी द्या."],
+    "Couldn't get your location. Try again outdoors or check location settings.": ["आपकी जगह नहीं मिली। बाहर जाकर फिर कोशिश करें या लोकेशन सेटिंग देखें।", "तुमचे ठिकाण मिळाले नाही. बाहेर जाऊन पुन्हा प्रयत्न करा किंवा लोकेशन सेटिंग तपासा."],
+    "You're offline. Saved data still works; directions, menus and ratings links need internet.": ["आप ऑफ़लाइन हैं। सेव डेटा काम करेगा; रास्ता, मेन्यू और रेटिंग लिंक के लिए इंटरनेट चाहिए।", "तुम्ही ऑफलाइन आहात. सेव्ह डेटा चालेल; दिशा, मेनू आणि रेटिंग लिंकसाठी इंटरनेट लागेल."],
+    "The map couldn't load. Check your internet connection and reload the page.": ["नक्शा लोड नहीं हुआ। इंटरनेट जाँचें और पेज फिर से खोलें।", "नकाशा लोड झाला नाही. इंटरनेट तपासा आणि पेज पुन्हा उघडा."],
+    "Places within 800 m in the direction you point. Busyness is an estimate. Tap a label for details.": ["जिस दिशा में फ़ोन है, वहाँ 800 मीटर तक की जगहें। भीड़ अनुमान है। जानकारी के लिए लेबल दबाएँ।", "फोन ज्या दिशेला आहे तिथली 800 मीटरपर्यंतची ठिकाणे. गर्दी हा अंदाज आहे. माहितीसाठी लेबल दाबा."],
+  };
+
+  // Whole sentences with changing parts.
+  const L2 = (L, hi, mr) => (L === 0 ? hi : mr);
+  const PAT = [
+    [/^([\d,]+) of ([\d,]+) places?(?: in (.+))?$/, (m, L) => L2(L, `${m[2]} में से ${m[1]} जगहें`, `${m[2]} पैकी ${m[1]} ठिकाणे`) + (m[3] ? L2(L, ` · ${tz(m[3])}`, ` · ${tz(m[3])}`) : "")],
+    [/^Show ([\d,]+) more of ([\d,]+) left$/, (m, L) => L2(L, `और ${m[1]} दिखाएँ (${m[2]} बाकी)`, `आणखी ${m[1]} दाखवा (${m[2]} शिल्लक)`)],
+    [/^in (.+)$/, (m, L) => L2(L, `${tz(m[1])} में`, `${tz(m[1])} मध्ये`)],
+    [/^near (you|the map centre)$/, (m, L) => m[1] === "you" ? L2(L, "आपके पास", "तुमच्या जवळ") : L2(L, "नक्शे के बीच के पास", "नकाशाच्या मध्याजवळ")],
+    [/^Hot right now (near you|near the map centre)$/, (m, L) => L2(L, "अभी लोकप्रिय · ", "आत्ता लोकप्रिय · ") + tz(m[1])],
+    [/^Rising hidden gems (near you|near the map centre)$/, (m, L) => L2(L, "उभरते छुपे रत्न · ", "उदयोन्मुख लपलेली रत्ने · ") + tz(m[1])],
+    [/^(.+)'s list: (\d+) places?\.$/, (m, L) => L2(L, `${m[1]} की सूची: ${m[2]} जगहें।`, `${m[1]} यांची यादी: ${m[2]} ठिकाणे.`)],
+    [/^A shared list: (\d+) places?\.$/, (m, L) => L2(L, `शेयर की गई सूची: ${m[1]} जगहें।`, `शेअर केलेली यादी: ${m[1]} ठिकाणे.`)],
+    [/^Keep as (.+)'s picks$/, (m, L) => L2(L, `${m[1] === "a friend" ? "दोस्त" : m[1]} की पसंद के रूप में रखें`, `${m[1] === "a friend" ? "मित्राची" : m[1] + " यांची"} पसंती म्हणून ठेवा`)],
+    [/^Kept as (.+)'s picks\. Turn on 👥 Friends' picks to see them$/, (m, L) => L2(L, `${m[1]} की पसंद के रूप में रखा। देखने के लिए 👥 दोस्तों की पसंद चालू करें`, `${m[1]} यांची पसंती म्हणून ठेवले. पाहण्यासाठी 👥 मित्रांची पसंती चालू करा`)],
+    [/^How about (.+)\?$/, (m, L) => L2(L, `${m[1]} कैसा रहेगा?`, `${m[1]} कसे वाटेल?`)],
+    [/^Show all ([\d,]+) matches on the map$/, (m, L) => L2(L, `सभी ${m[1]} नतीजे नक्शे पर दिखाएँ`, `सर्व ${m[1]} निकाल नकाशावर दाखवा`)],
+    [/^Matches (.+)$/, (m, L) => L2(L, "मेल: ", "जुळते: ") + m[1].split(", ").map(tz).join(", ")],
+    [/^No match yet\. Try fewer conditions, e\.g\. “(.+)”\.$/, (m, L) => L2(L, `अभी कुछ नहीं मिला। कम शर्तें रखें, जैसे “${m[1]}”।`, `अजून काही जुळले नाही. कमी अटी ठेवा, उदा. “${m[1]}”.`)],
+    [/^(.+) (\d+) places for (.+) across the city$/, (m, L) => L2(L, `${m[1]} पूरे शहर में ${tz(cap(m[3]))} की ${m[2]} जगहें`, `${m[1]} संपूर्ण शहरात ${tz(cap(m[3]))} ची ${m[2]} ठिकाणे`)],
+    [/^up to ₹([\d,]+)\/person(?: \(₹([\d,]+) for (\d+)\))?$/, (m, L) => L2(L, `प्रति व्यक्ति ₹${m[1]} तक`, `प्रति व्यक्ती ₹${m[1]} पर्यंत`) + (m[2] ? L2(L, ` (${m[3]} लोगों के लिए ₹${m[2]})`, ` (${m[3]} जणांसाठी ₹${m[2]})`) : "")],
+    [/^up to ₹([\d,]+) a person$/, (m, L) => L2(L, `प्रति व्यक्ति ₹${m[1]} तक`, `प्रति व्यक्ती ₹${m[1]} पर्यंत`)],
+    [/^₹([\d,]+) a person$/, (m, L) => L2(L, `प्रति व्यक्ति ₹${m[1]}`, `प्रति व्यक्ती ₹${m[1]}`)],
+    [/^₹([\d,]+) for (\d+) =$/, (m, L) => L2(L, `${m[2]} लोगों के लिए ₹${m[1]} =`, `${m[2]} जणांसाठी ₹${m[1]} =`)],
+    [/^· ([\d,]+) places fit(?: in (.+))?$/, (m, L) => L2(L, `· ${m[1]} जगहें फ़िट`, `· ${m[1]} ठिकाणे बसतात`) + (m[2] ? ` · ${tz(m[2])}` : "")],
+    [/^₹([\d,]+)\/person( \(est\.\))? · ₹([\d,]+) total$/, (m, L) => L2(L, `₹${m[1]}/व्यक्ति${m[2] ? " (अनुमान)" : ""} · कुल ₹${m[3]}`, `₹${m[1]}/व्यक्ती${m[2] ? " (अंदाज)" : ""} · एकूण ₹${m[3]}`)],
+    [/^per (.+)$/, (m, L) => L2(L, `स्रोत: ${m[1]}`, `स्रोत: ${m[1]}`)],
+    [/^No area called “(.+)”\. Pick one from the suggestions\.$/, (m, L) => L2(L, `“${m[1]}” नाम का कोई इलाका नहीं। सुझावों में से चुनें।`, `“${m[1]}” नावाचा भाग नाही. सूचनांमधून निवडा.`)],
+    [/^(.+) \((\d+)\)$/, (m, L) => (D[m[1]] ? `${D[m[1]][L]} (${m[2]})` : null)],
+    [/^(Quiet|Not too busy|Busy|Very busy) \(est\.\)$/, (m, L) => `${D[m[1]][L]} ${L2(L, "(अनुमान)", "(अंदाज)")}`],
+    [/^areas & stations · updated (.+)$/, (m, L) => L2(L, `इलाके और स्टेशन · अपडेट ${mon(m[1], L)}`, `भाग आणि स्टेशन · अपडेट ${mon(m[1], L)}`)],
+    [/^₹([\d,]+) for two$/, (m, L) => L2(L, `दो लोगों के लिए ₹${m[1]}`, `दोघांसाठी ₹${m[1]}`)],
+  ];
+  const MONTHS = { January: ["जनवरी", "जानेवारी"], February: ["फ़रवरी", "फेब्रुवारी"], March: ["मार्च", "मार्च"], April: ["अप्रैल", "एप्रिल"], May: ["मई", "मे"],
+    June: ["जून", "जून"], July: ["जुलाई", "जुलै"], August: ["अगस्त", "ऑगस्ट"], September: ["सितंबर", "सप्टेंबर"], October: ["अक्टूबर", "ऑक्टोबर"],
+    November: ["नवंबर", "नोव्हेंबर"], December: ["दिसंबर", "डिसेंबर"] };
+  function mon(s, L) { return String(s).replace(/\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/g, (x) => MONTHS[x][L]); }
+  // Phrases inside longer text (distances, times, separators).
+  const PHRASES = [
+    ["min walk", ["मिनट पैदल", "मिनिटे चालत"]], ["min by auto", ["मिनट ऑटो से", "मिनिटे रिक्षाने"]],
+    ["places ·", ["जगहें ·", "ठिकाणे ·"]], [" seats", [" सीटें", " आसने"]],
+    ["(est.)", ["(अनुमान)", "(अंदाज)"]], [" am", [" सुबह", " सकाळी"]], [" pm", [" शाम", " संध्याकाळी"]],
+    ["Long-distance terminus", ["लंबी दूरी का टर्मिनस", "लांब पल्ल्याचे टर्मिनस"]],
+    ["Trans-Harbour", ["ट्रांस-हार्बर", "ट्रान्स-हार्बर"]], ["Nerul–Uran", ["नेरुल–उरण", "नेरुळ–उरण"]], ["Vasai–Diva", ["वसई–दिवा", "वसई–दिवा"]],
+    ["Diva–Panvel", ["दिवा–पनवेल", "दिवा–पनवेल"]], ["Western", ["पश्चिम", "पश्चिम"]], ["Central", ["मध्य", "मध्य"]], ["Harbour", ["हार्बर", "हार्बर"]],
+    ["NM Metro Line", ["नवी मुंबई मेट्रो लाइन", "नवी मुंबई मेट्रो लाईन"]], ["Line ", ["लाइन ", "लाईन "]],
+  ];
+  // OpenStreetMap opening hours ("Mo-Fr 08:00-23:00; Sa,Su 09:00-01:00"): weekday names only.
+  const OSM_DAYS = { Mo: 1, Tu: 2, We: 3, Th: 4, Fr: 5, Sa: 6, Su: 0 };
+  const DAYN = [["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"], ["रवि", "सोम", "मंगळ", "बुध", "गुरु", "शुक्र", "शनि"]];
+  PAT.push([/^(?:Mo|Tu|We|Th|Fr|Sa|Su|PH)\b.*\d{1,2}:\d{2}/, (m, L) => m.input
+    .replace(/\b(Mo|Tu|We|Th|Fr|Sa|Su)\b/g, (d) => DAYN[L][OSM_DAYS[d]]).replace(/\bPH\b/g, L2(L, "छुट्टी", "सुट्टी")).replace(/\boff\b/gi, L2(L, "बंद", "बंद"))]);
+  // Long texts: whole paragraphs, translated together.
+  const BLOCKS = [
+    [".brand > p:not(.stats)", ["कोलाबा से मीरा रोड, ठाणे, भिवंडी, कल्याण और पनवेल तक हर नामवाला कैफ़े और रेस्टोरेंट।", "कुलाबा ते मीरा रोड, ठाणे, भिवंडी, कल्याण आणि पनवेलपर्यंत प्रत्येक नाव असलेले कॅफे आणि रेस्टॉरंट."]],
+    ["p.foot", ["कोलाबा से मीरा रोड और भायंदर, ठाणे, भिवंडी, कल्याण-डोंबिवली और नवी मुंबई से पनवेल तक। रेटिंग और दो लोगों का खर्च हर जगह पर बताई गई लिस्टिंग (Zomato, Swiggy, EazyDiner, District, Justdial आदि) से है और साइटों में अलग हो सकता है। डेटा © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap योगदानकर्ता</a>, 16 November 2026 का स्नैपशॉट।",
+      "कुलाबा ते मीरा रोड आणि भाईंदर, ठाणे, भिवंडी, कल्याण-डोंबिवली आणि नवी मुंबई ते पनवेल. रेटिंग आणि दोघांचा खर्च प्रत्येक ठिकाणी दिलेल्या लिस्टिंगमधून (Zomato, Swiggy, EazyDiner, District, Justdial इ.) आहे आणि साइटनुसार बदलू शकतो. डेटा © <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap योगदानकर्ते</a>, 16 November 2026 चा स्नॅपशॉट."]],
+    ["#aboutDlg > p:nth-of-type(1)", ["कोलाबा से मीरा रोड और भायंदर, ठाणे, भिवंडी, कल्याण-डोंबिवली और नवी मुंबई से पनवेल तक हर नामवाला कैफ़े और रेस्टोरेंट, एक ही नक्शे पर।", "कुलाबा ते मीरा रोड आणि भाईंदर, ठाणे, भिवंडी, कल्याण-डोंबिवली आणि नवी मुंबई ते पनवेल — प्रत्येक नाव असलेले कॅफे आणि रेस्टॉरंट, एकाच नकाशावर."]],
+    ["#aboutDlg ul:nth-of-type(1)", [
+      "<li><b>जगहें और खुलने का समय</b> OpenStreetMap से, हर महीने की 1 तारीख़ को अपडेट। पिछला अपडेट: 16 November 2026।</li><li><b>रेटिंग और दो लोगों का खर्च</b> लोकप्रिय इलाकों के लिए हर जगह पर बताई गई लिस्टिंग से। साइटें अक्सर अलग होती हैं, इन्हें अंदाज़ा मानें।</li><li><b>शुद्ध शाकाहारी, जैन और मांसाहारी</b> सिर्फ़ वहीं दिखते हैं जहाँ डेटा में है।</li><li><b>अभी खुला</b> मुंबई के समय से निकाला जाता है; जिनका समय नहीं पता, वे खुले या बंद नहीं दिखते।</li><li><b>मूड</b> और <b>भीड़</b> व्यंजन, खर्च, नाम और सामान्य पैटर्न से बने अनुमान हैं, लाइव नहीं।</li>",
+      "<li><b>ठिकाणे आणि उघडण्याच्या वेळा</b> OpenStreetMap वरून, दर महिन्याच्या 1 तारखेला अपडेट. मागील अपडेट: 16 November 2026.</li><li><b>रेटिंग आणि दोघांचा खर्च</b> लोकप्रिय भागांसाठी प्रत्येक ठिकाणी दिलेल्या लिस्टिंगमधून. साइट्स अनेकदा वेगळ्या असतात, अंदाज म्हणून वापरा.</li><li><b>शुद्ध शाकाहारी, जैन आणि मांसाहारी</b> फक्त डेटामध्ये असेल तिथेच दिसतात.</li><li><b>आत्ता उघडे</b> मुंबईच्या वेळेनुसार ठरते; ज्यांची वेळ माहीत नाही ते उघडे किंवा बंद दिसत नाहीत.</li><li><b>मूड</b> आणि <b>गर्दी</b> हे खाद्यप्रकार, खर्च, नाव आणि नेहमीच्या कलावरून केलेले अंदाज आहेत, थेट माहिती नाही.</li>"]],
+    ["#aboutDlg ul:nth-of-type(2)", [
+      "<li>कोई अकाउंट नहीं, कोई विज्ञापन नहीं, कोई ट्रैकिंग कुकी नहीं।</li><li><b>सेव जगहें</b> सिर्फ़ इसी ब्राउज़र में रहती हैं।</li><li><b>मेरे पास</b> आपकी लोकेशन सिर्फ़ आपके फ़ोन पर दूरी के लिए इस्तेमाल करता है, कहीं भेजता नहीं।</li><li>रास्ता, मेन्यू और रेटिंग Google Maps, Zomato या Swiggy पर खुलते हैं, जिनके अपने नियम हैं।</li>",
+      "<li>अकाउंट नाही, जाहिराती नाहीत, ट्रॅकिंग कुकी नाही.</li><li><b>सेव्ह केलेली ठिकाणे</b> फक्त याच ब्राउझरमध्ये राहतात.</li><li><b>माझ्या जवळ</b> तुमचे लोकेशन फक्त तुमच्या फोनवर अंतरासाठी वापरते, कुठेही पाठवत नाही.</li><li>दिशा, मेनू आणि रेटिंग Google Maps, Zomato किंवा Swiggy वर उघडतात, त्यांचे स्वतःचे नियम आहेत.</li>"]],
+    ["#aboutDlg > p:nth-of-type(2)", ["कोई जगह छूट गई या बंद हो गई? सूची के नीचे “जगह सुझाएँ” या किसी भी जगह पर “गलती बताएँ” इस्तेमाल करें।", "एखादे ठिकाण राहिले किंवा बंद झाले? यादीच्या खाली “ठिकाण सुचवा” किंवा कोणत्याही ठिकाणी “चूक कळवा” वापरा."]],
+    ["#aboutDlg > p:nth-of-type(3)", ["नक्शा डेटा © OpenStreetMap योगदानकर्ता (ODbL)।", "नकाशा डेटा © OpenStreetMap योगदानकर्ते (ODbL)."]],
+    ["#suggestDlg p.muted:not([role])", ["नक्शे पर न दिखने वाले कैफ़े या रेस्टोरेंट के बारे में बताएँ। भेजने पर पहले से भरा GitHub इशू खुलेगा (मुफ़्त GitHub अकाउंट चाहिए), या जानकारी कॉपी करके कहीं और भेजें।", "नकाशावर नसलेल्या कॅफे किंवा रेस्टॉरंटबद्दल सांगा. पाठवल्यावर आधीच भरलेले GitHub इश्यू उघडेल (मोफत GitHub अकाउंट लागेल), किंवा माहिती कॉपी करून दुसरीकडे पाठवा."]],
+    ["#foodDlg p.sub", ["जो खाने का मन है, वैसे लिखें जैसे दोस्त को बताते हैं। यह व्यंजन, स्वाद, बजट, इलाका, शाकाहारी/जैन, मूड और सुविधाएँ समझता है।", "काय खावेसे वाटते ते मित्राला सांगाल तसे लिहा. हे पदार्थ, चव, बजेट, भाग, शाकाहारी/जैन, मूड आणि सुविधा समजते."]],
+    ["#dishDlg p.sub", ["व्यंजन चुनें और देखें कहाँ मिलता है। नाम में व्यंजन वाली जगहें पहले; बाकी उनके व्यंजन-प्रकार से संभावित हैं।", "पदार्थ निवडा आणि तो कुठे मिळतो ते पाहा. नावात पदार्थ असलेली ठिकाणे आधी; बाकी त्यांच्या खाद्यप्रकारावरून शक्य आहेत."]],
+    ["#budgetDlg p.sub", ["जहाँ दो लोगों का खर्च पता है वह, वरना उस तरह की जगह का सामान्य खर्च (अनुमान लिखा होगा)।", "जिथे दोघांचा खर्च माहीत आहे तो, नाहीतर त्या प्रकारच्या ठिकाणाचा नेहमीचा खर्च (अंदाज असे लिहिलेले)."]],
+    ["#friendsDlg p.sub", ["अपनी ♥ सेव जगहें दोस्तों से शेयर करें और उनकी भेजी सूचियाँ रखें। उनकी पसंद पर नक्शे में 👥 बैज दिखेगा। सब कुछ आपके फ़ोन पर ही रहता है।", "तुमची ♥ सेव्ह ठिकाणे मित्रांना शेअर करा आणि त्यांनी पाठवलेल्या याद्या ठेवा. त्यांच्या पसंतीवर नकाशात 👥 बॅज दिसेल. सर्व काही तुमच्या फोनवरच राहते."]],
+    ["#reportDlg p.muted:not([role])", ["इस जगह की गलती बताएँ। भेजने पर पहले से भरा GitHub इशू खुलेगा, या जानकारी कॉपी करके कहीं और भेजें।", "या ठिकाणाची चूक कळवा. पाठवल्यावर आधीच भरलेले GitHub इश्यू उघडेल, किंवा माहिती कॉपी करून दुसरीकडे पाठवा."]],
+  ];
+  // Hindi / Marathi words people may type in search -> the English the search understands.
+  const DEVA = [
+    ["बिरयानी", "biryani"], ["बिर्याणी", "biryani"], ["पिज़्ज़ा", "pizza"], ["पिज्जा", "pizza"], ["पिझ्झा", "pizza"], ["बर्गर", "burger"],
+    ["डोसा", "dosa"], ["इडली", "idli"], ["वड़ा पाव", "vada pav"], ["वडा पाव", "vada pav"], ["वडापाव", "vada pav"], ["पाव भाजी", "pav bhaji"], ["पावभाजी", "pav bhaji"],
+    ["मिसल", "misal"], ["मिसळ", "misal"], ["मोमोज़", "momos"], ["मोमोज", "momos"], ["चाय", "chai"], ["चहा", "chai"], ["कॉफ़ी", "coffee"], ["कॉफी", "coffee"],
+    ["थाली", "thali"], ["थाळी", "thali"], ["चाट", "chaat"], ["पानी पूरी", "pani puri"], ["पाणीपुरी", "pani puri"], ["आइसक्रीम", "ice cream"], ["आईस्क्रीम", "ice cream"],
+    ["केक", "cake"], ["नाश्ता", "breakfast"], ["शुद्ध शाकाहारी", "pure veg"], ["शाकाहारी", "veg"], ["मांसाहारी", "non veg"], ["जैन", "jain"],
+    ["कैफ़े", "cafe"], ["कैफे", "cafe"], ["कॅफे", "cafe"], ["रेस्टोरेंट", "restaurant"], ["रेस्टॉरंट", "restaurant"], ["अभी खुला", "open now"], ["उघडे", "open now"],
+    ["सस्ता", "cheap"], ["स्वस्त", "cheap"], ["तीखा", "spicy"], ["तिखट", "spicy"], ["मीठा", "sweet"], ["गोड", "sweet"], ["ठंडा", "cold"], ["थंड", "cold"],
+    ["सीफ़ूड", "seafood"], ["मछली", "fish"], ["मासे", "fish"], ["चाइनीज़", "chinese"], ["चायनीज", "chinese"], ["से कम", "under"], ["पेक्षा कमी", "under"],
+    ["बांद्रा", "bandra"], ["वांद्रे", "bandra"], ["दादर", "dadar"], ["अंधेरी", "andheri"], ["ठाणे", "thane"], ["कोलाबा", "colaba"], ["कुलाबा", "colaba"],
+    ["जुहू", "juhu"], ["खार", "khar"], ["पवई", "powai"], ["वाशी", "vashi"], ["बोरीवली", "borivali"], ["बोरिवली", "borivali"], ["मलाड", "malad"], ["मालाड", "malad"],
+    ["घाटकोपर", "ghatkopar"], ["चेंबूर", "chembur"], ["कुर्ला", "kurla"], ["मुलुंड", "mulund"], ["कल्याण", "kalyan"], ["डोंबिवली", "dombivli"], ["पनवेल", "panvel"],
+    ["माटुंगा", "matunga"], ["गिरगांव", "girgaon"], ["गिरगाव", "girgaon"], ["चर्चगेट", "churchgate"], ["लोअर परेल", "lower parel"], ["वर्ली", "worli"], ["वरळी", "worli"],
+    ["सांताक्रूज़", "santacruz"], ["सांताक्रूझ", "santacruz"], ["गोरेगांव", "goregaon"], ["गोरेगाव", "goregaon"], ["कांदिवली", "kandivali"], ["मीरा रोड", "mira road"],
+    ["नवी मुंबई", "navi mumbai"], ["खारघर", "kharghar"], ["नेरुल", "nerul"], ["भिवंडी", "bhiwandi"], ["काला घोड़ा", "kala ghoda"], ["काळा घोडा", "kala ghoda"],
+    ["स्टेशन के पास", "near station"], ["स्टेशनजवळ", "near station"],
+  ];
+  function deva(text) {
+    let s = String(text || "");
+    if (!/[ऀ-ॿ]/.test(s)) return s;
+    for (const [h, e] of [...DEVA].sort((a, b) => b[0].length - a[0].length)) s = s.split(h).join(" " + e + " ");
+    return s.replace(/\s+/g, " ").trim();
+  }
+
+  // ------------------------------------------------------------ engine
+  const I18N = { L: -1, orig: new WeakMap(), attrs: new WeakMap(), blocks: new Map(), busy: false };
+  const SKIP = ".pname,.nm,.d-name,.pk-name,[translate=no],.leaflet-marker-pane,.leaflet-tooltip-pane,.leaflet-popup-pane,.leaflet-control-attribution,.addr,#detail p.meta,#arLabels b,#langSel,[data-tblock]";
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  function tz(s) { const L = I18N.L; return L < 0 ? s : (D[s] ? D[s][L] : s); }
+  function trText(s, L) {
+    if (D[s]) return D[s][L];
+    const m = s.match(/^([^\p{L}\p{N}]+)(\p{L}.*)$/u);                    // leading emoji / symbols
+    if (m && D[m[2].trim()]) return m[1] + D[m[2].trim()][L];
+    for (const [re, f] of PAT) { const mm = s.match(re); if (mm) { const r = f(mm, L); if (r != null) return r; } }
+    if (s.includes(" · ")) {                                       // "Cafe · Bandra · ★ 4.4", "spicy · veg · open now"
+      let any = false;
+      const parts = s.split(" · ").map((x) => { const t = x && !x.includes(" · ") ? trText(x, L) : null; if (t != null) any = true; return t != null ? t : x; });
+      if (any) return parts.join(" · ");
+    }
+    let out = s, hit = false;
+    for (const [p, v] of PHRASES) if (out.includes(p)) { out = out.split(p).join(v[L]); hit = true; }
+    return hit ? out : null;
+  }
+  function trNode(n) {
+    const L = I18N.L;
+    const had = I18N.orig.has(n);
+    const orig = had ? I18N.orig.get(n) : n.nodeValue;
+    if (L < 0) { if (had) { n.nodeValue = orig; I18N.orig.delete(n); } return; }
+    const s = orig.trim();
+    if (!s || !/[A-Za-z]/.test(s)) return;
+    const pe = n.parentElement;
+    if (!pe || pe.closest(SKIP) || pe.closest("script,style,datalist")) return;
+    const t = trText(s, L);
+    if (t == null) return;
+    I18N.orig.set(n, orig);
+    const v = orig.match(/^\s*/)[0] + t + orig.match(/\s*$/)[0];
+    if (n.nodeValue !== v) n.nodeValue = v;
+  }
+  const ATTRS = ["placeholder", "aria-label", "title"];
+  function trAttrs(el) {
+    if (el.closest && el.closest(".leaflet-marker-pane,.leaflet-tooltip-pane,#langSel")) return;
+    const L = I18N.L;
+    let rec = I18N.attrs.get(el);
+    for (const a of ATTRS) {
+      if (!el.hasAttribute(a)) continue;
+      const cur = el.getAttribute(a);
+      if (rec && rec[a] && cur === rec[a].t) { if (L < 0) el.setAttribute(a, rec[a].o); else { const t = trText(rec[a].o, L); if (t != null && t !== cur) { rec[a].t = t; el.setAttribute(a, t); } } continue; }
+      if (L < 0) continue;
+      const t = trText(cur.trim(), L);
+      if (t == null) continue;
+      if (!rec) { rec = {}; I18N.attrs.set(el, rec); }
+      rec[a] = { o: cur, t };
+      el.setAttribute(a, t);
+    }
+  }
+  function trTree(root) {
+    if (root.nodeType === 3) return trNode(root);
+    if (root.nodeType !== 1 || (root.closest && root.closest(".leaflet-marker-pane,.leaflet-tooltip-pane"))) return;
+    trAttrs(root);
+    root.querySelectorAll("[placeholder],[aria-label],[title]").forEach(trAttrs);
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const list = [];
+    while (w.nextNode()) list.push(w.currentNode);
+    list.forEach(trNode);
+  }
+  function applyBlocks() {
+    const L = I18N.L;
+    for (const [sel, tr] of BLOCKS) {
+      document.querySelectorAll(sel).forEach((el) => {
+        if (!I18N.blocks.has(el)) I18N.blocks.set(el, el.innerHTML);
+        if (L < 0) { el.innerHTML = I18N.blocks.get(el); el.removeAttribute("data-tblock"); }
+        else { el.innerHTML = mon(tr[L], L); el.setAttribute("data-tblock", ""); }
+      });
+    }
+  }
+  const obs = new MutationObserver((muts) => {
+    if (I18N.L < 0 || I18N.busy) return;
+    I18N.busy = true;
+    try {
+      for (const m of muts) {
+        if (m.type === "childList") m.addedNodes.forEach(trTree);
+        else if (m.type === "attributes") trAttrs(m.target);
+      }
+    } finally { I18N.busy = false; }
+  });
+  function setLang(code, save) {
+    const L = code === "hi" ? 0 : code === "mr" ? 1 : -1;
+    I18N.L = L;
+    document.documentElement.lang = code;
+    if (L >= 0 && !document.getElementById("devaFont")) {
+      const l = document.createElement("link");
+      l.id = "devaFont"; l.rel = "stylesheet";
+      l.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap";
+      document.head.appendChild(l);
+    }
+    obs.disconnect();
+    I18N.busy = true;
+    applyBlocks();
+    trTree(document.body);
+    I18N.busy = false;
+    if (L >= 0) obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ATTRS });
+    document.title = L < 0 ? "Mumbai Cafe & Restaurant Finder" : D["Mumbai Cafe & Restaurant Finder"][L];
+    $("langSel").value = code;
+    if (save) store.set("cf-lang", code);
+    syncUrl();
+  }
+  $("langSel").innerHTML = LANGS.map(([c, n]) => `<option value="${c}">${n}</option>`).join("");
+  $("langSel").addEventListener("change", (e) => setLang(e.target.value, true));
+  // Language from the link (?lang=hi), then the saved choice, then the phone's language.
+  const urlLang = new URLSearchParams(location.search).get("lang");
+  const navLang = (navigator.languages || [navigator.language || ""]).map((l) => String(l).slice(0, 2)).find((l) => l === "hi" || l === "mr");
+  const startLang = ["en", "hi", "mr"].includes(urlLang) ? urlLang : store.get("cf-lang", "") || navLang || "en";
+
 
   syncFavCount();
   refreshCounts();
@@ -3382,6 +3906,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   // ?area=Bandra%20West or ?q=jain%20kala%20ghoda open straight into a search (used by the area and food pages).
   // Filters can also come in the link (?area=…&cat=…&f=veg,open&cuisine=…), see applyUrl.
   applyUrl(new URLSearchParams(location.search));
+  if (startLang !== "en") setLang(startLang, false);
 })();
 </script>
 

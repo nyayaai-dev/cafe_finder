@@ -93,7 +93,7 @@
     const ctr = state.me || map.getCenter();
     const row = (label, f) => `<tr><th scope="row">${label}</th>${ps.map((p) => `<td>${f(p)}</td>`).join("")}</tr>`;
     const o = (p) => { const v = openNow(p.hours); return v === true ? `<span class="tag open">Open now</span>` : v === false ? `<span class="tag shut">Closed now</span>` : `<span class="muted">Hours not listed</span>`; };
-    $("cmpBody").innerHTML = `<table class="cmp"><thead><tr><th></th>${ps.map((p) => `<th scope="col">${esc(p.name)}</th>`).join("")}</tr></thead><tbody>
+    $("cmpBody").innerHTML = `<table class="cmp"><thead><tr><th></th>${ps.map((p) => `<th scope="col" class="pname">${esc(p.name)}</th>`).join("")}</tr></thead><tbody>
       ${row("Type", (p) => esc(p.kind))}
       ${row("Area", (p) => esc(p.loc === p.sub ? p.sub : p.loc + ", " + p.sub))}
       ${row("Station", (p) => { const c = closestStation(p); return c ? stationBit(c) : `<span class="muted">Not found</span>`; })}
@@ -271,6 +271,7 @@
   function setMood(m) { if (state.mood !== m) document.querySelector(`#moods [data-mood="${m}"]`).click(); }
 
   function smartSearch(raw) {
+    raw = deva(raw);
     let q = " " + norm(raw) + " ";
     if (!q.trim()) return showArea("");
     // An exact place name opens that place; a chain name (several branches) lists them all.
@@ -299,6 +300,7 @@
   const box = $("suggestBox");
   let sugItems = [], sugIdx = -1;
   function suggestions(raw) {
+    raw = deva(raw);
     const q = norm(raw);
     if (q.length < 2) return [];
     const out = [];
@@ -316,7 +318,7 @@
     $("place").setAttribute("aria-expanded", !box.hidden);
     box.innerHTML = sugItems.map((s, i) => `<li role="option" id="sug-${i}" class="${i === sugIdx ? "on" : ""}" data-i="${i}" aria-selected="${i === sugIdx}">
       <span class="ic">${s.kind === "dish" ? s.icon : s.kind === "area" ? "📍" : s.kind === "cuisine" ? "🍽" : s.kind === "query" ? "🔎" : s.cat === "cafe" ? "☕" : "🍴"}</span>
-      <span class="tx"><span>${esc(s.label)}</span><small class="muted">${esc(s.sub)}</small></span></li>`).join("");
+      <span class="tx"><span class="${s.kind === "place" || s.kind === "area" || s.kind === "query" ? "pname" : ""}">${esc(s.label)}</span><small class="muted">${esc(s.sub)}</small></span></li>`).join("");
     if (sugIdx >= 0) $("place").setAttribute("aria-activedescendant", "sug-" + sugIdx); else $("place").removeAttribute("aria-activedescendant");
   }
   function pickSuggestion(s) {
@@ -607,6 +609,7 @@
     if (t) ps.set("t", t);
     if ($("sortBy").value !== "near") ps.set("sort", $("sortBy").value);
     discoverParams(ps);
+    if (I18N.L >= 0) ps.set("lang", document.documentElement.lang);
     return ps;
   }
   let urlTimer;

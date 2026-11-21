@@ -160,6 +160,12 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   .grab span { width: 48px; }
 }
 
+/* language picker */
+.langpick { display: inline-flex; align-items: center; gap: 4px; background: var(--chip); border-radius: 8px; padding: 0 4px 0 8px; font-size: 13px; }
+.langpick select { border: 0; background: transparent; color: var(--ink); font: 600 13px var(--font-body); padding: 7px 4px; cursor: pointer; }
+:root[lang="hi"], :root[lang="mr"] { --font-body: "Inter", "Noto Sans Devanagari", system-ui, sans-serif; }
+:root[lang="hi"] body, :root[lang="mr"] body { line-height: 1.55; }
+
 /* report dialog */
 .rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
 .rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }

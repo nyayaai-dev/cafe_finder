@@ -311,6 +311,7 @@
     [/\bmeaty|meat|non ?veg|chicken|mutton\b/, { dishes: ["kebab", "biryani", "friedchicken", "northindian"], why: "meaty" }],
   ];
   function foodMatch(text) {
+    text = deva(text);
     const q = " " + norm(text) + " ";
     const why = [], dishes = new Map(), hard = {};
     const d = findDish(text);

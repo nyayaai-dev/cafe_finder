@@ -21,6 +21,9 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
   Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
 - Nearest train, metro and monorail station for every place, with line, distance and walk or auto time;
   "Near a station" filter (about an 8-minute walk). Stations: `py build/fetch_transit.py` (data/transit.json)
+- English / हिन्दी / मराठी interface (build/parts/i18n.js): 🌐 picker in the header, remembered per phone,
+  `?lang=hi` / `?lang=mr` in links, follows the phone's language on first visit. Place names stay as mapped;
+  search and Food Match understand common Hindi / Marathi words and area names ("वांद्रे पिझ्झा")
 - Discover tools (build/parts/discover.js):
   - Food Match: describe a craving ("spicy veg dinner in Dadar under 400") and get ranked matches with reasons
   - Dish finder: 38 dishes (biryani, benne dosa, misal, momos, matcha…) matched by name and cuisine
