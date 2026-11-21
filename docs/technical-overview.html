@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mumbai Cafe &amp; Restaurant Finder — Technical Overview</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+:root { --ink:#1f1712; --muted:#6b5d52; --line:#e4dcd3; --soft:#f6f1ec; --accent:#c2410c; --teal:#0f766e; }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; color: var(--ink); font: 10.4pt/1.5 "Segoe UI", system-ui, sans-serif; }
+h1 { font-size: 19pt; line-height: 1.15; margin: 0 0 4mm; color: var(--ink); letter-spacing: -.01em; break-before: page; }
+h1 .n { color: var(--accent); margin-right: 6px; }
+h2 { font-size: 12.5pt; margin: 6mm 0 2mm; color: var(--ink); break-after: avoid; }
+h3 { font-size: 10.8pt; margin: 4mm 0 1.5mm; color: var(--teal); break-after: avoid; }
+p { margin: 0 0 2.5mm; }
+ul, ol { margin: 0 0 3mm; padding-left: 5.5mm; }
+li { margin: 0 0 1mm; }
+code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: 9pt; background: var(--soft); padding: 0 3px; border-radius: 3px; }
+pre { font-family: Consolas, monospace; font-size: 8.6pt; background: var(--soft); border: 1px solid var(--line); border-radius: 6px; padding: 3mm 4mm; white-space: pre-wrap; margin: 0 0 3mm; break-inside: avoid; }
+table { width: 100%; border-collapse: collapse; margin: 1mm 0 4mm; font-size: 9.4pt; break-inside: auto; }
+th, td { text-align: left; vertical-align: top; padding: 1.6mm 2.2mm; border-bottom: 1px solid var(--line); }
+thead th { background: var(--soft); font-weight: 700; border-bottom: 1.5px solid #cfc3b6; }
+tr { break-inside: avoid; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.muted { color: var(--muted); }
+.note { background: #fff7ed; border-left: 3px solid var(--accent); padding: 2.5mm 4mm; margin: 2mm 0 4mm; border-radius: 0 6px 6px 0; break-inside: avoid; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 3mm 4mm; break-inside: avoid; }
+.card h3 { margin-top: 0; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; margin: 5mm 0; }
+.stat { background: var(--soft); border-radius: 8px; padding: 3mm; text-align: center; }
+.stat b { display: block; font-size: 17pt; color: var(--accent); line-height: 1.1; }
+.stat span { font-size: 8.6pt; color: var(--muted); }
+.cover { height: 250mm; display: flex; flex-direction: column; justify-content: center; }
+.cover .kicker { color: var(--accent); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; font-size: 9pt; }
+.cover h1 { break-before: auto; font-size: 30pt; margin: 3mm 0 3mm; }
+.cover .sub { font-size: 12.5pt; color: var(--muted); max-width: 150mm; }
+.cover .meta { margin-top: 12mm; font-size: 9.5pt; color: var(--muted); line-height: 1.7; }
+.toc { columns: 2; column-gap: 10mm; font-size: 10pt; padding-left: 5mm; }
+.toc li { break-inside: avoid; }
+.pill { display: inline-block; font-size: 8.2pt; font-weight: 700; padding: 0 6px; border-radius: 99px; background: var(--soft); border: 1px solid var(--line); margin-right: 3px; }
+svg text { font-family: "Segoe UI", sans-serif; }
+.keep { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<!-- ======================================================== cover -->
+<section class="cover">
+  <div class="kicker">Technical overview</div>
+  <h1>Mumbai Cafe &amp; Restaurant Finder</h1>
+  <p class="sub">How the website and installable app were built from scratch: frontend, backend, data pipeline, languages, libraries, hosting and the algorithms underneath.</p>
+  <div class="stats">
+    <div class="stat"><b>2,626</b><span>cafes &amp; restaurants</span></div>
+    <div class="stat"><b>1,033+</b><span>areas &amp; stations named</span></div>
+    <div class="stat"><b>200</b><span>train, metro &amp; monorail stations</span></div>
+    <div class="stat"><b>430</b><span>generated web pages</span></div>
+  </div>
+  <div class="meta">
+    Live site: <b>https://nyayaai-dev.github.io/cafe_finder/</b><br>
+    Install page: <b>https://nyayaai-dev.github.io/cafe_finder/install.html</b><br>
+    Source code: <b>github.com/nyayaai-dev/cafe_finder</b><br>
+    Coverage: Colaba to Mira Road &amp; Bhayandar, Thane, Bhiwandi, Kalyan–Dombivli, Navi Mumbai to Panvel<br>
+    Document date: 21 November 2026 · data snapshot 16 November 2026
+  </div>
+</section>
+
+<!-- ======================================================== contents -->
+<h1><span class="n">0</span>Contents</h1>
+<ol class="toc">
+  <li>Summary — what the app is</li>
+  <li>Technology stack at a glance</li>
+  <li>Languages used</li>
+  <li>Architecture</li>
+  <li>Frontend (what runs in the browser)</li>
+  <li>Backend (build pipeline, API, automation)</li>
+  <li>Data: sources, model and formats</li>
+  <li>Key algorithms</li>
+  <li>Hosting, deployment and updates</li>
+  <li>Security and privacy</li>
+  <li>File-by-file inventory</li>
+  <li>Rebuilding it from scratch</li>
+  <li>Limitations and next steps</li>
+  <li>Credits and licences</li>
+</ol>
+<div class="note"><b>In one sentence:</b> a <b>static website</b> (HTML, CSS and plain JavaScript, no framework) draws an OpenStreetMap-style map with Leaflet; all the data is prepared ahead of time by <b>Python build scripts</b> that download OpenStreetMap, clean it and merge in ratings from listing sites; it is hosted free on <b>GitHub Pages</b>, refreshed monthly by a <b>GitHub Action</b>, and installs on phones as a <b>Progressive Web App</b>. An optional <b>serverless Python function</b> adds live Google details if a key is configured.</div>
+
+<!-- ======================================================== 1 -->
+<h1><span class="n">1</span>Summary — what the app is</h1>
+<p>A map-and-list finder for every named cafe and restaurant across Greater Mumbai, Thane and Navi Mumbai. Each place shows its area, category, cuisine, pure veg / Jain / non-veg labels, rating and cost for two (where a listing gives them), opening hours with an “Open now” badge, menu links (Zomato, Swiggy), directions, and the nearest train / metro / monorail station with walking or auto time.</p>
+<h2>Main features</h2>
+<div class="grid2">
+<div class="card"><h3>Finding places</h3><ul>
+<li>Smart search: “bandra pizza”, “jain kala ghoda”, “cafes near station in thane”, or a place name</li>
+<li>1,033+ named areas, localities and stations; quick area chips</li>
+<li>Filters: cafes / restaurants, cuisine, pure veg, Jain, non-veg, has rating, open now, near a station, saved</li>
+<li>Mood chips: work-friendly, date night, under ₹500, late night, breakfast, desserts</li>
+<li>Sort by distance, rating, cost, name or detail</li>
+<li>Near me (GPS) with walking times; Surprise me; heatmap</li></ul></div>
+<div class="card"><h3>Using results</h3><ul>
+<li>Detail panel: weekly hours, nearby places within 500 m, stations, links</li>
+<li>Save favourites (♥), share a place or a whole saved list by link</li>
+<li>Compare up to 3 places side by side</li>
+<li>Filters kept in the address, so any view can be shared</li>
+<li>Report a problem / suggest a place (pre-filled GitHub issue)</li>
+<li>Resizable list and map on computers; bottom sheet on phones</li></ul></div>
+<div class="card"><h3>App and offline</h3><ul>
+<li>Installable app (PWA) with its own install page and QR code</li>
+<li>Works offline after the first visit; updates itself on the next open</li>
+<li>Dark mode follows the phone’s setting</li></ul></div>
+<div class="card"><h3>For search engines</h3><ul>
+<li>137 area pages and 292 food guides (e.g. “Pizza in Bandra”)</li>
+<li>Sitemap, robots.txt, link-preview image, structured data (schema.org)</li>
+<li>Privacy page and custom 404 page</li></ul></div>
+</div>
+
+<!-- ======================================================== 2 -->
+<h1><span class="n">2</span>Technology stack at a glance</h1>
+<table>
+<thead><tr><th style="width:24%">Layer</th><th>Technology</th><th style="width:30%">Why</th></tr></thead>
+<tbody>
+<tr><td><b>User interface</b></td><td>HTML5, CSS3 (custom properties, grid, flexbox, media queries), plain JavaScript (ES2020+). No React/Vue — one page plus a features module.</td><td>Small, fast, no build tooling for the browser code; works as one self-contained file too.</td></tr>
+<tr><td><b>Map</b></td><td>Leaflet 1.9.4 with the canvas renderer; Leaflet.markercluster 1.5.3; Leaflet.heat 0.2.0 (all from cdnjs)</td><td>Mature, light map library. The base map is drawn from our own OpenStreetMap vectors — no tile server needed.</td></tr>
+<tr><td><b>Fonts</b></td><td>Google Fonts: Bricolage Grotesque (headings), Inter (text)</td><td>Readable, distinctive, free.</td></tr>
+<tr><td><b>App shell</b></td><td>Progressive Web App: web app manifest, service worker (offline cache), install page</td><td>Installs on Android/iPhone without an app store.</td></tr>
+<tr><td><b>Data pipeline</b></td><td>Python 3.12/3.13, standard library only (urllib, json, math, re, unicodedata, hashlib)</td><td>No dependencies to install; runs the same locally and in GitHub Actions.</td></tr>
+<tr><td><b>Data sources</b></td><td>OpenStreetMap via the Overpass API; Nominatim geocoding; listing sites (Zomato, Swiggy, EazyDiner, District, LBB, Justdial, Free Press Journal and others)</td><td>Free and open map data, topped up with current ratings and costs.</td></tr>
+<tr><td><b>Optional live data</b></td><td>Python serverless function on Vercel calling Google Places API (New)</td><td>Keeps the Google key on a server; Google data shown live, never stored.</td></tr>
+<tr><td><b>Hosting</b></td><td>GitHub Pages (live); Vercel config ready; claude.ai single-file version</td><td>Free HTTPS hosting from the repository.</td></tr>
+<tr><td><b>Automation</b></td><td>GitHub Actions (YAML), monthly cron</td><td>Refreshes data and republishes with no server to maintain.</td></tr>
+<tr><td><b>Version control</b></td><td>Git and GitHub (main branch for source, gh-pages branch for the published site)</td><td>History, issues (reports), and Pages publishing.</td></tr>
+<tr><td><b>Graphics</b></td><td>Pure-Python PNG rasteriser for app icons; PowerShell + .NET System.Drawing for the link-preview image; inline SVG</td><td>No image tools needed.</td></tr>
+</tbody></table>
+
+<!-- ======================================================== 3 -->
+<h1><span class="n">3</span>Languages used</h1>
+<p>Line counts are for hand-written source (vendor library files and generated data excluded).</p>
+<table>
+<thead><tr><th style="width:19%">Language</th><th class="num" style="width:10%">Lines</th><th>Where</th><th style="width:32%">Used for</th></tr></thead>
+<tbody>
+<tr><td><b>Python 3</b></td><td class="num">≈ 2,600</td><td><code>build/*.py</code>, <code>api/place.py</code>, <code>dev_server.py</code> (+ 475 in <code>legacy/server.py</code>)</td><td>Downloading and cleaning data, building every page, the Google lookup function, the local test server.</td></tr>
+<tr><td><b>JavaScript</b></td><td class="num">≈ 1,270</td><td>Main script in <code>build/template.html</code> (670), <code>build/parts/features.js</code> (557), service worker (42), install page</td><td>Map, filtering, search, detail panel, moods, compare, phone sheet, resizer, offline cache, install flow.</td></tr>
+<tr><td><b>CSS</b></td><td class="num">≈ 425</td><td><code>build/template.html</code> (224), <code>build/parts/features.css</code> (201), page styles in Python templates</td><td>Layout, light/dark themes, map colours, phone layout, print-safe styles.</td></tr>
+<tr><td><b>HTML</b></td><td class="num">≈ 200</td><td><code>build/template.html</code> markup; page templates inside <code>make_pages.py</code> / <code>make_install.py</code></td><td>Page structure, dialogs, accessible controls; 430 generated pages.</td></tr>
+<tr><td><b>Overpass QL</b></td><td class="num">—</td><td>Query strings inside the fetch scripts</td><td>Asking OpenStreetMap for places, localities, roads, coastline, stations and routes.</td></tr>
+<tr><td><b>JSON</b></td><td class="num">—</td><td><code>data/*.json</code>, <code>build/config.json</code>, <code>manifest.webmanifest</code>, <code>vercel.json</code></td><td>Data snapshots, settings, app manifest, hosting headers.</td></tr>
+<tr><td><b>YAML</b></td><td class="num">49</td><td><code>.github/workflows/refresh-data.yml</code></td><td>Monthly automatic data refresh and republish.</td></tr>
+<tr><td><b>PowerShell</b></td><td class="num">59</td><td><code>build/make_og.ps1</code></td><td>Drawing the 1200×630 link-preview image (og.png).</td></tr>
+<tr><td><b>SVG / XML</b></td><td class="num">—</td><td>Icons, inline UI icons; <code>sitemap.xml</code></td><td>Crisp icons; telling search engines about every page.</td></tr>
+<tr><td><b>Markdown</b></td><td class="num">128</td><td><code>README.md</code></td><td>How to run, deploy and refresh.</td></tr>
+</tbody></table>
+
+<!-- ======================================================== 4 -->
+<h1><span class="n">4</span>Architecture</h1>
+<p>The app has <b>no always-on server and no database</b>. All the heavy work happens <b>before</b> anyone visits: Python scripts turn raw OpenStreetMap data into compact files, and the browser does the rest.</p>
+<div class="keep">
+<svg viewBox="0 0 720 360" width="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Architecture diagram">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6b5d52"/></marker></defs>
+  <!-- sources -->
+  <g font-size="11">
+    <rect x="10" y="20" width="170" height="150" rx="10" fill="#f6f1ec" stroke="#e4dcd3"/>
+    <text x="95" y="40" text-anchor="middle" font-weight="700" font-size="12">Data sources</text>
+    <text x="22" y="64">• OpenStreetMap (Overpass)</text>
+    <text x="22" y="84">• Nominatim geocoding</text>
+    <text x="22" y="104">• Listing sites: Zomato,</text>
+    <text x="32" y="120">EazyDiner, District, LBB…</text>
+    <text x="22" y="142">• Hand-checked additions</text>
+    <text x="22" y="160">  (breakfast spots, Pongo)</text>
+  </g>
+  <!-- pipeline -->
+  <g font-size="11">
+    <rect x="220" y="20" width="250" height="150" rx="10" fill="#fff7ed" stroke="#c2410c"/>
+    <text x="345" y="40" text-anchor="middle" font-weight="700" font-size="12">Python build pipeline</text>
+    <text x="232" y="62">fetch_* → raw data (data/*.json)</text>
+    <text x="232" y="80">process_map → land, roads, rail vectors</text>
+    <text x="232" y="98">resolve_hotspots → ratings &amp; cost</text>
+    <text x="232" y="116">cleanup → names, duplicates, veg / Jain</text>
+    <text x="232" y="134">build → index.html + data/*.js</text>
+    <text x="232" y="152">make_pages / make_install → 430 pages</text>
+  </g>
+  <!-- site -->
+  <g font-size="11">
+    <rect x="510" y="20" width="200" height="150" rx="10" fill="#f0fdfa" stroke="#0f766e"/>
+    <text x="610" y="40" text-anchor="middle" font-weight="700" font-size="12">site/ (static files)</text>
+    <text x="522" y="62">index.html (app)</text>
+    <text x="522" y="80">data/places.js · basemap.js</text>
+    <text x="522" y="98">data/streets.json (lazy)</text>
+    <text x="522" y="116">areas/ · food/ · install.html</text>
+    <text x="522" y="134">sw.js · manifest · icons</text>
+    <text x="522" y="152">sitemap.xml · og.png</text>
+  </g>
+  <line x1="180" y1="95" x2="218" y2="95" stroke="#6b5d52" stroke-width="1.6" marker-end="url(#a)"/>
+  <line x1="470" y1="95" x2="508" y2="95" stroke="#6b5d52" stroke-width="1.6" marker-end="url(#a)"/>
+  <!-- hosting -->
+  <g font-size="11">
+    <rect x="510" y="210" width="200" height="66" rx="10" fill="#f6f1ec" stroke="#e4dcd3"/>
+    <text x="610" y="232" text-anchor="middle" font-weight="700" font-size="12">GitHub Pages</text>
+    <text x="610" y="250" text-anchor="middle">gh-pages branch, HTTPS</text>
+    <text x="610" y="266" text-anchor="middle" class="muted">(Vercel ready as an option)</text>
+  </g>
+  <line x1="610" y1="170" x2="610" y2="208" stroke="#6b5d52" stroke-width="1.6" marker-end="url(#a)"/>
+  <!-- browser -->
+  <g font-size="11">
+    <rect x="220" y="210" width="250" height="140" rx="10" fill="#ffffff" stroke="#1f1712"/>
+    <text x="345" y="230" text-anchor="middle" font-weight="700" font-size="12">Visitor’s browser / installed app</text>
+    <text x="232" y="252">Leaflet map (canvas) + clusters</text>
+    <text x="232" y="270">Search, filters, moods, detail, compare</text>
+    <text x="232" y="288">Service worker: offline cache, updates</text>
+    <text x="232" y="306">localStorage: saved places, list width</text>
+    <text x="232" y="324">GPS (Near me), Web Share, Clipboard</text>
+    <text x="232" y="342" fill="#6b5d52">→ links out to Google Maps, Zomato, Swiggy</text>
+  </g>
+  <line x1="508" y1="243" x2="472" y2="250" stroke="#6b5d52" stroke-width="1.6" marker-end="url(#a)"/>
+  <!-- api -->
+  <g font-size="11">
+    <rect x="10" y="230" width="170" height="80" rx="10" fill="#f6f1ec" stroke="#e4dcd3" stroke-dasharray="5 4"/>
+    <text x="95" y="250" text-anchor="middle" font-weight="700" font-size="12">Optional: /api/place</text>
+    <text x="95" y="268" text-anchor="middle">Vercel Python function</text>
+    <text x="95" y="284" text-anchor="middle">→ Google Places API</text>
+    <text x="95" y="300" text-anchor="middle" fill="#6b5d52">(needs a key; off on Pages)</text>
+  </g>
+  <line x1="218" y1="270" x2="182" y2="270" stroke="#6b5d52" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#a)"/>
+  <!-- action -->
+  <g font-size="11">
+    <rect x="220" y="182" width="250" height="20" rx="6" fill="#fff" stroke="none"/>
+    <text x="345" y="196" text-anchor="middle" fill="#c2410c" font-weight="600">GitHub Action, 1st of every month: fetch → build → publish</text>
+  </g>
+</svg>
+</div>
+<h2>Request flow when someone opens the site</h2>
+<ol>
+<li>The browser downloads <code>index.html</code> (≈ 37 KB compressed), then <code>data/places.js</code> (≈ 100 KB) and <code>data/basemap.js</code> (≈ 480 KB), plus Leaflet from cdnjs.</li>
+<li>The page draws land, water, parks, roads and rail from the vector data on a canvas, then places 2,626 pins in clusters.</li>
+<li>Everything after that — search, filters, sorting, distances, opening hours, nearest stations — is computed in the browser, instantly, with no further network calls.</li>
+<li>Zooming in past street level loads <code>data/streets.json</code> once and draws only the grid cells in view.</li>
+<li>The service worker stores these files so the next visit (or the installed app) works offline, and checks the server for a newer version each time.</li>
+</ol>
+
+<!-- ======================================================== 5 -->
+<h1><span class="n">5</span>Frontend (what runs in the browser)</h1>
+<h2>Structure</h2>
+<p>The app is one HTML page assembled at build time from <code>build/template.html</code> (markup, base styles, the main script) plus <code>build/parts/features.js</code> and <code>features.css</code> (later features). The JavaScript is a single immediately-invoked function, so nothing leaks into global scope. There is no framework and no client-side build step.</p>
+<table>
+<thead><tr><th style="width:28%">Module</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td>Data loading</td><td>Turns the compact <code>RAW</code> rows into place objects; builds a stable key per place for favourites and share links.</td></tr>
+<tr><td>Base map</td><td>Decodes delta-encoded coordinates; draws land, sea, mangroves, parks, roads (width and colour by class and zoom), rail and metro on a Leaflet canvas; softens everything outside the covered region.</td></tr>
+<tr><td>Labels &amp; pins</td><td>Area and locality labels by zoom; cup / fork pins coloured by category, clustered with markercluster.</td></tr>
+<tr><td>Filtering &amp; sorting</td><td>Area, category, cuisine, veg / Jain / non-veg, rating, open now, near a station, saved, mood and shared list — combined in one pass; sort by distance, rating, cost, name or detail.</td></tr>
+<tr><td>Smart search</td><td>Parses free text into area + keywords (veg, jain, open, cafe, date, late, near station…) + cuisine + leftover name; suggestion box with keyboard support.</td></tr>
+<tr><td>Detail panel</td><td>Weekly hours table, nearest train / metro / monorail, nearby places, compare, report a problem, share.</td></tr>
+<tr><td>Opening hours</td><td>Parses OpenStreetMap hours format into a 7-day timetable and checks “open now” in Mumbai time.</td></tr>
+<tr><td>Transit</td><td>Finds the nearest station of each type and estimates walking or auto time.</td></tr>
+<tr><td>Moods, picks, surprise</td><td>Rule-based moods; top-rated picks for the current area; random good pick.</td></tr>
+<tr><td>Sharing &amp; links</td><td>Place links (<code>#p-key</code>), shared lists (<code>#list-…</code>), filters in the address (<code>?area=…&amp;f=veg,open</code>), Web Share API with clipboard fallback.</td></tr>
+<tr><td>Layout</td><td>Desktop: resizable list / map with a draggable divider and hide tab; phone: full-screen map with a draggable bottom sheet.</td></tr>
+<tr><td>Offline &amp; install</td><td>Service worker cache, offline notice, install button and install page.</td></tr>
+</tbody></table>
+<h2>Browser features used</h2>
+<p><span class="pill">Canvas 2D</span><span class="pill">Service Worker &amp; Cache API</span><span class="pill">Web App Manifest</span><span class="pill">beforeinstallprompt</span><span class="pill">Geolocation</span><span class="pill">Web Share</span><span class="pill">Clipboard</span><span class="pill">localStorage</span><span class="pill">History API</span><span class="pill">Intl.DateTimeFormat (IST)</span><span class="pill">matchMedia (dark mode, phone)</span><span class="pill">Pointer events &amp; capture</span><span class="pill">&lt;dialog&gt;</span><span class="pill">fetch</span><span class="pill">Fonts API</span></p>
+<h2>Design and accessibility</h2>
+<ul>
+<li>Colour tokens in CSS custom properties with a full dark theme; OpenStreetMap-style map colours.</li>
+<li>Skip link, labelled controls, ARIA roles for the search combobox, live result counts, keyboard use for cards, divider and dialogs; respects “reduce motion”.</li>
+<li>Responsive: side-by-side from 640 px wide, bottom-sheet layout below that; safe-area insets for notched phones.</li>
+</ul>
+
+<!-- ======================================================== 6 -->
+<h1><span class="n">6</span>Backend (build pipeline, API, automation)</h1>
+<p>“Backend” here means three things: the <b>build pipeline</b> that prepares all data ahead of time, an <b>optional serverless function</b> for live Google details, and <b>GitHub Actions</b> automation. There is deliberately no database: the data is read-only for visitors and fits in a few megabytes, so shipping it as static files is faster, cheaper and works offline.</p>
+<h2>6.1 Build pipeline (Python, <code>build/</code>)</h2>
+<table>
+<thead><tr><th style="width:27%">Script</th><th>Job</th></tr></thead>
+<tbody>
+<tr><td><code>fetch_places.py</code></td><td>Downloads every cafe, restaurant, fast-food, bakery and dessert place from OpenStreetMap tile by tile; refuses to save if the new count is under 90% of the old (a cut-short download).</td></tr>
+<tr><td><code>fetch_region.py</code>, <code>fetch_geo.py</code></td><td>Localities, suburbs and stations with names; area outlines and groups.</td></tr>
+<tr><td><code>fetch_detail.py</code>, <code>process_map.py</code></td><td>Coastline, water, parks, roads, rail and metro; builds land polygons from coastline chains, simplifies and delta-encodes them into <code>map_base.json</code> / <code>map_minor.json</code>.</td></tr>
+<tr><td><code>fetch_transit.py</code></td><td>200 train, metro and monorail stations, each labelled with its lines from the route tracks.</td></tr>
+<tr><td><code>hotspots.py</code>, <code>resolve_hotspots.py</code></td><td>273 hand-collected listings (rating, cost for two, veg) matched to map places by name and distance, or added as web listings.</td></tr>
+<tr><td><code>web_additions.py</code></td><td>Cafes web listings name that OpenStreetMap lacks.</td></tr>
+<tr><td><code>cleanup.py</code></td><td>Tidies names, drops non-places, merges duplicates, marks pure veg and Jain food.</td></tr>
+<tr><td><code>build.py</code></td><td>Combines everything: region filter, locality assignment, breakfast tagging, then writes <code>site/index.html</code>, <code>site/data/*</code>, manifest, service worker and icons — or one self-contained HTML file with <code>--single</code>.</td></tr>
+<tr><td><code>make_pages.py</code>, <code>make_install.py</code></td><td>137 area pages, 292 food guides, indexes, privacy, 404, install page, sitemap and robots.txt.</td></tr>
+<tr><td><code>make_icons.py</code>, <code>make_og.ps1</code></td><td>App icons (pure-Python PNG writer) and the link-preview image.</td></tr>
+</tbody></table>
+<h2>6.2 Live Google details — <code>api/place.py</code> (optional)</h2>
+<ul>
+<li>A Vercel Python serverless function: <code>GET /api/place?name=…&amp;lat=…&amp;lng=…</code> → rating, review count, price level / range, serves-vegetarian, open now, Google Maps link.</li>
+<li>One Google Places API (New) Text Search per lookup, biased to 300 m around the place; picks the closest match within 400 m; answers only for the covered region.</li>
+<li>The key lives only in the server’s <code>GOOGLE_MAPS_API_KEY</code> environment variable; responses are cached at the edge for a day. Google data is shown live and never stored, as Google’s terms require.</li>
+<li><code>?probe=1</code> lets the page check whether a key is configured. On GitHub Pages there is no server, so the probe fails and the feature stays hidden.</li>
+</ul>
+<h2>6.3 Automation — GitHub Actions</h2>
+<p><code>.github/workflows/refresh-data.yml</code> runs at 08:00 IST on the 1st of every month (and on demand): sets up Python, downloads places, rebuilds the site, commits if anything changed, and republishes the <code>gh-pages</code> branch.</p>
+<h2>6.4 Local development</h2>
+<p><code>dev_server.py</code> serves <code>site/</code> on port 8780 and runs <code>/api/place</code> the same way Vercel would, reading the key from a git-ignored <code>.env</code> file.</p>
+
+<!-- ======================================================== 7 -->
+<h1><span class="n">7</span>Data: sources, model and formats</h1>
+<h2>Sources</h2>
+<table>
+<thead><tr><th style="width:26%">Source</th><th>What we take</th><th style="width:22%">Access</th></tr></thead>
+<tbody>
+<tr><td>OpenStreetMap</td><td>Places (name, type, cuisine, hours, phone, website, diet tags), localities, roads, coastline, parks, rail, stations, routes</td><td>Overpass API (two mirrors, retries)</td></tr>
+<tr><td>Nominatim</td><td>Coordinates for listing-site places and areas</td><td>Public geocoder, cached locally</td></tr>
+<tr><td>Listing sites</td><td>Ratings and cost for two for ≈ 250 hotspot places (Zomato, Swiggy, EazyDiner, District, LBB, Justdial, Free Press Journal, Homegrown…)</td><td>Checked by hand, source linked on each place</td></tr>
+<tr><td>Google Places (optional)</td><td>Live rating, price, veg, open now</td><td>Serverless function with a key</td></tr>
+</tbody></table>
+<h2>Place record (one row per place in <code>data/places.js</code>)</h2>
+<pre>[ name, isRestaurant, kind, address, lat, lng, "cuisine;list", hours, phone, website, menu,
+  source, sourceUrl, costForTwo, suburbIndex, localityIndex, areaIndex,
+  rating, ratingSource, costSource, dietBits, isWebListing ]
+
+dietBits: 1 = pure veg, 2 = Jain food, 4 = non-veg, 8 = has veg options</pre>
+<h2>Other formats</h2>
+<ul>
+<li><b>Map geometry</b>: coordinates multiplied by 100,000 (≈ 1 m) and stored as differences from the previous point — small integers that compress well.</li>
+<li><b>Stations</b>: <code>[name, 0 train | 1 metro | 2 monorail, lat, lng, "Line;Line"]</code>.</li>
+<li><b>Place key</b>: djb2 hash of <code>name|lat|lng</code> (4 decimals) in base 36 — identical in JavaScript and Python, so links stay stable across rebuilds.</li>
+<li><b>Opening hours</b>: OpenStreetMap syntax (e.g. <code>Mo-Fr 08:00-23:00; Sa,Su 09:00-01:00</code>) parsed in the browser.</li>
+</ul>
+<h2>Numbers in this release</h2>
+<table>
+<tbody>
+<tr><td>Places shown</td><td class="num">2,626</td><td>Places with a rating</td><td class="num">249</td></tr>
+<tr><td>From OpenStreetMap</td><td class="num">2,398</td><td>With cost for two</td><td class="num">263</td></tr>
+<tr><td>From listing sites</td><td class="num">228</td><td>Pure veg / Jain food</td><td class="num">348 / 38</td></tr>
+<tr><td>Areas, localities &amp; stations named</td><td class="num">1,033+</td><td>Train / metro / monorail stations</td><td class="num">96 / 88 / 16</td></tr>
+</tbody></table>
+
+<!-- ======================================================== 8 -->
+<h1><span class="n">8</span>Key algorithms</h1>
+<table>
+<thead><tr><th style="width:25%">Problem</th><th>Approach</th></tr></thead>
+<tbody>
+<tr><td>Covered region</td><td>Ray-casting point-in-polygon test against an 11-point outline (Mira Road – Kalyan – Panvel – Colaba).</td></tr>
+<tr><td>Naming every area</td><td>Each place takes its nearest named locality, neighbourhood and main area (nearest-centre assignment), so even small spots like Charni Road get a name.</td></tr>
+<tr><td>Drawing the coast</td><td>Coastline ways are chained end to end, clipped to the view box and closed along its edge to form land polygons; water and parks are layered on top.</td></tr>
+<tr><td>Small map files</td><td>Douglas–Peucker style simplification per layer, then delta-encoding; residential streets split into grid cells and loaded only when zoomed in.</td></tr>
+<tr><td>Matching listings to map</td><td>Normalised names (brackets, “restaurant”, punctuation removed) must match or contain each other, within 2.2 km of the geocoded area; closest wins.</td></tr>
+<tr><td>Duplicates</td><td>Same name key (accents and case removed) within 150 m → merged, keeping the richer record and filling gaps from the other.</td></tr>
+<tr><td>Veg / Jain labels</td><td>Name and cuisine rules (Udupi, thali, sweets, juice, Shiv Sagar, Rajdhani…) — never applied if anything suggests meat (seafood, biryani, kebab, bar, Irani).</td></tr>
+<tr><td>Distances</td><td>Haversine great-circle distance; streets assumed 1.3× straight line.</td></tr>
+<tr><td>Travel time</td><td>Up to 2 km: walking at 4.8 km/h. Beyond: auto / taxi at about 18 km/h plus 3 minutes.</td></tr>
+<tr><td>Station lines</td><td>A station gets every local / metro route whose track passes within 150 m of it.</td></tr>
+<tr><td>Open now</td><td>Hours parsed into minute ranges per weekday, including spans past midnight; current time taken in Asia/Kolkata.</td></tr>
+<tr><td>Smart search</td><td>Longest area name first; keyword rules before cuisines; leftover words become a name filter; an exact name opens the place, a chain name lists all branches.</td></tr>
+</tbody></table>
+
+<!-- ======================================================== 9 -->
+<h1><span class="n">9</span>Hosting, deployment and updates</h1>
+<ul>
+<li><b>Source</b>: GitHub repository <code>nyayaai-dev/cafe_finder</code>, branch <code>main</code>.</li>
+<li><b>Published site</b>: the <code>site/</code> folder is split into the <code>gh-pages</code> branch (<code>git subtree split --prefix site</code>) and served by GitHub Pages over HTTPS.</li>
+<li><b>Updates reach visitors</b>: the service worker checks the page and data with the server on every visit (“no-cache”), falls back to its copy offline, and reloads once if a new version takes over right after opening.</li>
+<li><b>Alternative host</b>: <code>vercel.json</code> serves <code>site/</code> with security headers and enables the Google function.</li>
+<li><b>claude.ai version</b>: <code>build.py --single</code> inlines everything into one HTML file for the shareable artifact.</li>
+</ul>
+<h2>Publishing commands</h2>
+<pre>py build/build.py
+git add -A &amp;&amp; git commit -m "Update site"
+git push origin main
+git subtree split --prefix site -b gh-pages-new
+git push -f origin gh-pages-new:gh-pages &amp;&amp; git branch -D gh-pages-new</pre>
+
+<!-- ======================================================== 10 -->
+<h1><span class="n">10</span>Security and privacy</h1>
+<ul>
+<li>No accounts, no ads, no tracking cookies. Visitor counting (GoatCounter) is optional and cookie-free.</li>
+<li>Saved places and list width stay in the browser’s <code>localStorage</code>; GPS position is used only on the device.</li>
+<li>All text from data is HTML-escaped before display; the Google key never reaches the browser.</li>
+<li>On Vercel: Content-Security-Policy, HSTS, no framing, no-sniff, strict referrer and permissions policies.</li>
+<li>External scripts only from cdnjs with exact versions; fonts only from Google Fonts.</li>
+<li>Reports and suggestions go through GitHub issues, so nothing personal is collected by the site.</li>
+</ul>
+
+<!-- ======================================================== 11 -->
+<h1><span class="n">11</span>File-by-file inventory</h1>
+<table>
+<thead><tr><th style="width:36%">File</th><th class="num" style="width:9%">Lines</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td><code>build/template.html</code></td><td class="num">1,097</td><td>The app page: markup, base CSS, main JavaScript</td></tr>
+<tr><td><code>build/parts/features.js</code></td><td class="num">557</td><td>Detail panel, search, moods, compare, sheet, resizer, reports, link filters</td></tr>
+<tr><td><code>build/parts/features.css</code></td><td class="num">201</td><td>Styles for those features and the phone layout</td></tr>
+<tr><td><code>build/build.py</code></td><td class="num">358</td><td>Main build</td></tr>
+<tr><td><code>build/make_pages.py</code></td><td class="num">382</td><td>Area pages, food guides, privacy, 404, sitemap</td></tr>
+<tr><td><code>build/hotspots.py</code></td><td class="num">371</td><td>Hand-collected listings with ratings and costs</td></tr>
+<tr><td><code>build/process_map.py</code></td><td class="num">339</td><td>Base-map geometry</td></tr>
+<tr><td><code>build/fetch_transit.py</code></td><td class="num">180</td><td>Stations and lines</td></tr>
+<tr><td><code>build/make_install.py</code></td><td class="num">148</td><td>Install page</td></tr>
+<tr><td><code>build/cleanup.py</code></td><td class="num">147</td><td>Data clean-up and veg / Jain tagging</td></tr>
+<tr><td><code>api/place.py</code></td><td class="num">114</td><td>Optional Google lookup function</td></tr>
+<tr><td><code>build/fetch_geo.py</code> · <code>fetch_region.py</code> · <code>fetch_detail.py</code> · <code>fetch_places.py</code></td><td class="num">282</td><td>OpenStreetMap downloads</td></tr>
+<tr><td><code>build/resolve_hotspots.py</code> · <code>web_additions.py</code></td><td class="num">144</td><td>Matching listings to the map</td></tr>
+<tr><td><code>build/make_icons.py</code> · <code>make_og.ps1</code></td><td class="num">139</td><td>Icons and link-preview image</td></tr>
+<tr><td><code>build/sw.template.js</code></td><td class="num">42</td><td>Service worker (offline cache)</td></tr>
+<tr><td><code>dev_server.py</code></td><td class="num">59</td><td>Local server with the API</td></tr>
+<tr><td><code>.github/workflows/refresh-data.yml</code></td><td class="num">49</td><td>Monthly refresh</td></tr>
+<tr><td><code>vercel.json</code> · <code>build/config.json</code></td><td class="num">29</td><td>Hosting headers; site URL, name, analytics code</td></tr>
+<tr><td><code>legacy/server.py</code></td><td class="num">475</td><td>First prototype (tile crawler and server), kept for reference</td></tr>
+<tr><td><code>data/</code></td><td class="num">—</td><td>5.5 MB of snapshots: places, localities, map layers, stations, listings, geocode cache</td></tr>
+<tr><td><code>site/</code></td><td class="num">—</td><td>12 MB generated website: app, data, 430 pages, icons, sitemap</td></tr>
+</tbody></table>
+
+<!-- ======================================================== 12 -->
+<h1><span class="n">12</span>Rebuilding it from scratch</h1>
+<p>Needs only <b>Python 3.12+</b> and <b>Git</b> (no packages to install).</p>
+<pre>git clone https://github.com/nyayaai-dev/cafe_finder.git
+cd cafe_finder
+
+# 1. Download the data (OpenStreetMap; takes 10–30 minutes)
+py build/fetch_places.py        # cafes and restaurants
+py build/fetch_region.py        # localities and stations
+py build/fetch_geo.py           # area outlines and groups
+py build/fetch_detail.py        # coastline, roads, rail, parks (into build/raw/)
+py build/process_map.py         # compact base map
+py build/fetch_transit.py       # train, metro and monorail stations
+py build/resolve_hotspots.py cache   # match listing-site ratings (edit build/hotspots.py first)
+
+# 2. Build and run
+py build/build.py               # writes site/
+py dev_server.py                # open http://127.0.0.1:8780
+
+# 3. Publish (GitHub Pages)
+git add -A &amp;&amp; git commit -m "Update"
+git push origin main
+git subtree split --prefix site -b gh-pages-new
+git push -f origin gh-pages-new:gh-pages &amp;&amp; git branch -D gh-pages-new</pre>
+<p>Optional: set <code>GOOGLE_MAPS_API_KEY</code> and deploy to Vercel for live Google details; add a GoatCounter code in <code>build/config.json</code> for visitor stats; run <code>build/make_og.ps1</code> on Windows to redraw the preview image.</p>
+
+<!-- ======================================================== 13 -->
+<h1><span class="n">13</span>Limitations and next steps</h1>
+<h2>Known limitations</h2>
+<ul>
+<li>Ratings and cost for two cover about 250 popular places; the rest link to Google for ratings. Some listing ratings rest on few reviews.</li>
+<li>228 places from listing sites have approximate pins (area centre); Directions finds the exact spot by name.</li>
+<li>Veg / Jain labels are rule-based where the data is silent; mood chips are best guesses.</li>
+<li>Travel times are estimates (straight-line × 1.3, typical speeds), not live routing; bus stops are not included.</li>
+<li>No user reviews or photos yet; per-place link previews show the site card.</li>
+</ul>
+<h2>Next steps</h2>
+<ol>
+<li>Real-world testing with a handful of users; fix what they stumble on.</li>
+<li>Google Search Console + sitemap; GoatCounter for visitor stats.</li>
+<li>Google key on Vercel for live ratings and photos on every place.</li>
+<li>Ratings for remaining areas (Dadar, BKC, Thane, Mira Road, Kalyan, Panvel).</li>
+<li>Custom domain; later, user reviews with moderation; Hindi / Marathi interface.</li>
+</ol>
+
+<!-- ======================================================== 14 -->
+<h1><span class="n">14</span>Credits and licences</h1>
+<ul>
+<li>Map and place data © OpenStreetMap contributors, available under the Open Database Licence (ODbL).</li>
+<li>Leaflet (BSD-2-Clause), Leaflet.markercluster (MIT), Leaflet.heat (BSD-2-Clause), qrcodejs (MIT).</li>
+<li>Fonts: Bricolage Grotesque and Inter (SIL Open Font Licence) via Google Fonts.</li>
+<li>Ratings and cost for two are attributed on each place to the listing they came from (Zomato, Swiggy, EazyDiner, District, LBB, Justdial, Free Press Journal and others).</li>
+<li>Google Places data, when enabled, is displayed live under Google’s terms and never stored.</li>
+</ul>
+<p class="muted" style="margin-top:10mm">Generated from the project repository on 21 November 2026.</p>
+</body>
+</html>
