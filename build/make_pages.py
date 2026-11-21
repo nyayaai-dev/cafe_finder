@@ -364,6 +364,8 @@ def build_pages(site_dir, rows, geo, snapshot, cfg, transit=()):
 <p><a class="cta" href="./">Back to the map</a></p>
 {foot("")}""")
     sitemap.append(base + "privacy.html")
+    import make_install
+    sitemap.append(make_install.build_install(site_dir, cfg))
     open(os.path.join(site_dir, "404.html"), "w", encoding="utf-8").write(f"""{head("Page not found · " + cfg['site_name'], "This page doesn't exist.", base + '404.html', cfg, image, prefix=base)}
 <p class="crumbs"><a href="{base}">Map</a></p>
 <h1>That page isn't on the menu</h1>

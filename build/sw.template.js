@@ -1,7 +1,7 @@
 // Offline cache for the installed app. build/build.py stamps __VERSION__ on
 // every build, so a new deploy replaces the old cache automatically.
 const CACHE = "cafe-finder-__VERSION__";
-const CORE = ["./", "index.html", "data/places.js", "data/basemap.js", "manifest.webmanifest", "icons/icon-192.png", "icons/icon.svg"];
+const CORE = ["./", "index.html", "data/places.js", "data/basemap.js", "manifest.webmanifest", "install.html", "icons/icon-192.png", "icons/icon.svg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));

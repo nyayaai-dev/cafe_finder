@@ -1203,6 +1203,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
         <button type="button" class="ghost" id="aboutBtn">About &amp; data</button>
         <a class="ghost btnlink" id="areasLink" href="areas/" hidden>Browse by area</a>
         <a class="ghost btnlink" id="foodLink" href="food/" hidden>Food guides</a>
+        <a class="ghost btnlink" id="appLink" href="install.html" hidden>📲 Get the app</a>
       </div>
     </header>
 
@@ -2500,7 +2501,7 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
   $("aboutClose").addEventListener("click", () => $("aboutDlg").close());
   $("statPlaces").textContent = places.length.toLocaleString("en-IN");
   $("statAreas").textContent = (GEO.locs.length + GEO.zones.length).toLocaleString("en-IN") + "+";
-  if (typeof SITE_MODE !== "undefined" && SITE_MODE) { $("areasLink").hidden = false; $("foodLink").hidden = false; }
+  if (typeof SITE_MODE !== "undefined" && SITE_MODE) { $("areasLink").hidden = false; $("foodLink").hidden = false; $("appLink").hidden = matchMedia("(display-mode: standalone)").matches; }
 
   // ------------------------------------------------------------ keyboard on result cards
   $("list").addEventListener("keydown", (e) => {

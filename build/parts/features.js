@@ -458,7 +458,7 @@
   $("aboutClose").addEventListener("click", () => $("aboutDlg").close());
   $("statPlaces").textContent = places.length.toLocaleString("en-IN");
   $("statAreas").textContent = (GEO.locs.length + GEO.zones.length).toLocaleString("en-IN") + "+";
-  if (typeof SITE_MODE !== "undefined" && SITE_MODE) { $("areasLink").hidden = false; $("foodLink").hidden = false; }
+  if (typeof SITE_MODE !== "undefined" && SITE_MODE) { $("areasLink").hidden = false; $("foodLink").hidden = false; $("appLink").hidden = matchMedia("(display-mode: standalone)").matches; }
 
   // ------------------------------------------------------------ keyboard on result cards
   $("list").addEventListener("keydown", (e) => {
