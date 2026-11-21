@@ -281,6 +281,17 @@ button.ghost { background: var(--chip); color: var(--ink); }
       <button type="button" id="installBtn" hidden>⬇ Install app</button>
     </div>
     <div class="moods pad" id="moods" role="group" aria-label="Mood"></div>
+    <div class="tools pad" id="tools" role="group" aria-label="Discover">
+      <button type="button" data-tool="match">✨ Food Match</button>
+      <button type="button" data-tool="dish">🍽️ Dish finder</button>
+      <button type="button" data-tool="budget">💰 Budget</button>
+      <button type="button" data-tool="trend">🔥 Trending</button>
+      <button type="button" data-tool="gems" aria-pressed="false">💎 Hidden gems</button>
+      <button type="button" data-tool="friends" id="friendsTool" hidden>👥 Friends' picks</button>
+      <button type="button" data-tool="friendlist">🤝 Friends</button>
+      <button type="button" data-tool="ar" id="arTool" hidden>📷 AR view</button>
+    </div>
+    <div id="discoverBanner" class="dbanner pad" hidden role="status"><span id="discoverText"></span><button type="button" class="linkbtn" id="discoverClear">Clear</button></div>
     <section class="picks pad" id="picks" hidden aria-labelledby="picksTitle">
       <h2 id="picksTitle">Top picks <span id="picksWhere" class="muted"></span></h2>
       <div class="picks-row" id="picksRow"></div>
@@ -310,6 +321,9 @@ button.ghost { background: var(--chip); color: var(--ink); }
         <label><input type="checkbox" id="fRated"> Has rating</label>
         <label><input type="checkbox" id="fOpen"> Open now</label>
         <label><input type="checkbox" id="fNear"> 🚆 Near a station</label>
+        <label><input type="checkbox" id="fWifi"> 📶 Wi-Fi</label>
+        <label><input type="checkbox" id="fOutdoor"> 🌳 Outdoor seating</label>
+        <label><input type="checkbox" id="fPark"> 🅿️ Parking nearby</label>
         <label><input type="checkbox" id="fFav"> ♥ Saved <small id="nFav" class="muted"></small></label>
       </div>
       <div class="row between">
@@ -323,6 +337,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     <div id="listBanner" class="banner pad" hidden role="status">
       <span id="listBannerText"></span>
       <button type="button" class="linkbtn" id="listSaveAll">♥ Save all</button>
+      <button type="button" class="linkbtn" id="listKeep" hidden>👥 Keep as their picks</button>
       <button type="button" class="linkbtn" id="listClose">Show everything</button>
     </div>
     <ol id="list" class="list" aria-label="Results" aria-busy="true">
@@ -387,6 +402,51 @@ button.ghost { background: var(--chip); color: var(--ink); }
     </div>
   </form>
 </dialog>
+<dialog id="foodDlg" class="dlg" aria-labelledby="fmTitle">
+  <h2 id="fmTitle">✨ Food Match</h2>
+  <p class="muted sub">Describe what you feel like eating, the way you'd tell a friend. It reads dishes, cravings, budget, area, veg/Jain, mood and facilities.</p>
+  <div class="fm-in"><textarea id="fmText" rows="2" placeholder="e.g. spicy veg dinner in Dadar under 400"></textarea><button type="button" id="fmGo">Match</button></div>
+  <div class="examples" id="fmExamples"><button type="button">cheesy pizza in Bandra under 600</button><button type="button">something cold and sweet near station</button><button type="button">quiet cafe with wifi to study</button><button type="button">jain thali for 4 under 2000</button><button type="button">spicy seafood open now</button><button type="button">healthy breakfast in Andheri</button></div>
+  <div id="fmOut" aria-live="polite"></div>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
+</dialog>
+<dialog id="dishDlg" class="dlg" aria-labelledby="dishTitle">
+  <h2 id="dishTitle">🍽️ Dish finder</h2>
+  <p class="muted sub">Pick a dish to see places that serve it. Places named for it come first; others are likely from their cuisine.</p>
+  <div class="dishgrid" id="dishGrid"></div>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
+</dialog>
+<dialog id="budgetDlg" class="dlg" aria-labelledby="bgTitle">
+  <h2 id="bgTitle">💰 Budget planner</h2>
+  <p class="muted sub">Uses each place's listed cost for two where known, otherwise a typical cost for its type (marked est.).</p>
+  <div class="bgform">
+    <label>Total budget (₹)<input id="bgTotal" type="number" min="0" step="50" value="1000" inputmode="numeric"></label>
+    <label>People<input id="bgPeople" type="number" min="1" max="20" value="2" inputmode="numeric"></label>
+    <label>Meal<select id="bgMeal"><option value="any">Any</option><option value="breakfast">Breakfast</option><option value="lunch">Lunch</option><option value="dinner">Dinner</option><option value="snack">Snack</option><option value="coffee">Coffee</option></select></label>
+  </div>
+  <p id="bgSummary" aria-live="polite"></p>
+  <ul class="bg" id="bgList"></ul>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button><button type="button" id="bgApply">Show all on the map</button></div>
+</dialog>
+<dialog id="trendDlg" class="dlg" aria-labelledby="trTitle">
+  <h2 id="trTitle">🔥 Trending</h2>
+  <div id="trendBody"></div>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
+</dialog>
+<dialog id="friendsDlg" class="dlg" aria-labelledby="frTitle">
+  <h2 id="frTitle">🤝 Friends</h2>
+  <p class="muted sub">Share your saved (♥) places with friends, and keep the lists they send you. Their picks get a 👥 badge on the map. Everything stays on your phone.</p>
+  <div class="frrow"><label for="frName"><b>Your name</b></label><input id="frName" maxlength="30" placeholder="shown on lists you share"><button type="button" class="ghost" id="frSave">Save</button><button type="button" id="frShare">Share my list</button></div>
+  <h3 class="d-sub">Lists from friends</h3>
+  <ul id="frList"></ul>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
+</dialog>
+<div id="arView" hidden>
+  <video id="arVideo" autoplay playsinline muted></video>
+  <div id="arLabels"></div>
+  <button type="button" id="arClose">✕ Close</button>
+  <p class="arnote">Places within 800 m in the direction you point. Busyness is an estimate. Tap a label for details.</p>
+</div>
 <div id="netBanner" class="net" role="status" hidden>You're offline. Saved data still works; directions, menus and ratings links need internet.</div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <button type="button" id="sheetToggle" class="sheet-toggle">🗺 Show map</button>
@@ -447,6 +507,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     web: !!r[21], src: r[11], srcUrl: r[12], priceTwo: r[13] || 0,
     rating: r[17] || 0, ratingSrc: r[18], priceSrc: r[19], pureVeg: !!(r[20] & 1), jain: !!(r[20] & 2), nonVeg: !!(r[20] & 4), vegOk: !!(r[20] & 8),
     sub: GEO.suburbs[r[14]].name, loc: GEO.locs[r[15]].name, zone: GEO.zones[r[16]].name,
+    fac: r[22] || 0, seats: r[23] || 0,
   }));
   places.forEach((p) => { p.info = [p.address, p.hours, p.phone, p.website, p.menu, p.src, p.priceTwo].filter(Boolean).length + p.cuisine.length; });
 
@@ -805,7 +866,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     return places.filter((p) => inArea(p) && inCat(p) &&
       (!veg || p.pureVeg) && (!jain || p.jain) && (!non || p.nonVeg) && (!rated || p.rating) &&
       (!openOnly || openNow(p.hours) === true) && (!favOnly || favs.has(p.key)) && (!nearOnly || nearStation(p)) &&
-      moodOk(p) && (!state.list || state.list.has(p.key)) &&
+      moodOk(p) && discoverOk(p) && (!state.list || state.list.has(p.key)) &&
       (!cu || p.cuisine.includes(cu)) &&
       (!text || (p.name + " " + p.address + " " + p.loc + " " + p.sub + " " + p.zone).toLowerCase().includes(text)));
   }
@@ -860,8 +921,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
     }
     $("list").innerHTML = rows.slice(0, state.shown).map((p) => `
       <li data-id="${p.id}" tabindex="0" aria-label="${esc(p.name)}, ${esc(p.kind)}" class="pad${p.id === state.active ? " active" : ""}">
-        <div class="name"><span>${esc(p.name)} ${catTag(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
-        ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${cuisine(p)}${source(p)}
+        <div class="name"><span>${esc(p.name)} ${catTag(p)}${friendTag(p)}${facIcons(p)}</span><span class="right">${distLabel(p)}${favBtn(p)}</span></div>
+        ${area(p)}${transit(p)}${rating(p)}${price(p)}${food(p)}${hoursLine(p)}${crowdLine(p)}${cuisine(p)}${source(p)}
         ${p.address ? `<div class="addr">${esc(p.address)}</div>` : ""}
         ${actions(p)}
       </li>`).join("") + (rows.length > state.shown
@@ -1026,8 +1087,8 @@ button.ghost { background: var(--chip); color: var(--ink); }
     catch (e) { window.prompt ? toast("Copy this link: " + url) : toast(url); }
   }
   function openFromHash() {
-    const lm = location.hash.match(/^#list-([a-z0-9-]+)$/);
-    if (lm) return showSharedList(lm[1].split("-"));
+    const lm = location.hash.match(/^#list-([a-z0-9-]+)(?:~(.{1,60}))?$/);
+    if (lm) { let who = ""; try { who = lm[2] ? decodeURIComponent(lm[2]) : ""; } catch (e) { /* bad name */ } return showSharedList(lm[1].split("-"), who); }
     const m = location.hash.match(/^#p-([a-z0-9]+)$/);
     if (!m || !byKey.has(m[1])) return;
     if (detailOpen && detailOpen.key === m[1]) return;

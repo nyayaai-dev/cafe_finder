@@ -210,6 +210,44 @@ for n, ll in {"Mulund West": (19.1726, 72.9425), "Mulund East": (19.1700, 72.964
     ZONES.setdefault(n, ll)
 ZLIST = [{"name": n, "lat": ll[0], "lng": ll[1]} for n, ll in sorted(ZONES.items())]
 
+# Facilities (build/fetch_facilities.py): tags per place plus public parking / EV charging points.
+# Bits: 1 Wi-Fi, 2 outdoor seating, 4 indoor seating, 8 AC, 16 wheelchair, 32 takeaway, 64 delivery,
+#       128 public parking within 300 m, 256 EV charging within 1 km.
+FAC_BITS = {"wifi": 1, "outdoor": 2, "indoor": 4, "ac": 8, "wheelchair": 16, "takeaway": 32, "delivery": 64}
+fac_path = os.path.join(DATA_DIR, "facilities.json")
+FAC = json.load(open(fac_path, encoding="utf-8")) if os.path.exists(fac_path) else {"places": {}, "parking": [], "charging": []}
+
+
+def grid(points, cell=0.01):
+    g = {}
+    for lat, lng in points:
+        g.setdefault((int(lat / cell), int(lng / cell)), []).append((lat, lng))
+    return g
+
+
+PARK, CHARGE = grid(FAC["parking"]), grid(FAC["charging"])
+
+
+def near_point(g, lat, lng, km, cell=0.01):
+    cy, cx, r = int(lat / cell), int(lng / cell), int(km / 1.1 / cell) + 1
+    for y in range(cy - r, cy + r + 1):
+        for x in range(cx - r, cx + r + 1):
+            for a, b in g.get((y, x), ()):
+                if math.hypot((a - lat) * 111.0, (b - lng) * 105.0) <= km:
+                    return True
+    return False
+
+
+def facilities(it):
+    f = FAC["places"].get(it.get("id") or "", {})
+    bits = sum(b for k, b in FAC_BITS.items() if f.get(k))
+    if near_point(PARK, it["lat"], it["lng"], 0.3):
+        bits |= 128
+    if near_point(CHARGE, it["lat"], it["lng"], 1.0):
+        bits |= 256
+    return bits, f.get("seats", 0)
+
+
 rows = []
 for it in items:
     si, _ = nearest(it["lat"], it["lng"], SUBS)
@@ -228,7 +266,7 @@ for it in items:
     rows.append([it["name"], it["rest"], it["kind"], address, round(it["lat"], 5), round(it["lng"], 5),
                  it["cuisine"], it["hours"], it["phone"], it["website"], it["menu"],
                  it["src"], it["srcUrl"], it["priceTwo"], si, li, zi,
-                 it["rating"], it["ratingSrc"], it["priceSrc"], it["diet"], it["web"]])
+                 it["rating"], it["ratingSrc"], it["priceSrc"], it["diet"], it["web"], *facilities(it)])
 rows.sort(key=lambda r: (r[4], r[5]))
 
 # Groups: West + East together, the north-west strip, Navi Mumbai and Mira-Bhayandar.
@@ -266,8 +304,10 @@ streets = open(os.path.join(DATA_DIR, "map_minor.json"), encoding="utf-8").read(
 html = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
 parts = os.path.join(HERE, "parts")
 html = (html.replace("/*__VENDOR_CSS__*/", vendor)
-            .replace("/*__FEATURES_CSS__*/", open(os.path.join(parts, "features.css"), encoding="utf-8").read())
-            .replace("/*__FEATURES_JS__*/", open(os.path.join(parts, "features.js"), encoding="utf-8").read())
+            .replace("/*__FEATURES_CSS__*/", open(os.path.join(parts, "features.css"), encoding="utf-8").read()
+                     + open(os.path.join(parts, "discover.css"), encoding="utf-8").read())
+            .replace("/*__FEATURES_JS__*/", open(os.path.join(parts, "features.js"), encoding="utf-8").read()
+                     + open(os.path.join(parts, "discover.js"), encoding="utf-8").read())
             .replace("__SNAPSHOT__", SNAPSHOT))
 start, end = html.index("<!--DATA-->"), html.index("<!--/DATA-->") + len("<!--/DATA-->")
 

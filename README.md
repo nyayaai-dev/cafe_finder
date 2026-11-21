@@ -21,6 +21,18 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
   Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
 - Nearest train, metro and monorail station for every place, with line, distance and walk or auto time;
   "Near a station" filter (about an 8-minute walk). Stations: `py build/fetch_transit.py` (data/transit.json)
+- Discover tools (build/parts/discover.js):
+  - Food Match: describe a craving ("spicy veg dinner in Dadar under 400") and get ranked matches with reasons
+  - Dish finder: 38 dishes (biryani, benne dosa, misal, momos, matcha…) matched by name and cuisine
+  - Budget planner: total budget + people + meal -> places that fit (listed cost, or a typical estimate)
+  - Trending: dishes from 2025–26 coverage (sources linked) and guide-featured places nearby
+  - Hidden gems: rated 4.3+, not a chain, not one of the famous names, not packed right now
+  - Friends: share your list with your name; keep friends' lists; their picks get a badge and a filter
+  - AR view (phones): camera + compass labels for places within 800 m in the direction you point
+  - Moods: work/study, celebration, business meeting, family outing, party, date night, budget, late night, breakfast, desserts
+  - How busy: typical busyness by hour, best time to visit and likely wait (an estimate from typical patterns, not live)
+  - Facilities: Wi-Fi, seating, AC, wheelchair access, takeaway, delivery (OpenStreetMap), public parking within 300 m
+    and EV charging within 1 km; Wi-Fi / outdoor / parking filters. Data: `py build/fetch_facilities.py`
 - Area pages for search engines (`site/areas/`), sitemap, link-preview image (`site/og.png`)
 - Food guides by cuisine and area (`site/food/`, e.g. Pizza in Bandra, Jain food), linked from area pages
 - Filters live in the address, so any view can be shared (`?area=Bandra&cat=cafe&f=veg,open&cuisine=Pizza&mood=date&sort=rating`)

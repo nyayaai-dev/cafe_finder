@@ -18,7 +18,11 @@
   // ------------------------------------------------------------ moods
   const PREMIUM = /italian|european|french|japanese|sushi|mediterranean|steak|continental|lebanese|fine dining|asian|thai|korean/i;
   const MOODS = {
-    work: { label: "💻 Work-friendly", test: (p) => p.cat === "cafe" && (/coffee|starbucks|third wave|blue tokai|araku|barista|costa|tim hortons|ccd|cafe coffee day|subko|bombay island/i.test(p.name) || p.cuisine.includes("Coffee Shop")) },
+    work: { label: "💻 Work / study", test: (p) => (p.fac & 1) || p.cat === "cafe" && (/coffee|starbucks|third wave|blue tokai|araku|barista|costa|tim hortons|ccd|cafe coffee day|subko|bombay island/i.test(p.name) || p.cuisine.includes("Coffee Shop")) },
+    celebrate: { label: "🎉 Celebration", test: (p) => (p.cat === "rest" && (p.priceTwo >= 1500 || p.rating >= 4.4)) || /lounge|social|bistro|brew|bar\b/i.test(p.name) || p.cuisine.some((c) => /cake|dessert/i.test(c)) },
+    business: { label: "💼 Business meeting", test: (p) => /starbucks|third wave|blue tokai|costa|novotel|marriott|courtyard|hyatt|taj|trident|oberoi|westin|sofitel|orchid|tunga|kohinoor|lounge/i.test(p.name) || (p.cat === "rest" && p.priceTwo >= 1200 && p.priceTwo <= 3500) },
+    family: { label: "👨‍👩‍👧 Family outing", test: (p) => p.cat === "rest" && !/bar|pub|brew|lounge|wine|beer|tap\b/i.test(p.name) && (p.pureVeg || p.seats >= 40 || p.cuisine.some((c) => /indian|chinese|pizza|thali|gujarati|punjabi|mughlai/i.test(c))) },
+    party: { label: "🥳 Party", test: (p) => /bar|pub|brew|lounge|social|club|tap\b|taproom|cocktail|doolally/i.test(p.name) || p.cuisine.some((c) => /bar food|cocktail/i.test(c)) },
     date: { label: "🕯 Date night", test: (p) => p.priceTwo >= 1500 || (p.rating >= 4.5 && p.cat === "rest") || (p.cat === "rest" && p.cuisine.some((c) => PREMIUM.test(c))) },
     budget: { label: "💸 Under ₹500", test: (p) => (p.priceTwo && p.priceTwo <= 500) || (!p.priceTwo && /Fast food|Tea shop|Food court/.test(p.kind)) || p.cuisine.some((c) => /street|chaat|vada|pav|snack|tea/i.test(c)) },
     late: { label: "🌙 Late night", test: (p) => { const w = week(p); return !!w && w.some((d) => d.some(([, b]) => b >= 23 * 60 + 30)); } },
@@ -37,12 +41,15 @@
 
   // ------------------------------------------------------------ shared lists (#list-key1-key2…)
   state.list = null;
-  function showSharedList(keys) {
+  function showSharedList(keys, who) {
     const found = keys.filter((k) => byKey.has(k));
     if (!found.length) return;
     state.list = new Set(found);
+    state.listFrom = who || "";
     $("listBanner").hidden = false;
-    $("listBannerText").textContent = `Viewing a shared list of ${found.length} place${found.length > 1 ? "s" : ""}.`;
+    $("listKeep").hidden = false;
+    $("listKeep").textContent = `👥 Keep as ${who || "a friend"}'s picks`;
+    $("listBannerText").textContent = `${who ? who + "'s" : "A shared"} list: ${found.length} place${found.length > 1 ? "s" : ""}.`;
     setArea(null, "", document.querySelector('#quick [data-area=""]'));
     const b = L.latLngBounds(found.map((k) => [byKey.get(k).lat, byKey.get(k).lng]));
     map.fitBounds(b.pad(0.3), fitPad(24, { animate: false, maxZoom: 16 }));
@@ -61,7 +68,8 @@
   $("shareListBtn").addEventListener("click", async () => {
     const keys = [...favs].slice(0, 60);
     if (!keys.length) return toast("Save some places with ♥ first");
-    const url = location.href.split("#")[0] + "#list-" + keys.join("-");
+    const me = store.get("cf-myname", "");
+    const url = location.href.split("#")[0] + "#list-" + keys.join("-") + (me ? "~" + encodeURIComponent(me) : "");
     try { if (navigator.share) { await navigator.share({ title: "My cafe list", url }); return; } } catch (e) { if (e && e.name === "AbortError") return; }
     try { await navigator.clipboard.writeText(url); toast("List link copied"); } catch (e) { toast(url); }
   });
@@ -139,10 +147,10 @@
         <button type="button" class="ghost back" id="detailBack" aria-label="Back to results">← Results</button>
         <span class="d-tools">${favBtn(p)}</span>
       </div>
-      <h2 class="d-name" tabindex="-1" id="detailName">${esc(p.name)}</h2>
+      <h2 class="d-name" tabindex="-1" id="detailName">${esc(p.name)}</h2>${friendTag(p) ? `<p>${friendTag(p)}</p>` : ""}
       <div class="d-tags">${catTag(p)}</div>
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
-      ${area(p)}${transit(p, true)}${rating(p)}${price(p)}${food(p)}${weeklyHours(p)}${cuisine(p)}${source(p)}
+      ${area(p)}${transit(p, true)}${rating(p)}${price(p)}${food(p)}${weeklyHours(p)}${crowdDetail(p)}${facDetail(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
       ${p.phone ? `<p class="meta">Phone: <span class="sel">${esc(p.phone)}</span></p>` : ""}
       ${p.website ? `<p class="meta"><a class="rate" href="${esc(p.website)}" target="_blank" rel="noopener">Website ↗</a></p>` : ""}
@@ -272,6 +280,8 @@
     for (const a of areaByLen) { const n = norm(a); if (n.length > 2 && q.includes(" " + n + " ")) { areaHit = a; q = q.replace(" " + n + " ", " "); break; } }
     // Keywords before cuisines, so "jain" means Jain food rather than a cuisine tag.
     for (const [re, fn] of KEYWORDS) { if (re.test(q)) { fn(); q = q.replace(re, " "); } }
+    const dishHit = findDish(q);
+    if (dishHit) { state.dish = dishHit.key; q = q.replace(dishHit.re, " "); syncDiscoverBanner(); }
     let cuisineHit = "";
     for (const c of allCuisines) { const n = norm(c); if (n.length > 2 && q.includes(" " + n + " ")) { cuisineHit = c; q = q.replace(" " + n + " ", " "); break; } }
     // A name with no area in it ("starbucks", "irani cafe") searches the whole city.
@@ -294,6 +304,7 @@
     const out = [];
     areaIndex.filter((a) => norm(a).includes(q)).sort((a, b) => norm(a).indexOf(q) - norm(b).indexOf(q) || a.length - b.length)
       .slice(0, 4).forEach((a) => out.push({ kind: "area", label: a, sub: "Area", value: a }));
+    Object.entries(DISHES).filter(([, d]) => norm(d.label).includes(q)).slice(0, 2).forEach(([k, d]) => out.push({ kind: "dish", label: d.label, sub: "Dish", value: k, icon: d.icon }));
     allCuisines.filter((c) => norm(c).includes(q)).slice(0, 2).forEach((c) => out.push({ kind: "cuisine", label: c, sub: "Cuisine", value: c }));
     places.filter((p) => norm(p.name).includes(q)).sort((a, b) => norm(a.name).indexOf(q) - norm(b.name).indexOf(q) || (b.rating || 0) - (a.rating || 0))
       .slice(0, 5).forEach((p) => out.push({ kind: "place", label: p.name, sub: `${p.kind} · ${p.loc === p.sub ? p.sub : p.loc}`, value: p.key, cat: p.cat }));
@@ -304,13 +315,14 @@
     box.hidden = !sugItems.length;
     $("place").setAttribute("aria-expanded", !box.hidden);
     box.innerHTML = sugItems.map((s, i) => `<li role="option" id="sug-${i}" class="${i === sugIdx ? "on" : ""}" data-i="${i}" aria-selected="${i === sugIdx}">
-      <span class="ic">${s.kind === "area" ? "📍" : s.kind === "cuisine" ? "🍽" : s.kind === "query" ? "🔎" : s.cat === "cafe" ? "☕" : "🍴"}</span>
+      <span class="ic">${s.kind === "dish" ? s.icon : s.kind === "area" ? "📍" : s.kind === "cuisine" ? "🍽" : s.kind === "query" ? "🔎" : s.cat === "cafe" ? "☕" : "🍴"}</span>
       <span class="tx"><span>${esc(s.label)}</span><small class="muted">${esc(s.sub)}</small></span></li>`).join("");
     if (sugIdx >= 0) $("place").setAttribute("aria-activedescendant", "sug-" + sugIdx); else $("place").removeAttribute("aria-activedescendant");
   }
   function pickSuggestion(s) {
     box.hidden = true; sugItems = []; $("place").setAttribute("aria-expanded", "false");
     if (s.kind === "area") { $("place").value = s.value; showArea(s.value); }
+    else if (s.kind === "dish") { $("place").value = ""; pickDish(s.value); }
     else if (s.kind === "cuisine") { refreshCounts(); $("cuisine").value = s.value; state.shown = PAGE; render(); $("place").value = ""; }
     else if (s.kind === "place") { $("place").value = s.label; openDetail(byKey.get(s.value)); }
     else smartSearch(s.value);
@@ -582,7 +594,7 @@
   // ------------------------------------------------------------ filters in the link (website only)
   // ?area=Bandra&cat=cafe&f=veg,open&mood=date&cuisine=Pizza&t=irani&sort=rating
   const SITE = typeof SITE_MODE !== "undefined" && SITE_MODE;
-  const FLAGS = [["veg", "fVeg"], ["jain", "fJain"], ["nonveg", "fNon"], ["rated", "fRated"], ["open", "fOpen"], ["station", "fNear"]];
+  const FLAGS = [["veg", "fVeg"], ["jain", "fJain"], ["nonveg", "fNon"], ["rated", "fRated"], ["open", "fOpen"], ["station", "fNear"], ["wifi", "fWifi"], ["outdoor", "fOutdoor"], ["parking", "fPark"]];
   function viewParams() {
     const ps = new URLSearchParams();
     if (state.area && state.area.names && state.areaName) ps.set("area", state.areaName);
@@ -594,6 +606,7 @@
     const t = $("filterText").value.trim();
     if (t) ps.set("t", t);
     if ($("sortBy").value !== "near") ps.set("sort", $("sortBy").value);
+    discoverParams(ps);
     return ps;
   }
   let urlTimer;
@@ -620,6 +633,7 @@
     if (ps.get("t")) $("filterText").value = ps.get("t");
     const so = ps.get("sort");
     if (so && [...$("sortBy").options].some((o) => o.value === so)) $("sortBy").value = so;
+    applyDiscoverParams(ps);
     state.urlReady = true;
     state.shown = PAGE; render();
   }
