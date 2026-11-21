@@ -389,6 +389,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
 </dialog>
 <div id="netBanner" class="net" role="status" hidden>You're offline. Saved data still works; directions, menus and ratings links need internet.</div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
+<button type="button" id="sheetToggle" class="sheet-toggle">🗺 Show map</button>
 <div id="cmpTray" hidden><span>Compare <span id="cmpCount">0</span></span>
   <button type="button" id="cmpView">View</button><button type="button" class="ghost" id="cmpClear">Clear</button></div>
 <dialog id="cmpDlg" class="dlg" aria-labelledby="cmpTitle">
@@ -887,10 +888,11 @@ button.ghost { background: var(--chip); color: var(--ink); }
     if (inside.length) {
       const b = L.latLngBounds(inside.map((p) => [p.lat, p.lng]));
       areaBox.setBounds(b.pad(0.04)).addTo(map);
-      map.fitBounds(areaBox.getBounds(), { padding: [24, 24] });
+      if (sheet.mq.matches && sheet.state === "peek") sheet.set("half");   // phones: show the results with the area above them
+      map.fitBounds(areaBox.getBounds(), fitPad(24));
     } else {
       areaBox.remove();
-      map.fitBounds(MUMBAI);
+      map.fitBounds(MUMBAI, fitPad(8));
     }
     refreshCounts();
     render();

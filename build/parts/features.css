@@ -145,6 +145,21 @@ table.cmp tbody th { color: var(--muted); font-weight: 600; white-space: nowrap;
 .stations { display: flex; flex-direction: column; gap: 3px; }
 .stations .tw { display: inline-block; min-width: 64px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
 
+/* phone: floating Map / List switch */
+.sheet-toggle { display: none; }
+@media (max-width: 640px) {
+  .sheet-toggle {
+    display: inline-flex; align-items: center; gap: 6px; position: fixed; z-index: 1400;
+    top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--panel); border: 0; border-radius: 99px; padding: 9px 16px;
+    font: 700 13px var(--font-body); box-shadow: 0 6px 18px rgba(0,0,0,.3); cursor: pointer;
+  }
+  body:has(#cmpTray:not([hidden])) .sheet-toggle { top: calc(62px + env(safe-area-inset-top, 0px)); }   /* below the Compare bar */
+  .sheet-scroll { touch-action: pan-x pan-y; }
+  .grab { padding: 12px 0 8px; }                      /* bigger handle to grab */
+  .grab span { width: 48px; }
+}
+
 /* report dialog */
 .rp-opts { border: 0; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; }
 .rp-opts legend { font-size: 12px; font-weight: 600; margin-bottom: 4px; padding: 0; }

@@ -45,7 +45,7 @@
     $("listBannerText").textContent = `Viewing a shared list of ${found.length} place${found.length > 1 ? "s" : ""}.`;
     setArea(null, "", document.querySelector('#quick [data-area=""]'));
     const b = L.latLngBounds(found.map((k) => [byKey.get(k).lat, byKey.get(k).lng]));
-    map.fitBounds(b.pad(0.3), { animate: false, maxZoom: 16 });
+    map.fitBounds(b.pad(0.3), fitPad(24, { animate: false, maxZoom: 16 }));
   }
   $("listSaveAll").addEventListener("click", () => {
     if (!state.list) return;
@@ -213,7 +213,8 @@
     onAdd() {
       const box = L.DomUtil.create("div", "leaflet-bar map-tools");
       box.innerHTML = `<button type="button" id="heatBtn" aria-pressed="false" title="Show where places cluster">🔥 Heatmap</button>
-        <button type="button" id="surpriseMapBtn" title="Pick a random place">🎲 Surprise me</button>`;
+        <button type="button" id="surpriseMapBtn" title="Pick a random place">🎲 Surprise me</button>
+        <button type="button" id="locateMapBtn" title="Show places near you" hidden>📍 Near me</button>`;
       L.DomEvent.disableClickPropagation(box);
       return box;
     },
@@ -235,6 +236,8 @@
     else { drawHeat(); map.addLayer(cluster); }
   });
   $("surpriseMapBtn").addEventListener("click", () => $("surpriseBtn").click());
+  $("locateMapBtn").hidden = $("meBtn").hidden;                       // same rule as Near me in the list
+  $("locateMapBtn").addEventListener("click", () => $("meBtn").click());
 
   // ------------------------------------------------------------ smart search
   const allCuisines = [...new Set(places.flatMap((p) => p.cuisine))].sort((a, b) => b.length - a.length);
@@ -280,7 +283,7 @@
     $("filterText").value = q;
     $("place").value = raw;
     state.shown = PAGE; render();
-    if (!areaHit && q) { const b = L.latLngBounds(visible().map((p) => [p.lat, p.lng])); if (b.isValid()) map.fitBounds(b.pad(0.1), { maxZoom: 16 }); }
+    if (!areaHit && q) { const b = L.latLngBounds(visible().map((p) => [p.lat, p.lng])); if (b.isValid()) map.fitBounds(b.pad(0.1), fitPad(24, { maxZoom: 16 })); }
   }
 
   const box = $("suggestBox");
@@ -324,8 +327,10 @@
   $("place").addEventListener("blur", () => setTimeout(() => { box.hidden = true; $("place").setAttribute("aria-expanded", "false"); }, 150));
 
   // ------------------------------------------------------------ phone bottom sheet
+  // The map fills the screen; the list is a sheet over it: "peek" (search bar only),
+  // "half" or "full". The map always leaves room for whatever the sheet covers.
   const sheet = {
-    state: "half",
+    state: "peek",
     mq: matchMedia("(max-width: 640px)"),
     set(s) {
       if (!this.mq.matches) return;
@@ -334,13 +339,81 @@
       panel.dataset.sheet = s;
       panel.style.transform = "";
       $("sheetHandle").setAttribute("aria-label", s === "full" ? "Shrink the list" : "Expand the list");
+      const tg = $("sheetToggle");
+      tg.textContent = s === "peek" ? "☰ Show list" : "🗺 Show map";
+      tg.setAttribute("aria-label", s === "peek" ? "Show the list" : "Show the map");
     },
   };
+  // Height of the screen the sheet covers in a given state (px).
+  function sheetCover(s) {
+    if (!sheet.mq.matches) return 0;
+    const panelH = innerHeight - 56;
+    return s === "full" ? panelH : s === "half" ? Math.round(panelH * 0.55) : 132;
+  }
+  // fitBounds options that keep the result clear of the sheet (phones) or just padded (desktop).
+  function fitPad(p = 24, extra = {}) {
+    const st = sheet.state === "full" ? "half" : sheet.state;
+    const o = sheet.mq.matches
+      ? { paddingTopLeft: [p, p + 44], paddingBottomRight: [p, sheetCover(st) + p] }
+      : { padding: [p, p] };
+    return Object.assign(o, extra);
+  }
   (function setupSheet() {
     const panel = document.querySelector(".panel");
     const handle = $("sheetHandle");
     let startY = 0, startT = 0, dragging = false, moved = false;
     const current = () => new DOMMatrixReadOnly(getComputedStyle(panel).transform).m42;
+    const ORDER = ["peek", "half", "full"];
+    const step = (dir) => ORDER[Math.max(0, Math.min(2, ORDER.indexOf(sheet.state) + dir))];
+
+    // Swipe the list itself: up grows the sheet (until full), down at the top of the list shrinks it.
+    const sc = $("sheetScroll");
+    let ty0 = 0, tx0 = 0, tStart = 0, mode = null, lastY = 0, lastT = 0, vel = 0;
+    sc.addEventListener("touchstart", (e) => {
+      if (!sheet.mq.matches || e.touches.length !== 1) { mode = "scroll"; return; }
+      const t = e.touches[0];
+      ty0 = lastY = t.clientY; tx0 = t.clientX; tStart = current(); mode = null; lastT = e.timeStamp; vel = 0;
+    }, { passive: true });
+    sc.addEventListener("touchmove", (e) => {
+      if (mode === "scroll" || !sheet.mq.matches || e.touches.length !== 1) return;
+      const t = e.touches[0], dy = t.clientY - ty0, dx = t.clientX - tx0;
+      if (mode === null) {
+        if (Math.abs(dy) < 5 && Math.abs(dx) < 5) return;
+        if (Math.abs(dx) > Math.abs(dy)) { mode = "scroll"; return; }          // sideways: chip rows scroll
+        const atTop = sc.scrollTop <= 0;
+        mode = (dy < 0 && sheet.state !== "full") || (dy > 0 && atTop) ? "sheet" : "scroll";
+        if (mode === "scroll") return;
+        panel.classList.add("dragging");
+      }
+      e.preventDefault();
+      const y = Math.min(panel.offsetHeight - 120, Math.max(0, tStart + dy));
+      panel.style.transform = `translateY(${y}px)`;
+      vel = (t.clientY - lastY) / Math.max(1, e.timeStamp - lastT); lastY = t.clientY; lastT = e.timeStamp;
+    }, { passive: false });
+    const touchEnd = () => {
+      if (mode !== "sheet") { mode = null; return; }
+      mode = null; panel.classList.remove("dragging");
+      const moved = lastY - ty0;
+      if (Math.abs(vel) > 0.5) return sheet.set(step(vel < 0 ? 1 : -1));                 // a flick moves one step
+      const frac = 1 - current() / panel.offsetHeight;
+      sheet.set(Math.abs(moved) < 30 ? sheet.state : frac > 0.72 ? "full" : frac > 0.3 ? "half" : "peek");
+    };
+    sc.addEventListener("touchend", touchEnd);
+    sc.addEventListener("touchcancel", touchEnd);
+
+    // Floating Map / List button.
+    $("sheetToggle").addEventListener("click", () => sheet.set(sheet.state === "peek" ? "half" : "peek"));
+
+    // Let the map move far enough that any part of the region can sit above the sheet.
+    const base = MUMBAI.pad(0.15);
+    const syncBounds = () => {
+      if (sheet.mq.matches) {
+        const h = base.getNorth() - base.getSouth();
+        map.setMaxBounds(L.latLngBounds([base.getSouth() - h * 0.9, base.getWest()], [base.getNorth() + h * 0.1, base.getEast()]));
+      } else map.setMaxBounds(base);
+    };
+    syncBounds();
+    sheet.mq.addEventListener("change", syncBounds);
     handle.addEventListener("pointerdown", (e) => {
       if (!sheet.mq.matches) return;
       dragging = true; moved = false; startY = e.clientY; startT = current();
@@ -364,9 +437,13 @@
     handle.addEventListener("pointercancel", end);
     handle.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sheet.set(sheet.state === "full" ? "half" : "full"); } });
     $("place").addEventListener("focus", () => { if (sheet.mq.matches && sheet.state === "peek") sheet.set("half"); });
-    map.on("dragstart", () => { if (sheet.mq.matches && sheet.state === "full") sheet.set("half"); });
-    sheet.set("half");
-    sheet.mq.addEventListener("change", () => { panel.style.transform = ""; if (sheet.mq.matches) sheet.set("half"); });
+    // Moving or tapping the map tucks the list away so the whole map is free.
+    map.on("dragstart", () => { if (sheet.mq.matches && sheet.state !== "peek") sheet.set("peek"); });
+    map.on("click", () => { if (sheet.mq.matches && sheet.state !== "peek") sheet.set("peek"); });
+    // Open map-first on phones, with the whole region framed above the search bar.
+    sheet.set("peek");
+    if (sheet.mq.matches) map.fitBounds(MUMBAI, fitPad(8, { animate: false }));
+    sheet.mq.addEventListener("change", () => { panel.style.transform = ""; if (sheet.mq.matches) sheet.set("peek"); });
   })();
 
   // ------------------------------------------------------------ resizable list / map (desktop)
