@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Mumbai Cafe Finder app QR</title>
+<style>
+  html, body { margin: 0; width: 640px; height: 800px; background: #fff; font-family: "Segoe UI", system-ui, sans-serif; }
+  .top { background: #c2410c; color: #fff; height: 110px; display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .top img { width: 62px; height: 62px; border-radius: 14px; background: #fff; }
+  .top b { font-size: 34px; letter-spacing: -.01em; }
+  #qr { display: flex; justify-content: center; margin-top: 36px; }
+  .t { text-align: center; color: #241a14; font-size: 27px; font-weight: 700; margin-top: 30px; }
+  .u { text-align: center; color: #76675c; font-size: 19px; margin-top: 10px; }
+</style></head>
+<body>
+  <div class="top"><img src="../site/icons/icon-192.png" alt=""><b>Mumbai Cafe Finder</b></div>
+  <div id="qr"></div>
+  <div class="t">Scan to install the app</div>
+  <div class="u">nyayaai-dev.github.io/cafe_finder/install.html</div>
+  <div class="u">Free · no app store · works offline</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>new QRCode(document.getElementById("qr"), { text: "https://nyayaai-dev.github.io/cafe_finder/install.html", width: 460, height: 460, correctLevel: QRCode.CorrectLevel.M });</script>
+</body></html>
