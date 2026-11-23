@@ -173,10 +173,30 @@
     </span></div>`;
   }
 
+
+  // ------------------------------------------------------------ photos
+  // Free-licensed photos from Wikimedia Commons (credited), plus links to each place's
+  // own photo galleries on Google Maps and Zomato, where inside photos live.
+  const PH = typeof PHOTOS !== "undefined" ? PHOTOS : {};
+  function photoLinks(p) {
+    const zomato = "https://www.google.com/search?btnI=1&q=" + encodeURIComponent(`${p.name} ${where(p)} photos site:zomato.com`);
+    return `<div class="actions phlinks"><a class="btn" href="${esc(gmaps(p))}" target="_blank" rel="noopener">📷 Inside photos on Google Maps</a>
+      <a class="btn" href="${esc(zomato)}" target="_blank" rel="noopener">📷 Photos on Zomato</a></div>`;
+  }
+  function photosBlock(p) {
+    const list = PH[p.key] || [];
+    if (!list.length) return photoLinks(p);
+    return `<div class="photos"><div class="phstrip">${list.map(([u, page, a, lic, inside, t]) => `<figure>
+        <a href="${esc(page)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="${esc(t)}" loading="lazy" referrerpolicy="no-referrer"></a>
+        ${inside ? `<span class="phin">Inside</span>` : ""}
+        <figcaption><span class="pname">${esc(a)}</span> · ${esc(lic)} · <a href="${esc(page)}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption></figure>`).join("")}</div>
+      ${photoLinks(p)}</div>`;
+  }
+
   // ------------------------------------------------------------ facilities (dashboard)
   const FAC = [[1, "📶", "Wi-Fi"], [2, "🌳", "Outdoor seating"], [4, "🪑", "Indoor seating"], [8, "❄️", "AC"], [16, "♿", "Wheelchair access"],
     [32, "🥡", "Takeaway"], [64, "🛵", "Delivery"], [128, "🅿️", "Public parking nearby"], [256, "🔌", "EV charging nearby"]];
-  const facIcons = (p) => FAC.filter(([b]) => p.fac & b).map(([, i, t]) => `<span class="fi" title="${t}" aria-label="${t}">${i}</span>`).join("");
+  const facIcons = (p) => (PH[p.key] ? `<span class="fi" title="Photos" aria-label="Photos">📷</span>` : "") + FAC.filter(([b]) => p.fac & b).map(([, i, t]) => `<span class="fi" title="${t}" aria-label="${t}">${i}</span>`).join("");
   function facDetail(p) {
     const have = FAC.filter(([b]) => p.fac & b);
     const v = crowdNow(p);
@@ -200,9 +220,37 @@
   const friendOf = (p) => Object.keys(friends).filter((n) => (friends[n] || []).includes(p.key));
   const friendTag = (p) => { const f = friendOf(p); return f.length ? `<span class="friend" title="Recommended by ${esc(f.join(", "))}">👥 ${esc(f.slice(0, 2).join(", "))}${f.length > 2 ? " +" + (f.length - 2) : ""}</span>` : ""; };
 
+
+  // ------------------------------------------------------------ chains (all outlets of a brand)
+  const CHAINS = [
+    ["McDonald's", "🍔", /^mcdonald/i], ["Burger King", "🍔", /^burger king/i], ["KFC", "🍗", /^kfc\b/i], ["Domino's", "🍕", /^domino/i],
+    ["Pizza Hut", "🍕", /^pizza hut/i], ["Subway", "🥪", /^subway\b/i], ["Taco Bell", "🌮", /^taco bell/i], ["Starbucks", "☕", /^starbucks/i],
+    ["Cafe Coffee Day", "☕", /^caf[eé] coffee day|^ccd\b/i], ["Third Wave Coffee", "☕", /^third wave/i], ["Barista", "☕", /^barista\b/i],
+    ["Chaayos", "🫖", /^chaayos/i], ["Baskin-Robbins", "🍨", /^baskin/i], ["Kailash Parbat", "🍛", /^kailash parbat/i],
+    ["Bhagat Tarachand", "🍛", /^bhagat tarachand/i], ["Jumbo King", "🍔", /^jumbo king/i], ["Wow! Momo", "🥟", /^wow!? ?momo/i],
+    ["Haldiram's", "🍛", /^haldiram/i], ["Theobroma", "🍰", /^theobroma/i],
+  ];
+  state.chain = "";
+  const chainRe = (name) => (CHAINS.find(([n]) => n === name) || [])[2];
+  function drawChains() {
+    $("chainGrid").innerHTML = CHAINS.map(([n, icon, re]) => [n, icon, places.filter((p) => re.test(p.name)).length])
+      .filter(([, , c]) => c).sort((a, b) => b[2] - a[2])
+      .map(([n, icon, c]) => `<button type="button" class="dish" data-chain="${esc(n)}"><span class="di">${icon}</span><span class="pname">${esc(n)}</span><small class="muted">${c}</small></button>`).join("");
+  }
+  $("chainGrid").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-chain]"); if (!b) return;
+    $("chainsDlg").close();
+    setArea(null, "", document.querySelector('#quick [data-area=""]'));
+    applyDiscover({ chain: b.dataset.chain });
+    const pts = visible().map((p) => [p.lat, p.lng]);
+    if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.05), fitPad(16, { maxZoom: 15 }));
+    toast(`${b.dataset.chain}: ${pts.length} outlets`);
+  });
+
   // ------------------------------------------------------------ filter state + visible() hook
   state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false;
   function discoverOk(p) {
+    if (state.chain && !chainRe(state.chain).test(p.name)) return false;
     if (state.dish && !dishMatch(p, state.dish)) return false;
     if (state.budget && costPP(p).v > state.budget) return false;
     if (state.gems && !isGem(p)) return false;
@@ -214,6 +262,7 @@
   }
   function syncDiscoverBanner() {
     const bits = [];
+    if (state.chain) bits.push(`🏷️ ${state.chain}`);
     if (state.dish) bits.push(`${DISHES[state.dish].icon} ${DISHES[state.dish].label}`);
     if (state.budget) bits.push(`💰 up to ₹${state.budget.toLocaleString("en-IN")} a person`);
     if (state.gems) bits.push("💎 Hidden gems");
@@ -225,7 +274,7 @@
     $("friendsTool").hidden = !Object.keys(friends).length;
   }
   $("discoverClear").addEventListener("click", () => {
-    state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false;
+    state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false; state.chain = "";
     syncDiscoverBanner(); state.shown = PAGE; render();
   });
   function applyDiscover(patch) {
@@ -237,12 +286,14 @@
 
   // URL: ?dish=biryani&budget=300&gems=1&friends=1 (filters in the link, website only)
   function discoverParams(ps) {
+    if (state.chain) ps.set("chain", state.chain);
     if (state.dish) ps.set("dish", state.dish);
     if (state.budget) ps.set("budget", state.budget);
     if (state.gems) ps.set("gems", "1");
     if (state.friendsOnly) ps.set("friends", "1");
   }
   function applyDiscoverParams(ps) {
+    if (chainRe(ps.get("chain"))) state.chain = ps.get("chain");
     if (DISHES[ps.get("dish")]) state.dish = ps.get("dish");
     const b = parseInt(ps.get("budget"), 10); if (b > 0) state.budget = b;
     if (ps.get("gems") === "1") state.gems = true;
@@ -527,6 +578,7 @@
     const b = e.target.closest("[data-tool]"); if (!b) return;
     const t = b.dataset.tool;
     if (t === "dish") $("dishDlg").showModal();
+    else if (t === "chains") { drawChains(); $("chainsDlg").showModal(); }
     else if (t === "match") { $("foodDlg").showModal(); $("fmText").focus(); }
     else if (t === "budget") { drawBudget(); $("budgetDlg").showModal(); }
     else if (t === "trend") { drawTrending(); $("trendDlg").showModal(); }

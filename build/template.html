@@ -285,6 +285,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     <div class="tools pad" id="tools" role="group" aria-label="Discover">
       <button type="button" data-tool="match">✨ Food Match</button>
       <button type="button" data-tool="dish">🍽️ Dish finder</button>
+      <button type="button" data-tool="chains">🏷️ Chains</button>
       <button type="button" data-tool="budget">💰 Budget</button>
       <button type="button" data-tool="trend">🔥 Trending</button>
       <button type="button" data-tool="gems" aria-pressed="false">💎 Hidden gems</button>
@@ -409,6 +410,12 @@ button.ghost { background: var(--chip); color: var(--ink); }
   <div class="fm-in"><textarea id="fmText" rows="2" placeholder="e.g. spicy veg dinner in Dadar under 400"></textarea><button type="button" id="fmGo">Match</button></div>
   <div class="examples" id="fmExamples"><button type="button">cheesy pizza in Bandra under 600</button><button type="button">something cold and sweet near station</button><button type="button">quiet cafe with wifi to study</button><button type="button">jain thali for 4 under 2000</button><button type="button">spicy seafood open now</button><button type="button">healthy breakfast in Andheri</button></div>
   <div id="fmOut" aria-live="polite"></div>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
+</dialog>
+<dialog id="chainsDlg" class="dlg" aria-labelledby="chTitle">
+  <h2 id="chTitle">🏷️ Chains</h2>
+  <p class="muted sub">Every outlet of popular chains across Mumbai, Thane and Navi Mumbai. Tap one to see all its outlets on the map.</p>
+  <div class="dishgrid" id="chainGrid"></div>
   <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
 </dialog>
 <dialog id="dishDlg" class="dlg" aria-labelledby="dishTitle">

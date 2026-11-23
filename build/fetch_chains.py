@@ -1,0 +1,103 @@
+"""Chain outlets across the region, so every McDonald's, KFC, Domino's… shows on the map.
+
+Sources:
+  - All The Places (alltheplaces.xyz, CC0): outlet lists collected from each brand's own store
+    locator. Spiders used: Burger King, KFC, Domino's, Pizza Hut, Baskin-Robbins, Chaayos,
+    Taco Bell and Third Wave Coffee (India).
+  - Brands' own outlet pages for Bhagat Tarachand and Kailash Parbat (pins placed at the mall /
+    street named in the address, so they're marked approximate).
+McDonald's, Subway and Starbucks come from OpenStreetMap (already in the places data); their
+store locators can't be read without a browser.
+
+Writes data/chains.json: [{name, lat, lng, address, hours, phone, website, kind, rest, cuisine,
+diet, src, srcUrl, approx}]. build.py merges these with the map places, skipping any outlet
+already on the map within 250 m."""
+import json, os, sys, urllib.request
+
+sys.stdout.reconfigure(encoding="utf-8")
+HERE = os.path.dirname(os.path.abspath(__file__))
+UA = "cafe-finder-prototype/0.1"
+RUNS = "https://alltheplaces-data.openaddresses.io/runs/history.json"
+OUTLINE = [(19.340, 72.760), (19.340, 73.100), (19.275, 73.195), (19.190, 73.195), (19.100, 73.125), (19.020, 73.150),
+           (18.960, 73.150), (18.945, 73.050), (18.950, 72.980), (18.860, 72.900), (18.860, 72.760)]
+
+# spider -> (name on the map, is restaurant, kind, cuisine, diet bits: 1 pure veg, 2 Jain, 4 non-veg, 8 veg options)
+ATP = {
+    "burger_king_in": ("Burger King", 1, "Fast food", "Burger", 12),
+    "kfc_in": ("KFC", 1, "Fast food", "Chicken", 12),
+    "dominos_pizza_in": ("Domino's", 1, "Fast food", "Pizza", 12),
+    "pizza_hut_in": ("Pizza Hut", 1, "Restaurant", "Pizza", 12),
+    "baskin_robbins_in": ("Baskin-Robbins", 0, "Dessert & ice cream", "Ice Cream", 1),
+    "chaayos_in": ("Chaayos", 0, "Cafe", "Tea", 8),
+    "taco_bell_in": ("Taco Bell", 1, "Fast food", "Mexican", 12),
+    "third_wave_coffee_in": ("Third Wave Coffee Roasters", 0, "Cafe", "Coffee Shop", 8),
+}
+
+BT = ("Bhagat Tarachand", 1, "Restaurant", "North Indian;Vegetarian", 3, "https://bhagattarachand.com/locations/")
+KP = ("Kailash Parbat", 1, "Restaurant", "North Indian;Chaat;Vegetarian", 3, "https://kailashparbatgroup.com/locations-india/")
+MANUAL = [  # brand, address (as listed), lat, lng (the mall / street named)
+    (BT, "69/75 Mumbadevi Commercial Centre, Shaikh Memon Street, Zaveri Bazaar", 18.9497, 72.8331),
+    (BT, "47/55 Mumbadevi Road, next to IDBI Bank, Pydhonie", 18.9531, 72.8327),
+    (BT, "Mahavir Ratan, Sector 12, Vashi, Navi Mumbai", 19.0750, 73.0010),
+    (BT, "Matulya Centre, A Wing, Ground Floor, Lower Parel", 18.9985, 72.8270),
+    (BT, "Ghanshyam Chambers, opp. Citi Mall, New Link Road, Andheri West", 19.1378, 72.8327),
+    (BT, "Viviana Mall, 2nd Floor Food Court, Thane West", 19.2087, 72.9712),
+    (BT, "Seawoods Grand Central Mall, 2nd Floor Food Court, Seawoods", 19.0208, 73.0186),
+    (BT, "Inorbit Mall, 2nd Floor Food Court, Malad West", 19.1730, 72.8355),
+    (BT, "Inorbit Mall, 2nd Floor Food Court, Sector 30A, Vashi", 19.0657, 73.0014),
+    (KP, "Inorbit Mall, Food Court, Malad West", 19.1731, 72.8357),
+    (KP, "T2, Chhatrapati Shivaji Maharaj International Airport", 19.0974, 72.8742),
+    (KP, "Lodha Xperia Mall, Food Court, Palava, Dombivli", 19.1622, 73.0786),
+    (KP, "Seawoods Grand Central Mall, Food Court, Nerul", 19.0209, 73.0188),
+    (KP, "AHCL Homes, New Link Road, Shimpoli, Borivali West", 19.2295, 72.8420),
+]
+
+
+def inside(lat, lng, poly=OUTLINE):
+    res, j = False, len(poly) - 1
+    for i in range(len(poly)):
+        (yi, xi), (yj, xj) = poly[i], poly[j]
+        if (yi > lat) != (yj > lat) and lng < (xj - xi) * (lat - yi) / (yj - yi) + xi:
+            res = not res
+        j = i
+    return res
+
+
+def fetch(url):
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=240) as r:
+        return r.read()
+
+
+def main():
+    runs = [r for r in json.loads(fetch(RUNS)) if r.get("output_url")]
+    run = runs[-1]["run_id"]
+    print("All The Places run", run)
+    out = []
+    for spider, (name, rest, kind, cuisine, diet) in ATP.items():
+        d = json.loads(fetch(f"https://alltheplaces-data.openaddresses.io/runs/{run}/output/{spider}.geojson"))
+        n = 0
+        for f in d["features"]:
+            g, p = f.get("geometry"), f.get("properties", {})
+            if not g or not g.get("coordinates"):
+                continue
+            lng, lat = g["coordinates"][:2]
+            if not inside(lat, lng):
+                continue
+            addr = p.get("addr:full") or ", ".join(x for x in (p.get("addr:street_address"), p.get("addr:city")) if x)
+            out.append({"name": name, "lat": round(lat, 6), "lng": round(lng, 6), "address": addr.strip(" ,")[:160],
+                        "hours": p.get("opening_hours", ""), "phone": p.get("phone", ""), "website": p.get("website", ""),
+                        "kind": kind, "rest": rest, "cuisine": cuisine, "diet": diet, "src": f"{name} store locator",
+                        "srcUrl": p.get("website") or f"https://www.alltheplaces.xyz/", "approx": 0})
+            n += 1
+        print(f"  {name}: {n} outlets in the region")
+    for (name, rest, kind, cuisine, diet, url), addr, lat, lng in MANUAL:
+        out.append({"name": name, "lat": lat, "lng": lng, "address": addr, "hours": "", "phone": "", "website": url,
+                    "kind": kind, "rest": rest, "cuisine": cuisine, "diet": diet, "src": f"{name} outlet list",
+                    "srcUrl": url, "approx": 1})
+    print(f"  Bhagat Tarachand + Kailash Parbat: {len(MANUAL)} outlets from their own pages")
+    json.dump(out, open(os.path.join(HERE, "..", "data", "chains.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
+    print(len(out), "chain outlets written")
+
+
+if __name__ == "__main__":
+    main()

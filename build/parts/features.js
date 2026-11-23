@@ -149,6 +149,7 @@
       </div>
       <h2 class="d-name" tabindex="-1" id="detailName">${esc(p.name)}</h2>${friendTag(p) ? `<p>${friendTag(p)}</p>` : ""}
       <div class="d-tags">${catTag(p)}</div>
+      ${photosBlock(p)}
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
       ${area(p)}${transit(p, true)}${rating(p)}${price(p)}${food(p)}${weeklyHours(p)}${crowdDetail(p)}${facDetail(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
@@ -196,7 +197,7 @@
     $("picks").hidden = picks.length < 2;
     $("picksWhere").textContent = state.areaName ? `in ${state.areaName}` : "across the city";
     $("picksRow").innerHTML = picks.map((p) => `
-      <button type="button" class="pick" data-open="${p.key}">
+      <button type="button" class="pick" data-open="${p.key}">${PH[p.key] ? `<img class="pkimg" src="${esc(PH[p.key][0][0])}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}
         <span class="pk-top"><span class="dot-sm ${p.cat}"></span><b class="stars">★ ${p.rating.toFixed(1)}</b></span>
         <span class="pk-name">${esc(p.name)}</span>
         <span class="muted">${esc(p.loc === p.sub ? p.sub : p.loc)}${p.priceTwo ? " · ₹" + p.priceTwo.toLocaleString("en-IN") + " for two" : ""}</span>

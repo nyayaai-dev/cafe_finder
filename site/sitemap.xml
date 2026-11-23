@@ -55,9 +55,12 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/jogeshwari-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/juhu.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/juinagar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kala-ghoda.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kalamboli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kalyan-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kalyan-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kalyan-dombivli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kamatghar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kandivali.html</loc></url>
@@ -71,11 +74,14 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/khar-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kharghar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kokanipada.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kolshet.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kopar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kopar-khairne.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kopri.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/kurla.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/lokmanya-nagar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/lower-parel.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/midc-rabale.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/mahalaxmi.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/mahape.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/mahim.html</loc></url>
@@ -137,33 +143,42 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/vile-parle-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/vitthalwadi.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/wadala.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/wagle-industrial-estate.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/areas/worli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-airoli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-airoli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-airoli.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-andheri.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-andheri.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-andheri.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-andheri.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-andheri.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-andheri.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-andheri.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-andheri.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-andheri-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-andheri.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-andheri-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-andheri-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-andheri-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-andheri-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-andheri-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-andheri-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-andheri-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-andheri-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-andheri-west.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-andheri-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-andheri-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-andheri-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-bandra.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-bandra.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-bandra.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-bandra.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-bandra.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-bandra.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-bandra.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-bandra.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-bandra-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-bandra-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-bandra-kurla-complex.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-bandra-kurla-complex.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-bandra-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-bandra-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-bandra-west.html</loc></url>
@@ -173,24 +188,29 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-belapur-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-belapur-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-belapur-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-belapur-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-belapur-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-bhandup.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-bhayander-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-borivali.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-borivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-borivali.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-borivali.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-borivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-borivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-borivali.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-borivali.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-borivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-borivali-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-borivali-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-borivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-borivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-borivali-west.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-borivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-borivali-west.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-borivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-byculla.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-chembur.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-chembur.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-chembur.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-chembur.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-chembur.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-churchgate.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-churchgate.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-dadar.html</loc></url>
@@ -199,47 +219,59 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-dahisar-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-digha.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-dombivli-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-dombivli-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-fort.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-fort.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-fort.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-ghansoli.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-ghatkopar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-ghatkopar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-ghatkopar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-ghansoli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-ghatkopar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-ghatkopar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-ghatkopar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-ghatkopar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-ghatkopar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-girgaon.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-girgaon.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/dessert-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/juice-in-girgaon.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/asian-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-girgaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-in-girgaon.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-goregaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-goregaon.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-goregaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-goregaon.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-goregaon.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-goregaon-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-goregaon-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-goregaon-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-goregaon-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-goregaon-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-goregaon-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-grant-road.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-grant-road.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/mughlai-in-grant-road.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-grant-road.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-jambli-naka.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-jogeshwari.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food-in-jogeshwari.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-jogeshwari.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/tea-in-jogeshwari.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-jogeshwari.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-jogeshwari-west.html</loc></url>
@@ -249,68 +281,94 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-in-jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-jogeshwari-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/tea-in-jogeshwari-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-juhu.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kala-ghoda.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kala-ghoda.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-kala-ghoda.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-kala-ghoda.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kalyan-and-dombivli.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kalyan-and-dombivli.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kalamboli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-kalyan-and-dombivli.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-kalyan-and-dombivli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-kalyan-and-dombivli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-kalyan-and-dombivli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kandivali.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kandivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-kandivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-kandivali.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-kandivali.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kandivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-kandivali.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kandivali-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-kandivali.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kandivali-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-kandivali-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kandivali-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-kandivali-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-kandivali-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kandivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-kandivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-kandivali-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-kandivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-kandivali-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-khar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-khar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-khar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-khar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-khar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-khar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-khar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-khar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-khar-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-khar-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-khar-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-khar-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-khar-west.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-khar-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-khar-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-khar-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-kharghar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kharghar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kopar-khairne.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-kurla.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-kurla.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-lower-parel.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-lower-parel.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-lower-parel.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-lower-parel.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-majiwada.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-malabar-hill.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-malad.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-malad.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-malad.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-malad.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-malad.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-malad.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-malad.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-malad.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-malad.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-malad.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-malad.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-malad.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-malad-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-malad-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-malad-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-malad-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-malad-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-malad-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-malad-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-malad-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-malad-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-malad-to-dahisar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-malad-to-dahisar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-malad-to-dahisar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-malad-to-dahisar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-malad-to-dahisar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-in-malad-to-dahisar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-malad-to-dahisar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-malad-to-dahisar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/kebab-in-malad-to-dahisar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/mexican-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pasta-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/south-indian-in-malad-to-dahisar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-marine-lines.html</loc></url>
@@ -318,98 +376,126 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-matunga.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-matunga.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-mira-road.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-mira-road.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-mira-road.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-mira-road.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-mira-road.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-mira-road-and-bhayandar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-mira-road-and-bhayandar.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-mira-road-and-bhayandar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-mira-road-and-bhayandar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-mira-road-and-bhayandar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-mira-road-and-bhayandar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-mira-road-and-bhayandar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-mira-road-and-bhayandar.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-mulund.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-mulund-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-mulund-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-mulund-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-naupada.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-navi-mumbai.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-navi-mumbai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-navi-mumbai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-navi-mumbai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-navi-mumbai.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/juice-in-navi-mumbai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/north-indian-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-navi-mumbai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/seafood-in-navi-mumbai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/tea-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/dessert-in-navi-mumbai.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-in-navi-mumbai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-nerul-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-nerul-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-nilaje.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-panvel.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-panvel.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-powai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-powai.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-powai.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-powai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/cake-in-powai.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-powai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-prabhadevi.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-prabhadevi.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-santacruz.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-santacruz.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-santacruz.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-santacruz.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-santacruz-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-sion.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-sion.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-tardeo.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-tardeo.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-targhar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-thakurli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-thane.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-thane.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-thane.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-thane.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-thane.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-thane.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/mexican-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/tea-in-thane.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-ulhasnagar.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-ulwe.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-vashi.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-vikhroli.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-vile-parle.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-vile-parle.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-vile-parle.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-vile-parle.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food-in-vile-parle.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-vile-parle-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger-in-vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich-in-vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-vile-parle-east.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-vile-parle-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken-in-vile-parle-east.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food-in-vile-parle-east.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-vile-parle-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop-in-vile-parle-west.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza-in-vile-parle-west.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian-in-wadala.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian-in-wadala.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast-in-wadala.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese-in-wadala.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/vegetarian.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/indian.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/coffee-shop.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pizza.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/burger.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chinese.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/sandwich.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/breakfast.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chicken.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/ice-cream.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/jain-food.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/tea.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/mexican.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/juice.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/seafood.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/asian.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/dessert.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/mexican.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/north-indian.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/kebab.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/pasta.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/american.html</loc></url>
@@ -421,13 +507,13 @@
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/italian-pizza.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/thai.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/barbecue.html</loc></url>
+  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/chaat.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/bubble-tea.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/grill.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/salad.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/soup.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/fish.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/mediterranean.html</loc></url>
-  <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/north-indian.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/tex-mex.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/donut.html</loc></url>
   <url><loc>https://nyayaai-dev.github.io/cafe_finder/food/momo.html</loc></url>

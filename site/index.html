@@ -7,7 +7,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Mumbai Cafe & Restaurant Finder">
 <meta property="og:title" content="Mumbai Cafe & Restaurant Finder">
-<meta property="og:description" content="Find 2,626 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
+<meta property="og:description" content="Find 3,039 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
 <meta property="og:url" content="https://nyayaai-dev.github.io/cafe_finder/">
 <meta property="og:image" content="https://nyayaai-dev.github.io/cafe_finder/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Find 2,626 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
+<meta name="description" content="Find 3,039 cafes and restaurants from Colaba to Mira Road, Thane, Kalyan and Panvel: areas, cuisine, veg and Jain filters, ratings, cost for two, menus and directions.">
 <script>if ('serviceWorker' in navigator && window.isSecureContext) {const t0 = Date.now(), had = !!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange', () => {if (had && Date.now() - t0 < 20000 && !window.__cfReloaded) { window.__cfReloaded = true; location.reload(); } });addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then((r) => r.update()).catch(() => {})); }</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1259,6 +1259,19 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
 .frrow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .frrow input { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; }
 
+.dish small { margin-left: auto; font-weight: 700; }
+
+/* photos */
+.photos { margin: 10px 0 4px; }
+.phstrip { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
+.phstrip figure { position: relative; flex: none; width: min(78%, 300px); margin: 0; scroll-snap-align: start; }
+.phstrip img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; background: var(--chip); }
+.phstrip figcaption { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
+.phstrip figcaption a { color: inherit; }
+.phin { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.65); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+.phlinks { margin-top: 6px; }
+.pick .pkimg { width: calc(100% + 24px); margin: -10px -12px 6px; height: 92px; object-fit: cover; border-radius: 12px 12px 0 0; display: block; }
+
 /* AR view */
 #arView { position: fixed; inset: 0; z-index: 3000; background: #000; }
 #arVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
@@ -1331,6 +1344,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     <div class="tools pad" id="tools" role="group" aria-label="Discover">
       <button type="button" data-tool="match">✨ Food Match</button>
       <button type="button" data-tool="dish">🍽️ Dish finder</button>
+      <button type="button" data-tool="chains">🏷️ Chains</button>
       <button type="button" data-tool="budget">💰 Budget</button>
       <button type="button" data-tool="trend">🔥 Trending</button>
       <button type="button" data-tool="gems" aria-pressed="false">💎 Hidden gems</button>
@@ -1455,6 +1469,12 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   <div class="fm-in"><textarea id="fmText" rows="2" placeholder="e.g. spicy veg dinner in Dadar under 400"></textarea><button type="button" id="fmGo">Match</button></div>
   <div class="examples" id="fmExamples"><button type="button">cheesy pizza in Bandra under 600</button><button type="button">something cold and sweet near station</button><button type="button">quiet cafe with wifi to study</button><button type="button">jain thali for 4 under 2000</button><button type="button">spicy seafood open now</button><button type="button">healthy breakfast in Andheri</button></div>
   <div id="fmOut" aria-live="polite"></div>
+  <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
+</dialog>
+<dialog id="chainsDlg" class="dlg" aria-labelledby="chTitle">
+  <h2 id="chTitle">🏷️ Chains</h2>
+  <p class="muted sub">Every outlet of popular chains across Mumbai, Thane and Navi Mumbai. Tap one to see all its outlets on the map.</p>
+  <div class="dishgrid" id="chainGrid"></div>
   <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
 </dialog>
 <dialog id="dishDlg" class="dlg" aria-labelledby="dishTitle">
@@ -2345,6 +2365,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
       </div>
       <h2 class="d-name" tabindex="-1" id="detailName">${esc(p.name)}</h2>${friendTag(p) ? `<p>${friendTag(p)}</p>` : ""}
       <div class="d-tags">${catTag(p)}</div>
+      ${photosBlock(p)}
       <div class="line glive" id="glive-${p.id}" hidden><span class="lbl">Google</span><span class="gval"><span class="muted">Checking Google…</span></span></div>
       ${area(p)}${transit(p, true)}${rating(p)}${price(p)}${food(p)}${weeklyHours(p)}${crowdDetail(p)}${facDetail(p)}${cuisine(p)}${source(p)}
       ${p.address ? `<p class="meta">${esc(p.address)}</p>` : ""}
@@ -2392,7 +2413,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     $("picks").hidden = picks.length < 2;
     $("picksWhere").textContent = state.areaName ? `in ${state.areaName}` : "across the city";
     $("picksRow").innerHTML = picks.map((p) => `
-      <button type="button" class="pick" data-open="${p.key}">
+      <button type="button" class="pick" data-open="${p.key}">${PH[p.key] ? `<img class="pkimg" src="${esc(PH[p.key][0][0])}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}
         <span class="pk-top"><span class="dot-sm ${p.cat}"></span><b class="stars">★ ${p.rating.toFixed(1)}</b></span>
         <span class="pk-name">${esc(p.name)}</span>
         <span class="muted">${esc(p.loc === p.sub ? p.sub : p.loc)}${p.priceTwo ? " · ₹" + p.priceTwo.toLocaleString("en-IN") + " for two" : ""}</span>
@@ -3020,10 +3041,30 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     </span></div>`;
   }
 
+
+  // ------------------------------------------------------------ photos
+  // Free-licensed photos from Wikimedia Commons (credited), plus links to each place's
+  // own photo galleries on Google Maps and Zomato, where inside photos live.
+  const PH = typeof PHOTOS !== "undefined" ? PHOTOS : {};
+  function photoLinks(p) {
+    const zomato = "https://www.google.com/search?btnI=1&q=" + encodeURIComponent(`${p.name} ${where(p)} photos site:zomato.com`);
+    return `<div class="actions phlinks"><a class="btn" href="${esc(gmaps(p))}" target="_blank" rel="noopener">📷 Inside photos on Google Maps</a>
+      <a class="btn" href="${esc(zomato)}" target="_blank" rel="noopener">📷 Photos on Zomato</a></div>`;
+  }
+  function photosBlock(p) {
+    const list = PH[p.key] || [];
+    if (!list.length) return photoLinks(p);
+    return `<div class="photos"><div class="phstrip">${list.map(([u, page, a, lic, inside, t]) => `<figure>
+        <a href="${esc(page)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="${esc(t)}" loading="lazy" referrerpolicy="no-referrer"></a>
+        ${inside ? `<span class="phin">Inside</span>` : ""}
+        <figcaption><span class="pname">${esc(a)}</span> · ${esc(lic)} · <a href="${esc(page)}" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption></figure>`).join("")}</div>
+      ${photoLinks(p)}</div>`;
+  }
+
   // ------------------------------------------------------------ facilities (dashboard)
   const FAC = [[1, "📶", "Wi-Fi"], [2, "🌳", "Outdoor seating"], [4, "🪑", "Indoor seating"], [8, "❄️", "AC"], [16, "♿", "Wheelchair access"],
     [32, "🥡", "Takeaway"], [64, "🛵", "Delivery"], [128, "🅿️", "Public parking nearby"], [256, "🔌", "EV charging nearby"]];
-  const facIcons = (p) => FAC.filter(([b]) => p.fac & b).map(([, i, t]) => `<span class="fi" title="${t}" aria-label="${t}">${i}</span>`).join("");
+  const facIcons = (p) => (PH[p.key] ? `<span class="fi" title="Photos" aria-label="Photos">📷</span>` : "") + FAC.filter(([b]) => p.fac & b).map(([, i, t]) => `<span class="fi" title="${t}" aria-label="${t}">${i}</span>`).join("");
   function facDetail(p) {
     const have = FAC.filter(([b]) => p.fac & b);
     const v = crowdNow(p);
@@ -3047,9 +3088,37 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   const friendOf = (p) => Object.keys(friends).filter((n) => (friends[n] || []).includes(p.key));
   const friendTag = (p) => { const f = friendOf(p); return f.length ? `<span class="friend" title="Recommended by ${esc(f.join(", "))}">👥 ${esc(f.slice(0, 2).join(", "))}${f.length > 2 ? " +" + (f.length - 2) : ""}</span>` : ""; };
 
+
+  // ------------------------------------------------------------ chains (all outlets of a brand)
+  const CHAINS = [
+    ["McDonald's", "🍔", /^mcdonald/i], ["Burger King", "🍔", /^burger king/i], ["KFC", "🍗", /^kfc\b/i], ["Domino's", "🍕", /^domino/i],
+    ["Pizza Hut", "🍕", /^pizza hut/i], ["Subway", "🥪", /^subway\b/i], ["Taco Bell", "🌮", /^taco bell/i], ["Starbucks", "☕", /^starbucks/i],
+    ["Cafe Coffee Day", "☕", /^caf[eé] coffee day|^ccd\b/i], ["Third Wave Coffee", "☕", /^third wave/i], ["Barista", "☕", /^barista\b/i],
+    ["Chaayos", "🫖", /^chaayos/i], ["Baskin-Robbins", "🍨", /^baskin/i], ["Kailash Parbat", "🍛", /^kailash parbat/i],
+    ["Bhagat Tarachand", "🍛", /^bhagat tarachand/i], ["Jumbo King", "🍔", /^jumbo king/i], ["Wow! Momo", "🥟", /^wow!? ?momo/i],
+    ["Haldiram's", "🍛", /^haldiram/i], ["Theobroma", "🍰", /^theobroma/i],
+  ];
+  state.chain = "";
+  const chainRe = (name) => (CHAINS.find(([n]) => n === name) || [])[2];
+  function drawChains() {
+    $("chainGrid").innerHTML = CHAINS.map(([n, icon, re]) => [n, icon, places.filter((p) => re.test(p.name)).length])
+      .filter(([, , c]) => c).sort((a, b) => b[2] - a[2])
+      .map(([n, icon, c]) => `<button type="button" class="dish" data-chain="${esc(n)}"><span class="di">${icon}</span><span class="pname">${esc(n)}</span><small class="muted">${c}</small></button>`).join("");
+  }
+  $("chainGrid").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-chain]"); if (!b) return;
+    $("chainsDlg").close();
+    setArea(null, "", document.querySelector('#quick [data-area=""]'));
+    applyDiscover({ chain: b.dataset.chain });
+    const pts = visible().map((p) => [p.lat, p.lng]);
+    if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.05), fitPad(16, { maxZoom: 15 }));
+    toast(`${b.dataset.chain}: ${pts.length} outlets`);
+  });
+
   // ------------------------------------------------------------ filter state + visible() hook
   state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false;
   function discoverOk(p) {
+    if (state.chain && !chainRe(state.chain).test(p.name)) return false;
     if (state.dish && !dishMatch(p, state.dish)) return false;
     if (state.budget && costPP(p).v > state.budget) return false;
     if (state.gems && !isGem(p)) return false;
@@ -3061,6 +3130,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   }
   function syncDiscoverBanner() {
     const bits = [];
+    if (state.chain) bits.push(`🏷️ ${state.chain}`);
     if (state.dish) bits.push(`${DISHES[state.dish].icon} ${DISHES[state.dish].label}`);
     if (state.budget) bits.push(`💰 up to ₹${state.budget.toLocaleString("en-IN")} a person`);
     if (state.gems) bits.push("💎 Hidden gems");
@@ -3072,7 +3142,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     $("friendsTool").hidden = !Object.keys(friends).length;
   }
   $("discoverClear").addEventListener("click", () => {
-    state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false;
+    state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false; state.chain = "";
     syncDiscoverBanner(); state.shown = PAGE; render();
   });
   function applyDiscover(patch) {
@@ -3084,12 +3154,14 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
 
   // URL: ?dish=biryani&budget=300&gems=1&friends=1 (filters in the link, website only)
   function discoverParams(ps) {
+    if (state.chain) ps.set("chain", state.chain);
     if (state.dish) ps.set("dish", state.dish);
     if (state.budget) ps.set("budget", state.budget);
     if (state.gems) ps.set("gems", "1");
     if (state.friendsOnly) ps.set("friends", "1");
   }
   function applyDiscoverParams(ps) {
+    if (chainRe(ps.get("chain"))) state.chain = ps.get("chain");
     if (DISHES[ps.get("dish")]) state.dish = ps.get("dish");
     const b = parseInt(ps.get("budget"), 10); if (b > 0) state.budget = b;
     if (ps.get("gems") === "1") state.gems = true;
@@ -3374,6 +3446,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     const b = e.target.closest("[data-tool]"); if (!b) return;
     const t = b.dataset.tool;
     if (t === "dish") $("dishDlg").showModal();
+    else if (t === "chains") { drawChains(); $("chainsDlg").showModal(); }
     else if (t === "match") { $("foodDlg").showModal(); $("fmText").focus(); }
     else if (t === "budget") { drawBudget(); $("budgetDlg").showModal(); }
     else if (t === "trend") { drawTrending(); $("trendDlg").showModal(); }
@@ -3664,6 +3737,10 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     "Pastry": ["पेस्ट्री", "पेस्ट्री"], "Chocolate": ["चॉकलेट", "चॉकलेट"], "Ramen": ["रामेन", "रामेन"], "Curry": ["करी", "करी"], "Salads": ["सलाद", "सॅलड"],
     "Sweets": ["मिठाई", "मिठाई"], "Bhel Puri": ["भेल पूरी", "भेळपुरी"], "Samosa": ["समोसा", "समोसा"], "Frankies": ["फ़्रैंकी", "फ्रँकी"], "Maggi": ["मैगी", "मॅगी"],
     "Healthy Food": ["हेल्दी फ़ूड", "आरोग्यदायी अन्न"], "Kebabs": ["कबाब", "कबाब"], "Udupi": ["उडुपी", "उडुपी"], "Malvani": ["मालवणी", "मालवणी"], "Konkan": ["कोंकणी", "कोकणी"],
+    "Chains": ["चेन रेस्टोरेंट", "चेन रेस्टॉरंट"],
+    "Inside": ["अंदर", "आत"], "Photos": ["फ़ोटो", "फोटो"],
+    "Inside photos on Google Maps": ["Google Maps पर अंदर की फ़ोटो", "Google Maps वर आतले फोटो"],
+    "Photos on Zomato": ["Zomato पर फ़ोटो", "Zomato वर फोटो"],
     // Food Match "Looking for" words
     "a cafe": ["कैफ़े", "कॅफे"], "a restaurant": ["रेस्टोरेंट", "रेस्टॉरंट"], "spicy": ["तीखा", "तिखट"], "cheesy": ["चीज़ी", "चीझी"],
     "something sweet": ["कुछ मीठा", "काहीतरी गोड"], "light / healthy": ["हल्का / हेल्दी", "हलके / आरोग्यदायी"], "comfort food": ["घर जैसा खाना", "घरच्यासारखे जेवण"],
@@ -3706,6 +3783,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     [/^A shared list: (\d+) places?\.$/, (m, L) => L2(L, `शेयर की गई सूची: ${m[1]} जगहें।`, `शेअर केलेली यादी: ${m[1]} ठिकाणे.`)],
     [/^Keep as (.+)'s picks$/, (m, L) => L2(L, `${m[1] === "a friend" ? "दोस्त" : m[1]} की पसंद के रूप में रखें`, `${m[1] === "a friend" ? "मित्राची" : m[1] + " यांची"} पसंती म्हणून ठेवा`)],
     [/^Kept as (.+)'s picks\. Turn on 👥 Friends' picks to see them$/, (m, L) => L2(L, `${m[1]} की पसंद के रूप में रखा। देखने के लिए 👥 दोस्तों की पसंद चालू करें`, `${m[1]} यांची पसंती म्हणून ठेवले. पाहण्यासाठी 👥 मित्रांची पसंती चालू करा`)],
+    [/^(.+): (\d+) outlets$/, (m, L) => L2(L, `${m[1]}: ${m[2]} आउटलेट`, `${m[1]}: ${m[2]} आउटलेट`)],
     [/^How about (.+)\?$/, (m, L) => L2(L, `${m[1]} कैसा रहेगा?`, `${m[1]} कसे वाटेल?`)],
     [/^Show all ([\d,]+) matches on the map$/, (m, L) => L2(L, `सभी ${m[1]} नतीजे नक्शे पर दिखाएँ`, `सर्व ${m[1]} निकाल नकाशावर दाखवा`)],
     [/^Matches (.+)$/, (m, L) => L2(L, "मेल: ", "जुळते: ") + m[1].split(", ").map(tz).join(", ")],
@@ -3759,6 +3837,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     ["#aboutDlg > p:nth-of-type(3)", ["नक्शा डेटा © OpenStreetMap योगदानकर्ता (ODbL)।", "नकाशा डेटा © OpenStreetMap योगदानकर्ते (ODbL)."]],
     ["#suggestDlg p.muted:not([role])", ["नक्शे पर न दिखने वाले कैफ़े या रेस्टोरेंट के बारे में बताएँ। भेजने पर पहले से भरा GitHub इशू खुलेगा (मुफ़्त GitHub अकाउंट चाहिए), या जानकारी कॉपी करके कहीं और भेजें।", "नकाशावर नसलेल्या कॅफे किंवा रेस्टॉरंटबद्दल सांगा. पाठवल्यावर आधीच भरलेले GitHub इश्यू उघडेल (मोफत GitHub अकाउंट लागेल), किंवा माहिती कॉपी करून दुसरीकडे पाठवा."]],
     ["#foodDlg p.sub", ["जो खाने का मन है, वैसे लिखें जैसे दोस्त को बताते हैं। यह व्यंजन, स्वाद, बजट, इलाका, शाकाहारी/जैन, मूड और सुविधाएँ समझता है।", "काय खावेसे वाटते ते मित्राला सांगाल तसे लिहा. हे पदार्थ, चव, बजेट, भाग, शाकाहारी/जैन, मूड आणि सुविधा समजते."]],
+    ["#chainsDlg p.sub", ["मुंबई, ठाणे और नवी मुंबई में लोकप्रिय चेन के सभी आउटलेट। किसी एक को दबाएँ और उसके सारे आउटलेट नक्शे पर देखें।", "मुंबई, ठाणे आणि नवी मुंबईतील लोकप्रिय चेनचे सर्व आउटलेट. एकावर दाबा आणि त्याचे सर्व आउटलेट नकाशावर पाहा."]],
     ["#dishDlg p.sub", ["व्यंजन चुनें और देखें कहाँ मिलता है। नाम में व्यंजन वाली जगहें पहले; बाकी उनके व्यंजन-प्रकार से संभावित हैं।", "पदार्थ निवडा आणि तो कुठे मिळतो ते पाहा. नावात पदार्थ असलेली ठिकाणे आधी; बाकी त्यांच्या खाद्यप्रकारावरून शक्य आहेत."]],
     ["#budgetDlg p.sub", ["जहाँ दो लोगों का खर्च पता है वह, वरना उस तरह की जगह का सामान्य खर्च (अनुमान लिखा होगा)।", "जिथे दोघांचा खर्च माहीत आहे तो, नाहीतर त्या प्रकारच्या ठिकाणाचा नेहमीचा खर्च (अंदाज असे लिहिलेले)."]],
     ["#friendsDlg p.sub", ["अपनी ♥ सेव जगहें दोस्तों से शेयर करें और उनकी भेजी सूचियाँ रखें। उनकी पसंद पर नक्शे में 👥 बैज दिखेगा। सब कुछ आपके फ़ोन पर ही रहता है।", "तुमची ♥ सेव्ह ठिकाणे मित्रांना शेअर करा आणि त्यांनी पाठवलेल्या याद्या ठेवा. त्यांच्या पसंतीवर नकाशात 👥 बॅज दिसेल. सर्व काही तुमच्या फोनवरच राहते."]],

@@ -21,6 +21,11 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
   Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
 - Nearest train, metro and monorail station for every place, with line, distance and walk or auto time;
   "Near a station" filter (about an 8-minute walk). Stations: `py build/fetch_transit.py` (data/transit.json)
+- Chain outlets across the region (build/fetch_chains.py): Domino's, KFC, Burger King, Pizza Hut, Baskin-Robbins,
+  Chaayos, Taco Bell, Third Wave from All The Places (CC0, brands' own store locators); Bhagat Tarachand and
+  Kailash Parbat from their outlet pages; McDonald's, Starbucks, Subway, CCD from OpenStreetMap. 🏷️ Chains tool.
+- Photos (build/fetch_photos.py): free-licensed Wikimedia Commons photos with credits; every place links to its
+  Google Maps and Zomato photo galleries
 - English / हिन्दी / मराठी interface (build/parts/i18n.js): 🌐 picker in the header, remembered per phone,
   `?lang=hi` / `?lang=mr` in links, follows the phone's language on first visit. Place names stay as mapped;
   search and Food Match understand common Hindi / Marathi words and area names ("वांद्रे पिझ्झा")

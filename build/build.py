@@ -88,6 +88,34 @@ for h in hot:
                           cuisine="", hours="", phone="", website="", menu="", diet=1 if h["pureVeg"] else 0, web=1, **extra))
         added += 1
 print(f"hotspots: {enriched} map places given ratings/cost, {added} added from listings")
+
+# Chain outlets (build/fetch_chains.py): add every McDonald's, KFC, Domino's… not already on the map.
+chains_path = os.path.join(DATA_DIR, "chains.json")
+if os.path.exists(chains_path):
+    def brand_key(n):
+        k = re.sub(r"[^a-z]", "", n.lower().replace("café", "cafe"))
+        return re.sub(r"pizza$|coffeeroasters$|coffee$|restaurant$", "", k) or k
+    by_brand = {}
+    for it in items:
+        by_brand.setdefault(brand_key(it["name"])[:8], []).append(it)
+    ch_added = ch_merged = 0
+    for c in json.load(open(chains_path, encoding="utf-8")):
+        bk = brand_key(c["name"])[:8]
+        near = next((it for it in by_brand.get(bk, []) if math.hypot((it["lat"] - c["lat"]) * 111, (it["lng"] - c["lng"]) * 105) <= 0.25), None)
+        if near:                                       # same outlet already mapped: fill its gaps
+            for k in ("hours", "phone", "website"):
+                if not near.get(k) and c.get(k):
+                    near[k] = c[k]
+            near["diet"] = near.get("diet", 0) | c["diet"]
+            ch_merged += 1
+            continue
+        it = dict(id="", name=c["name"], rest=c["rest"], kind=c["kind"], street=c["address"], lat=c["lat"], lng=c["lng"],
+                  cuisine=c["cuisine"], hours=c["hours"], phone=c["phone"], website=c["website"], menu="",
+                  src=c["src"], srcUrl=c["srcUrl"], priceTwo=0, rating=0, ratingSrc="", priceSrc="", diet=c["diet"], web=c["approx"])
+        items.append(it)
+        by_brand.setdefault(bk, []).append(it)
+        ch_added += 1
+    print(f"chains: {ch_added} outlets added, {ch_merged} already on the map")
 # Cuisines for places added from listings (the listing pages give them; OpenStreetMap doesn't have these places).
 HOT_CUISINE = {"Pongo": "Asian;Sushi;Chinese;Momos"}
 for it in items:
@@ -317,6 +345,10 @@ TYPES = {"rail": 0, "metro": 1, "mono": 2}
 transit_src = json.load(open(os.path.join(DATA_DIR, "transit.json"), encoding="utf-8"))
 transit = [[s["name"], TYPES[s["type"]], s["lat"], s["lng"], ";".join(s["lines"])] for s in transit_src]
 TRANSIT_JS = "const TRANSIT = " + js(transit) + ";\n"
+# Free-licensed photos from Wikimedia Commons (build/fetch_photos.py), keyed by place key.
+photos_path = os.path.join(DATA_DIR, "photos.json")
+PHOTOS = json.load(open(photos_path, encoding="utf-8")) if os.path.exists(photos_path) else {}
+TRANSIT_JS += "const PHOTOS = " + js(PHOTOS) + ";\n"
 
 if SINGLE:
     # Everything inline: the shareable page can't load other files.
