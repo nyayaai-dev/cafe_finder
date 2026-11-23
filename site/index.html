@@ -1261,6 +1261,21 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
 
 .dish small { margin-left: auto; font-weight: 700; }
 
+/* Filters panel */
+.frow { align-items: center; flex-wrap: wrap; gap: 6px; }
+.fbtn { display: inline-flex; align-items: center; gap: 6px; background: var(--chip); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 7px 11px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.fbtn.on { border-color: var(--pin-rest); }
+.fbadge { background: var(--pin-rest); color: #fff; border-radius: 99px; font-size: 11px; min-width: 18px; padding: 0 5px; text-align: center; }
+.qchip { display: inline-flex; align-items: center; gap: 5px; background: var(--chip); border: 1px solid var(--line); border-radius: 99px; padding: 5px 10px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.qchip input { margin: 0; }
+.frow #sortBy { margin-left: auto; max-width: 52%; }
+.morepanel { display: grid; gap: 8px; padding: 10px; margin: 6px 0 4px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.morepanel .checks { margin: 0; }
+#filtersReset { justify-self: start; }
+
+/* approximate pins */
+.dot.approx { opacity: .75; outline: 2px dashed currentColor; outline-offset: 1px; }
+
 /* photos */
 .photos { margin: 10px 0 4px; }
 .phstrip { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
@@ -1272,19 +1287,6 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
 .phlinks { margin-top: 6px; }
 .pick .pkimg { width: calc(100% + 24px); margin: -10px -12px 6px; height: 92px; object-fit: cover; border-radius: 12px 12px 0 0; display: block; }
 
-/* AR view */
-#arView { position: fixed; inset: 0; z-index: 3000; background: #000; }
-#arVideo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-#arLabels { position: absolute; inset: 0; }
-.arlab {
-  position: absolute; transform: translate(-50%, -50%); max-width: 46vw; display: grid; gap: 1px; text-align: center;
-  background: rgba(20, 14, 10, .78); color: #fff; border: 1px solid rgba(255,255,255,.35); border-radius: 12px; padding: 6px 10px; font-size: 12px;
-  backdrop-filter: blur(4px); cursor: pointer;
-}
-.arlab b { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.armsg { position: absolute; left: 50%; top: 40%; transform: translateX(-50%); width: 80%; text-align: center; color: #fff; background: rgba(0,0,0,.55); padding: 10px 14px; border-radius: 12px; }
-#arClose { position: absolute; z-index: 2; top: calc(14px + env(safe-area-inset-top, 0px)); right: 14px; border-radius: 99px; padding: 9px 16px; font-weight: 700; }
-.arnote { position: absolute; z-index: 2; left: 12px; right: 12px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); color: #fff; font-size: 11.5px; text-align: center; opacity: .85; }
 @media (max-width: 640px) { .bgform { grid-template-columns: 1fr 1fr; } .bgform label:first-child { grid-column: 1 / -1; } }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -1348,9 +1350,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
       <button type="button" data-tool="budget">💰 Budget</button>
       <button type="button" data-tool="trend">🔥 Trending</button>
       <button type="button" data-tool="gems" aria-pressed="false">💎 Hidden gems</button>
-      <button type="button" data-tool="friends" id="friendsTool" hidden>👥 Friends' picks</button>
       <button type="button" data-tool="friendlist">🤝 Friends</button>
-      <button type="button" data-tool="ar" id="arTool" hidden>📷 AR view</button>
     </div>
     <div id="discoverBanner" class="dbanner pad" hidden role="status"><span id="discoverText"></span><button type="button" class="linkbtn" id="discoverClear">Clear</button></div>
     <section class="picks pad" id="picks" hidden aria-labelledby="picksTitle">
@@ -1364,9 +1364,10 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
         <button type="button" data-cat="cafe" role="radio" aria-checked="false"><i class="sw cafe"></i>Cafes <small id="nCafe">0</small></button>
         <button type="button" data-cat="rest" role="radio" aria-checked="false"><i class="sw rest"></i>Restaurants <small id="nRest">0</small></button>
       </div>
-      <input id="filterText" placeholder="Filter by name or street" aria-label="Filter by name or street">
-      <div class="row">
-        <select id="cuisine" aria-label="Cuisine"><option value="">All cuisines</option></select>
+      <div class="row frow">
+        <button type="button" id="filtersBtn" class="fbtn" aria-expanded="false" aria-controls="morePanel">⚙️ Filters <span id="nFilters" class="fbadge" hidden>0</span></button>
+        <label class="qchip"><input type="checkbox" id="fVeg"> Pure veg</label>
+        <label class="qchip"><input type="checkbox" id="fOpen"> Open now</label>
         <select id="sortBy" aria-label="Sort by">
           <option value="near">Nearest to map centre</option>
           <option value="rating">Top rated (where a rating is listed)</option>
@@ -1375,23 +1376,25 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
           <option value="info">Most details listed</option>
         </select>
       </div>
+      <div id="morePanel" class="morepanel" hidden>
+      <input id="filterText" placeholder="Filter by name or street" aria-label="Filter by name or street">
+      <select id="cuisine" aria-label="Cuisine"><option value="">All cuisines</option></select>
       <div class="row checks">
-        <label><input type="checkbox" id="fVeg"> Pure veg</label>
         <label><input type="checkbox" id="fJain"> Jain food</label>
         <label><input type="checkbox" id="fNon"> Non-veg</label>
         <label><input type="checkbox" id="fRated"> Has rating</label>
-        <label><input type="checkbox" id="fOpen"> Open now</label>
         <label><input type="checkbox" id="fNear"> 🚆 Near a station</label>
         <label><input type="checkbox" id="fWifi"> 📶 Wi-Fi</label>
         <label><input type="checkbox" id="fOutdoor"> 🌳 Outdoor seating</label>
         <label><input type="checkbox" id="fPark"> 🅿️ Parking nearby</label>
         <label><input type="checkbox" id="fFav"> ♥ Saved <small id="nFav" class="muted"></small></label>
       </div>
+      <button type="button" class="linkbtn" id="filtersReset">Clear filters</button>
+      </div>
       <div class="row between">
         <span id="countLabel" class="muted" aria-live="polite"></span>
         <button id="shareViewBtn" type="button" class="linkbtn" hidden>Copy link to this view</button>
         <button id="shareListBtn" type="button" class="linkbtn" hidden>Share my saved list</button>
-        <button id="csvBtn" type="button" class="linkbtn" hidden>Download CSV</button>
       </div>
     </section>
 
@@ -1505,15 +1508,10 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   <p class="muted sub">Share your saved (♥) places with friends, and keep the lists they send you. Their picks get a 👥 badge on the map. Everything stays on your phone.</p>
   <div class="frrow"><label for="frName"><b>Your name</b></label><input id="frName" maxlength="30" placeholder="shown on lists you share"><button type="button" class="ghost" id="frSave">Save</button><button type="button" id="frShare">Share my list</button></div>
   <h3 class="d-sub">Lists from friends</h3>
+  <p><button type="button" class="ghost" id="frOnly" hidden>👥 Show only friends' picks</button></p>
   <ul id="frList"></ul>
   <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
 </dialog>
-<div id="arView" hidden>
-  <video id="arVideo" autoplay playsinline muted></video>
-  <div id="arLabels"></div>
-  <button type="button" id="arClose">✕ Close</button>
-  <p class="arnote">Places within 800 m in the direction you point. Busyness is an estimate. Tap a label for details.</p>
-</div>
 <div id="netBanner" class="net" role="status" hidden>You're offline. Saved data still works; directions, menus and ratings links need internet.</div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <button type="button" id="sheetToggle" class="sheet-toggle">🗺 Show map</button>
@@ -1548,7 +1546,6 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
 <script>const SITE_MODE = true;</script>
 <script src="data/places.js"></script>
 <script src="data/basemap.js"></script>
@@ -1575,6 +1572,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     rating: r[17] || 0, ratingSrc: r[18], priceSrc: r[19], pureVeg: !!(r[20] & 1), jain: !!(r[20] & 2), nonVeg: !!(r[20] & 4), vegOk: !!(r[20] & 8),
     sub: GEO.suburbs[r[14]].name, loc: GEO.locs[r[15]].name, zone: GEO.zones[r[16]].name,
     fac: r[22] || 0, seats: r[23] || 0,
+    weak: r[18] === "EazyDiner" && r[17] >= 4.95,          // a perfect 5.0 there usually means only a few reviews
   }));
   places.forEach((p) => { p.info = [p.address, p.hours, p.phone, p.website, p.menu, p.src, p.priceTwo].filter(Boolean).length + p.cuisine.length; });
 
@@ -1584,6 +1582,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   const hash = (str) => { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0; return h.toString(36); };
   places.forEach((p) => { p.key = hash(`${p.name}|${p.lat.toFixed(4)}|${p.lng.toFixed(4)}`); });
   const byKey = new Map(places.map((p) => [p.key, p]));
+  const rk = (p) => (p.weak ? 4.0 : p.rating || 0);            // rating used for ranking
 
   // Favourites live in this browser only.
   const store = {
@@ -1791,10 +1790,10 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   map.addLayer(cluster);
   const CUP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h1.5a2.5 2.5 0 0 1 0 5H16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M7 3.5c0 1 1 1 1 2M11 3.5c0 1 1 1 1 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>';
   const FORK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7m-2-7v4.5A2 2 0 0 0 7 10a2 2 0 0 0 2-2.5V3M7 10v11M16.5 3c-1.9 1.2-2.6 3.6-2.6 6.2 0 1.6.9 2.6 2.6 2.8V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const icon = (p, hi) => L.divIcon({ className: "", html: `<div class="dot ${p.cat}${p.rating ? " rated" : ""}${hi ? " hi" : ""}">${p.cat === "cafe" ? CUP : FORK}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
+  const icon = (p, hi) => L.divIcon({ className: "", html: `<div class="dot ${p.cat}${p.rating ? " rated" : ""}${p.web ? " approx" : ""}${hi ? " hi" : ""}">${p.cat === "cafe" ? CUP : FORK}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
   const markers = places.map((p) => {
     const m = L.marker([p.lat, p.lng], { icon: icon(p), title: p.name, keyboard: false });
-    m.bindTooltip(p.name, { direction: "top", offset: [0, -10] });
+    m.bindTooltip(p.web ? `${esc(p.name)} · approx. location` : esc(p.name), { direction: "top", offset: [0, -10] });
     m.on("click", () => openDetail(p, { fly: false }));
     return m;
   });
@@ -1826,7 +1825,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     return `<div class="line"><span class="lbl">Area</span><span>${esc(parts.join(" · "))}</span></div>`;
   };
   const rating = (p) => p.rating
-    ? `<div class="line"><span class="lbl">Rating</span><b class="stars">★ ${p.rating.toFixed(1)}</b><a class="muted" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">per ${esc(p.ratingSrc)}</a><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google ↗</a></div>`
+    ? `<div class="line"><span class="lbl">Rating</span><b class="stars">★ ${p.rating.toFixed(1)}</b>${p.weak ? `<span class="muted">few reviews</span>` : ""}<a class="muted" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">per ${esc(p.ratingSrc)}</a><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google ↗</a></div>`
     : `<div class="line"><span class="lbl">Rating</span><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">★ See rating on Google</a></div>`;
 
   // ------------------------------------------------------------ nearest station (train, metro, monorail)
@@ -1965,6 +1964,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     current = rows;
     $("list").removeAttribute("aria-busy");
     syncUrl();
+    syncFilterBadge();
     if (resetMarkers !== false) {
       cluster.clearLayers();
       cluster.addLayers(rows.map((p) => markers[p.id]));
@@ -1973,13 +1973,12 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     const sort = $("sortBy").value;
     rows.forEach((p) => { p.d = km(p, ctr); });
     rows.sort(sort === "name" ? (a, b) => a.name.localeCompare(b.name)
-      : sort === "rating" ? (a, b) => (b.rating || 0) - (a.rating || 0) || a.d - b.d
+      : sort === "rating" ? (a, b) => rk(b) - rk(a) || a.d - b.d
       : sort === "cheap" ? (a, b) => (a.priceTwo || 1e9) - (b.priceTwo || 1e9) || a.d - b.d
       : sort === "info" ? (a, b) => b.info - a.info || a.d - b.d
       : (a, b) => a.d - b.d);
     renderPicks(rows);
     syncShareList();
-    if (heat) drawHeat();
     const total = places.filter(inArea).length;
     $("countLabel").textContent = `${rows.length.toLocaleString("en-IN")} of ${total.toLocaleString("en-IN")} places${state.areaName ? " in " + state.areaName : ""}`;
     if (!rows.length) {
@@ -2102,22 +2101,6 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     if (li) openDetail(places[+li.dataset.id]);
   });
 
-  // CSV through the viewer's download prompt, when this view offers it.
-  (async () => {
-    const dl = window.claude && (await window.claude.use("downloads").catch(() => null));
-    if (!dl) return;
-    const btn = $("csvBtn");
-    btn.hidden = false;
-    btn.addEventListener("click", async () => {
-      const cols = ["name", "kind", "cuisine", "address", "hours", "phone", "website", "lat", "lng"];
-      const q = (v) => `"${String(Array.isArray(v) ? v.join("; ") : v ?? "").replace(/"/g, '""')}"`;
-      const csv = "﻿" + [cols.join(","), ...current.map((p) => cols.map((k) => q(p[k])).join(","))].join("\r\n");
-      const slug = (state.areaName || "mumbai").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      try {
-        await dl.save({ filename: `${state.cat === "cafe" ? "cafes" : state.cat === "rest" ? "restaurants" : "cafes-restaurants"}-${slug}.csv`, data: csv });
-      } catch (err) { /* viewer declined the save */ }
-    });
-  })();
 
   // ------------------------------------------------------------ favourites
   const syncFavCount = () => { $("nFav").textContent = favs.size ? `(${favs.size})` : ""; };
@@ -2247,7 +2230,8 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   };
   state.mood = "";
   function moodOk(p) { return !state.mood || MOODS[state.mood].test(p); }
-  $("moods").innerHTML = Object.entries(MOODS).map(([k, m]) => `<button type="button" data-mood="${k}" aria-pressed="false">${m.label}</button>`).join("");
+  const CHIP_MOODS = ["work", "date", "family", "breakfast", "late"];            // the rest are understood by Food Match / search
+  $("moods").innerHTML = Object.entries(MOODS).filter(([k]) => CHIP_MOODS.includes(k)).map(([k, m]) => `<button type="button" data-mood="${k}" aria-pressed="false">${m.label}</button>`).join("");
   $("moods").addEventListener("click", (e) => {
     const b = e.target.closest("[data-mood]"); if (!b) return;
     state.mood = state.mood === b.dataset.mood ? "" : b.dataset.mood;
@@ -2409,7 +2393,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
 
   // ------------------------------------------------------------ top picks
   function renderPicks(rows) {
-    const picks = rows.filter((p) => p.rating >= 4.3).sort((a, b) => b.rating - a.rating || (b.priceTwo ? 1 : 0) - (a.priceTwo ? 1 : 0)).slice(0, 12);
+    const picks = rows.filter((p) => p.rating >= 4.3 && !p.weak).sort((a, b) => b.rating - a.rating || (b.priceTwo ? 1 : 0) - (a.priceTwo ? 1 : 0)).slice(0, 12);
     $("picks").hidden = picks.length < 2;
     $("picksWhere").textContent = state.areaName ? `in ${state.areaName}` : "across the city";
     $("picksRow").innerHTML = picks.map((p) => `
@@ -2431,37 +2415,18 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     openDetail(p);
   });
 
-  // ------------------------------------------------------------ heatmap
-  let heat = null;
+  // ------------------------------------------------------------ map button: Near me
   const HeatCtl = L.Control.extend({
     options: { position: "topright" },
     onAdd() {
       const box = L.DomUtil.create("div", "leaflet-bar map-tools");
-      box.innerHTML = `<button type="button" id="heatBtn" aria-pressed="false" title="Show where places cluster">🔥 Heatmap</button>
-        <button type="button" id="surpriseMapBtn" title="Pick a random place">🎲 Surprise me</button>
-        <button type="button" id="locateMapBtn" title="Show places near you" hidden>📍 Near me</button>`;
+      box.innerHTML = `<button type="button" id="locateMapBtn" title="Show places near you">📍 Near me</button>`;
       L.DomEvent.disableClickPropagation(box);
       return box;
     },
   });
   map.addControl(new HeatCtl());
-  function drawHeat() {
-    if (heat) { heat.remove(); heat = null; }
-    if (!$("heatBtn").classList.contains("on") || typeof L.heatLayer !== "function") return;
-    heat = L.heatLayer(visible().map((p) => [p.lat, p.lng, p.rating ? 1 : 0.6]), {
-      radius: 22, blur: 18, maxZoom: 15, minOpacity: 0.35,
-      gradient: { 0.2: "#2b6cd1", 0.45: "#10b981", 0.65: "#facc15", 0.85: "#f97316", 1: "#dc2626" },
-    }).addTo(map);
-  }
-  $("heatBtn").addEventListener("click", (e) => {
-    if (typeof L.heatLayer !== "function") return toast("Heatmap isn't available offline");
-    const on = !e.currentTarget.classList.contains("on");
-    e.currentTarget.classList.toggle("on", on); e.currentTarget.setAttribute("aria-pressed", on);
-    if (on) { map.removeLayer(cluster); drawHeat(); toast("Heatmap on: brighter means more places"); }
-    else { drawHeat(); map.addLayer(cluster); }
-  });
-  $("surpriseMapBtn").addEventListener("click", () => $("surpriseBtn").click());
-  $("locateMapBtn").hidden = $("meBtn").hidden;                       // same rule as Near me in the list
+  $("locateMapBtn").closest(".map-tools").hidden = $("meBtn").hidden;   // same rule as Near me in the list
   $("locateMapBtn").addEventListener("click", () => $("meBtn").click());
 
   // ------------------------------------------------------------ smart search
@@ -2477,7 +2442,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     [/\bnear (a |the )?(station|metro|train)\b/, () => { $("fNear").checked = true; }],
     [/\bcafe?s?\b|\bcoffee\b/, () => setCat("cafe")],
     [/\brestaurants?\b|\bdinner\b|\blunch\b/, () => setCat("rest")],
-    [/\bcheap\b|\bbudget\b/, () => setMood("budget")],
+    [/\bcheap\b|\bbudget\b/, () => { state.budget = 300; syncDiscoverBanner(); }],   // combines with any mood
     [/\bdate\b|\bromantic\b/, () => setMood("date")],
     [/\blate( night)?\b/, () => setMood("late")],
     [/\bbreakfast\b/, () => setMood("breakfast")],
@@ -2485,7 +2450,13 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     [/\bwork\b|\blaptop\b|\bwifi\b/, () => setMood("work")],
   ];
   function setCat(c) { document.querySelector(`.seg [data-cat="${c}"]`).click(); }
-  function setMood(m) { if (state.mood !== m) document.querySelector(`#moods [data-mood="${m}"]`).click(); }
+  function setMood(m) {
+    if (state.mood === m) return;
+    state.mood = m;
+    document.querySelectorAll("#moods [data-mood]").forEach((x) => { const on = x.dataset.mood === m; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+    if (typeof syncDiscoverBanner === "function") syncDiscoverBanner();
+    state.shown = PAGE; render();
+  }
 
   function smartSearch(raw) {
     raw = deva(raw);
@@ -3076,7 +3047,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   // ------------------------------------------------------------ hidden gems
   const FAMOUS = /leopold|bademiya|britannia|kyani|mondegar|pop tate|social|starbucks|theobroma|cafe madras|ram ashray|bastian|trishna|gajalee|mahesh lunch|jimmy boy|yazdani|olive|masque|bombay canteen/i;
   function isGem(p) {
-    if (!(p.rating >= 4.3) || isChain(p) || FAMOUS.test(p.name)) return false;
+    if (!(p.rating >= 4.3) || p.weak || isChain(p) || FAMOUS.test(p.name)) return false;
     const c = costPP(p);
     if (!c.est && c.v > 900) return false;                      // not the fancy, much-talked-about places
     const v = crowdNow(p);
@@ -3142,6 +3113,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
   }
   function syncDiscoverBanner() {
     const bits = [];
+    if (state.mood && !CHIP_MOODS.includes(state.mood)) bits.push(MOODS[state.mood].label);
     if (state.chain) bits.push(`🏷️ ${state.chain}`);
     if (state.dish) bits.push(`${DISHES[state.dish].icon} ${DISHES[state.dish].label}`);
     if (state.budget) bits.push(`💰 up to ₹${state.budget.toLocaleString("en-IN")} a person`);
@@ -3150,11 +3122,12 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     $("discoverBanner").hidden = !bits.length;
     $("discoverText").textContent = bits.join(" · ");
     document.querySelectorAll("[data-tool=gems]").forEach((b) => b.classList.toggle("on", state.gems));
-    document.querySelectorAll("[data-tool=friends]").forEach((b) => b.classList.toggle("on", state.friendsOnly));
-    $("friendsTool").hidden = !Object.keys(friends).length;
+    $("frOnly").hidden = !Object.keys(friends).length;
+    $("frOnly").textContent = state.friendsOnly ? "Show everyone's places" : "👥 Show only friends' picks";
   }
   $("discoverClear").addEventListener("click", () => {
     state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false; state.chain = "";
+    if (state.mood && !CHIP_MOODS.includes(state.mood)) state.mood = "";
     syncDiscoverBanner(); state.shown = PAGE; render();
   });
   function applyDiscover(patch) {
@@ -3206,7 +3179,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     const ctr = state.me || map.getCenter();
     const pool = visible().filter((p) => costPP(p).v <= pp && mealOk(p));
     pool.forEach((p) => { p._bd = km(p, ctr); });
-    pool.sort((a, b) => (b.rating || 0) - (a.rating || 0) || (costPP(a).est - costPP(b).est) || a._bd - b._bd);
+    pool.sort((a, b) => rk(b) - rk(a) || (costPP(a).est - costPP(b).est) || a._bd - b._bd);
     return { pp, people, total, pool };
   }
   function drawBudget() {
@@ -3299,7 +3272,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
       if (cu && p.cuisine.includes(cu)) { s += 3; hits.push(cu); }
       if (moodHit && moodHit[1].test(p)) { s += 2; }
       if ((dishes.size || cu) && !s) continue;                          // asked for food it doesn't serve
-      s += (p.rating || 3.6) * 0.8;
+      s += (p.weak ? 4.0 : p.rating || 3.6) * 0.8;
       const dist = km(p, ctr);
       s -= area ? 0 : Math.min(3, dist * 0.35);
       scored.push({ p, s, hits, dist });
@@ -3353,8 +3326,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     const ctr = state.me || map.getCenter();
     const where = state.me ? "near you" : "near the map centre";
     const guide = places.filter((p) => p.rating && p.src).map((p) => [km(p, ctr), p]).filter(([d]) => d <= 6)
-      .sort((a, b) => b[1].rating - a[1].rating || a[0] - b[0]).slice(0, 8);
-    const gems = places.filter(isGem).map((p) => [km(p, ctr), p]).sort((a, b) => a[0] - b[0]).slice(0, 5);
+      .sort((a, b) => rk(b[1]) - rk(a[1]) || a[0] - b[0]).slice(0, 8);
     const item = ([d, p]) => `<li><button type="button" data-open="${p.key}"><span class="nm">${esc(p.name)}</span>
       <span class="muted">★ ${p.rating.toFixed(1)} (${esc(p.ratingSrc)}) · ${esc(p.loc === p.sub ? p.sub : p.loc)} · ${fmtKm(d)}</span></button></li>`;
     $("trendBody").innerHTML = `
@@ -3363,13 +3335,13 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
       <h3 class="d-sub">Hot right now ${where}</h3>
       <p class="muted small">Places featured in current food guides and listings (checked November 2026), best rated first.</p>
       <ul class="near">${guide.map(item).join("") || `<li class="muted">None within 6 km. Move the map to a busier area.</li>`}</ul>
-      <h3 class="d-sub">Rising hidden gems ${where}</h3>
-      <ul class="near">${gems.map(item).join("") || `<li class="muted">None found nearby.</li>`}</ul>`;
+      <p><button type="button" class="linkbtn" id="trGems">💎 See hidden gems</button></p>`;
   }
   $("trendBody").addEventListener("click", (e) => {
     const b = e.target.closest("[data-dish]");
     if (b) { $("trendDlg").close(); return pickDish(b.dataset.dish); }
     if (e.target.closest("[data-open]")) $("trendDlg").close();
+    if (e.target.id === "trGems") { $("trendDlg").close(); applyDiscover({ gems: true }); }
   });
 
   // ------------------------------------------------------------ Friends' picks
@@ -3385,6 +3357,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     if (s) { $("friendsDlg").close(); showSharedList(friends[s.dataset.frshow], s.dataset.frshow); return; }
     if (d) { delete friends[d.dataset.frdel]; store.set("cf-friends", friends); drawFriends(); syncDiscoverBanner(); render(false); }
   });
+  $("frOnly").addEventListener("click", () => { $("friendsDlg").close(); applyDiscover({ friendsOnly: !state.friendsOnly }); });
   $("frSave").addEventListener("click", () => { store.set("cf-myname", $("frName").value.trim().slice(0, 30)); toast("Name saved: your shared lists will show it"); });
   $("frShare").addEventListener("click", () => { store.set("cf-myname", $("frName").value.trim().slice(0, 30)); $("friendsDlg").close(); $("shareListBtn").click(); });
   $("listKeep").addEventListener("click", () => { if (state.list) keepFriendList(state.listFrom, [...state.list]); });
@@ -3395,63 +3368,23 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     toast(`Kept as ${n}'s picks. Turn on 👥 Friends' picks to see them`);
   }
 
-  // ------------------------------------------------------------ AR view (phones)
-  const ar = { on: false, stream: null, heading: null, raf: 0, onOri: null };
-  const canAR = () => SITE && window.isSecureContext && "geolocation" in navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && matchMedia("(pointer: coarse)").matches;
-  $("arTool").hidden = !canAR();
-  function bearing(a, b) {
-    const r = Math.PI / 180, y = Math.sin((b.lng - a.lng) * r) * Math.cos(b.lat * r);
-    const x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lng - a.lng) * r);
-    return (Math.atan2(y, x) / r + 360) % 360;
+
+  // ------------------------------------------------------------ Filters panel
+  const PANEL_CHECKS = ["fJain", "fNon", "fRated", "fNear", "fWifi", "fOutdoor", "fPark", "fFav"];
+  function syncFilterBadge() {
+    const n = PANEL_CHECKS.filter((id) => $(id).checked).length + ($("cuisine").value ? 1 : 0) + ($("filterText").value.trim() ? 1 : 0);
+    $("nFilters").hidden = !n; $("nFilters").textContent = n;
+    $("filtersBtn").classList.toggle("on", n > 0);
   }
-  function drawAR() {
-    ar.raf = 0;
-    if (!ar.on) return;
-    const me = state.me, box = $("arLabels");
-    if (!me || ar.heading === null) { box.innerHTML = `<p class="armsg">${!me ? "Finding your location…" : "Move your phone in a figure-8 to calibrate the compass."}</p>`; return; }
-    const near = visible().map((p) => [km(p, me), p]).filter(([d]) => d <= 0.8).sort((a, b) => a[0] - b[0]).slice(0, 30);
-    const FOV = 30, W = innerWidth, Hh = innerHeight;
-    const shown = [];
-    for (const [d, p] of near) {
-      let rel = ((bearing(me, p) - ar.heading + 540) % 360) - 180;
-      if (Math.abs(rel) > FOV) continue;
-      const x = W / 2 + (rel / FOV) * (W / 2), y = Hh * 0.28 + Math.min(1, d / 0.8) * Hh * 0.42;
-      const v = crowdNow(p), o = openNow(p.hours);
-      shown.push(`<button type="button" class="arlab" data-open="${p.key}" style="left:${Math.round(x)}px;top:${Math.round(y)}px">
-        <b>${esc(p.name)}</b><span>${p.rating ? "★ " + p.rating.toFixed(1) + " · " : ""}${fmtKm(d)} · ${walkMin(d)} min${o === true ? " · open" : o === false ? " · closed" : ""}${v !== null ? " · " + level(v)[1].toLowerCase() : ""}</span></button>`);
-    }
-    box.innerHTML = shown.join("") || `<p class="armsg">No places in this direction within 800 m. Turn around slowly.</p>`;
-  }
-  const queueAR = () => { if (!ar.raf) ar.raf = requestAnimationFrame(drawAR); };
-  async function startAR() {
-    try {
-      if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
-        const r = await DeviceOrientationEvent.requestPermission(); if (r !== "granted") throw new Error("Compass access was not allowed.");
-      }
-      ar.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
-    } catch (e) { toast(e && e.message ? e.message : "Camera or compass not available"); return; }
-    $("arVideo").srcObject = ar.stream;
-    $("arView").hidden = false; ar.on = true; ar.heading = null;
-    ar.onOri = (e) => {
-      let h = null;
-      if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;                // iPhone
-      else if (e.absolute && typeof e.alpha === "number") h = (360 - e.alpha) % 360;           // Android
-      if (h !== null) { ar.heading = h; queueAR(); }
-    };
-    addEventListener("deviceorientationabsolute", ar.onOri);
-    addEventListener("deviceorientation", ar.onOri);
-    if (!state.me) $("meBtn").click();
-    queueAR();
-  }
-  function stopAR() {
-    ar.on = false; $("arView").hidden = true;
-    removeEventListener("deviceorientationabsolute", ar.onOri); removeEventListener("deviceorientation", ar.onOri);
-    if (ar.stream) ar.stream.getTracks().forEach((t) => t.stop());
-    ar.stream = null;
-  }
-  $("arClose").addEventListener("click", stopAR);
-  $("arLabels").addEventListener("click", (e) => { const b = e.target.closest("[data-open]"); if (b) { stopAR(); } });
-  map.on("moveend", () => { if (ar.on) queueAR(); });
+  $("filtersBtn").addEventListener("click", () => {
+    const open = $("morePanel").hidden;
+    $("morePanel").hidden = !open; $("filtersBtn").setAttribute("aria-expanded", open);
+  });
+  $("filtersReset").addEventListener("click", () => {
+    PANEL_CHECKS.forEach((id) => { $(id).checked = false; });
+    $("filterText").value = ""; $("cuisine").value = "";
+    state.shown = PAGE; render();
+  });
 
   // ------------------------------------------------------------ tools row
   $("tools").addEventListener("click", (e) => {
@@ -3463,9 +3396,7 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     else if (t === "budget") { drawBudget(); $("budgetDlg").showModal(); }
     else if (t === "trend") { drawTrending(); $("trendDlg").showModal(); }
     else if (t === "gems") applyDiscover({ gems: !state.gems });
-    else if (t === "friends") applyDiscover({ friendsOnly: !state.friendsOnly });
     else if (t === "friendlist") { drawFriends(); $("friendsDlg").showModal(); }
-    else if (t === "ar") startAR();
   });
   document.querySelectorAll("dialog [data-close]").forEach((b) => b.addEventListener("click", () => b.closest("dialog").close()));
   syncDiscoverBanner();
@@ -3750,6 +3681,9 @@ ol.fm .nm, ul.bg .nm { font-weight: 700; }
     "Sweets": ["मिठाई", "मिठाई"], "Bhel Puri": ["भेल पूरी", "भेळपुरी"], "Samosa": ["समोसा", "समोसा"], "Frankies": ["फ़्रैंकी", "फ्रँकी"], "Maggi": ["मैगी", "मॅगी"],
     "Healthy Food": ["हेल्दी फ़ूड", "आरोग्यदायी अन्न"], "Kebabs": ["कबाब", "कबाब"], "Udupi": ["उडुपी", "उडुपी"], "Malvani": ["मालवणी", "मालवणी"], "Konkan": ["कोंकणी", "कोकणी"],
     "Chains": ["चेन रेस्टोरेंट", "चेन रेस्टॉरंट"],
+    "Filters": ["फ़िल्टर", "फिल्टर"], "Clear filters": ["फ़िल्टर हटाएँ", "फिल्टर काढा"], "few reviews": ["कम रिव्यू", "कमी रिव्ह्यू"],
+    "See hidden gems": ["छुपे रत्न देखें", "लपलेली रत्ने पाहा"], "Show only friends' picks": ["सिर्फ़ दोस्तों की पसंद दिखाएँ", "फक्त मित्रांची पसंती दाखवा"],
+    "Show everyone's places": ["सबकी जगहें दिखाएँ", "सर्वांची ठिकाणे दाखवा"],
     "Inside": ["अंदर", "आत"], "Photos": ["फ़ोटो", "फोटो"],
     "Inside photos on Google Maps": ["Google Maps पर अंदर की फ़ोटो", "Google Maps वर आतले फोटो"],
     "Photos on Zomato": ["Zomato पर फ़ोटो", "Zomato वर फोटो"],

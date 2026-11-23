@@ -289,9 +289,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
       <button type="button" data-tool="budget">💰 Budget</button>
       <button type="button" data-tool="trend">🔥 Trending</button>
       <button type="button" data-tool="gems" aria-pressed="false">💎 Hidden gems</button>
-      <button type="button" data-tool="friends" id="friendsTool" hidden>👥 Friends' picks</button>
       <button type="button" data-tool="friendlist">🤝 Friends</button>
-      <button type="button" data-tool="ar" id="arTool" hidden>📷 AR view</button>
     </div>
     <div id="discoverBanner" class="dbanner pad" hidden role="status"><span id="discoverText"></span><button type="button" class="linkbtn" id="discoverClear">Clear</button></div>
     <section class="picks pad" id="picks" hidden aria-labelledby="picksTitle">
@@ -305,9 +303,10 @@ button.ghost { background: var(--chip); color: var(--ink); }
         <button type="button" data-cat="cafe" role="radio" aria-checked="false"><i class="sw cafe"></i>Cafes <small id="nCafe">0</small></button>
         <button type="button" data-cat="rest" role="radio" aria-checked="false"><i class="sw rest"></i>Restaurants <small id="nRest">0</small></button>
       </div>
-      <input id="filterText" placeholder="Filter by name or street" aria-label="Filter by name or street">
-      <div class="row">
-        <select id="cuisine" aria-label="Cuisine"><option value="">All cuisines</option></select>
+      <div class="row frow">
+        <button type="button" id="filtersBtn" class="fbtn" aria-expanded="false" aria-controls="morePanel">⚙️ Filters <span id="nFilters" class="fbadge" hidden>0</span></button>
+        <label class="qchip"><input type="checkbox" id="fVeg"> Pure veg</label>
+        <label class="qchip"><input type="checkbox" id="fOpen"> Open now</label>
         <select id="sortBy" aria-label="Sort by">
           <option value="near">Nearest to map centre</option>
           <option value="rating">Top rated (where a rating is listed)</option>
@@ -316,23 +315,25 @@ button.ghost { background: var(--chip); color: var(--ink); }
           <option value="info">Most details listed</option>
         </select>
       </div>
+      <div id="morePanel" class="morepanel" hidden>
+      <input id="filterText" placeholder="Filter by name or street" aria-label="Filter by name or street">
+      <select id="cuisine" aria-label="Cuisine"><option value="">All cuisines</option></select>
       <div class="row checks">
-        <label><input type="checkbox" id="fVeg"> Pure veg</label>
         <label><input type="checkbox" id="fJain"> Jain food</label>
         <label><input type="checkbox" id="fNon"> Non-veg</label>
         <label><input type="checkbox" id="fRated"> Has rating</label>
-        <label><input type="checkbox" id="fOpen"> Open now</label>
         <label><input type="checkbox" id="fNear"> 🚆 Near a station</label>
         <label><input type="checkbox" id="fWifi"> 📶 Wi-Fi</label>
         <label><input type="checkbox" id="fOutdoor"> 🌳 Outdoor seating</label>
         <label><input type="checkbox" id="fPark"> 🅿️ Parking nearby</label>
         <label><input type="checkbox" id="fFav"> ♥ Saved <small id="nFav" class="muted"></small></label>
       </div>
+      <button type="button" class="linkbtn" id="filtersReset">Clear filters</button>
+      </div>
       <div class="row between">
         <span id="countLabel" class="muted" aria-live="polite"></span>
         <button id="shareViewBtn" type="button" class="linkbtn" hidden>Copy link to this view</button>
         <button id="shareListBtn" type="button" class="linkbtn" hidden>Share my saved list</button>
-        <button id="csvBtn" type="button" class="linkbtn" hidden>Download CSV</button>
       </div>
     </section>
 
@@ -446,15 +447,10 @@ button.ghost { background: var(--chip); color: var(--ink); }
   <p class="muted sub">Share your saved (♥) places with friends, and keep the lists they send you. Their picks get a 👥 badge on the map. Everything stays on your phone.</p>
   <div class="frrow"><label for="frName"><b>Your name</b></label><input id="frName" maxlength="30" placeholder="shown on lists you share"><button type="button" class="ghost" id="frSave">Save</button><button type="button" id="frShare">Share my list</button></div>
   <h3 class="d-sub">Lists from friends</h3>
+  <p><button type="button" class="ghost" id="frOnly" hidden>👥 Show only friends' picks</button></p>
   <ul id="frList"></ul>
   <div class="dlg-actions"><button type="button" class="ghost" data-close>Close</button></div>
 </dialog>
-<div id="arView" hidden>
-  <video id="arVideo" autoplay playsinline muted></video>
-  <div id="arLabels"></div>
-  <button type="button" id="arClose">✕ Close</button>
-  <p class="arnote">Places within 800 m in the direction you point. Busyness is an estimate. Tap a label for details.</p>
-</div>
 <div id="netBanner" class="net" role="status" hidden>You're offline. Saved data still works; directions, menus and ratings links need internet.</div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
 <button type="button" id="sheetToggle" class="sheet-toggle">🗺 Show map</button>
@@ -489,7 +485,6 @@ button.ghost { background: var(--chip); color: var(--ink); }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
 <!--DATA-->
 <script>/* filled in by build/build.py: RAW, GEO, MAPD (+ inline streets for the single-file page) */</script>
 <!--/DATA-->
@@ -516,6 +511,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     rating: r[17] || 0, ratingSrc: r[18], priceSrc: r[19], pureVeg: !!(r[20] & 1), jain: !!(r[20] & 2), nonVeg: !!(r[20] & 4), vegOk: !!(r[20] & 8),
     sub: GEO.suburbs[r[14]].name, loc: GEO.locs[r[15]].name, zone: GEO.zones[r[16]].name,
     fac: r[22] || 0, seats: r[23] || 0,
+    weak: r[18] === "EazyDiner" && r[17] >= 4.95,          // a perfect 5.0 there usually means only a few reviews
   }));
   places.forEach((p) => { p.info = [p.address, p.hours, p.phone, p.website, p.menu, p.src, p.priceTwo].filter(Boolean).length + p.cuisine.length; });
 
@@ -525,6 +521,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
   const hash = (str) => { let h = 5381; for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0; return h.toString(36); };
   places.forEach((p) => { p.key = hash(`${p.name}|${p.lat.toFixed(4)}|${p.lng.toFixed(4)}`); });
   const byKey = new Map(places.map((p) => [p.key, p]));
+  const rk = (p) => (p.weak ? 4.0 : p.rating || 0);            // rating used for ranking
 
   // Favourites live in this browser only.
   const store = {
@@ -732,10 +729,10 @@ button.ghost { background: var(--chip); color: var(--ink); }
   map.addLayer(cluster);
   const CUP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Zm12 1h1.5a2.5 2.5 0 0 1 0 5H16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M7 3.5c0 1 1 1 1 2M11 3.5c0 1 1 1 1 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>';
   const FORK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v7m-2-7v4.5A2 2 0 0 0 7 10a2 2 0 0 0 2-2.5V3M7 10v11M16.5 3c-1.9 1.2-2.6 3.6-2.6 6.2 0 1.6.9 2.6 2.6 2.8V21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const icon = (p, hi) => L.divIcon({ className: "", html: `<div class="dot ${p.cat}${p.rating ? " rated" : ""}${hi ? " hi" : ""}">${p.cat === "cafe" ? CUP : FORK}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
+  const icon = (p, hi) => L.divIcon({ className: "", html: `<div class="dot ${p.cat}${p.rating ? " rated" : ""}${p.web ? " approx" : ""}${hi ? " hi" : ""}">${p.cat === "cafe" ? CUP : FORK}</div>`, iconSize: [22, 22], iconAnchor: [11, 11] });
   const markers = places.map((p) => {
     const m = L.marker([p.lat, p.lng], { icon: icon(p), title: p.name, keyboard: false });
-    m.bindTooltip(p.name, { direction: "top", offset: [0, -10] });
+    m.bindTooltip(p.web ? `${esc(p.name)} · approx. location` : esc(p.name), { direction: "top", offset: [0, -10] });
     m.on("click", () => openDetail(p, { fly: false }));
     return m;
   });
@@ -767,7 +764,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     return `<div class="line"><span class="lbl">Area</span><span>${esc(parts.join(" · "))}</span></div>`;
   };
   const rating = (p) => p.rating
-    ? `<div class="line"><span class="lbl">Rating</span><b class="stars">★ ${p.rating.toFixed(1)}</b><a class="muted" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">per ${esc(p.ratingSrc)}</a><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google ↗</a></div>`
+    ? `<div class="line"><span class="lbl">Rating</span><b class="stars">★ ${p.rating.toFixed(1)}</b>${p.weak ? `<span class="muted">few reviews</span>` : ""}<a class="muted" href="${esc(p.srcUrl)}" target="_blank" rel="noopener">per ${esc(p.ratingSrc)}</a><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">Google ↗</a></div>`
     : `<div class="line"><span class="lbl">Rating</span><a class="rate" href="${esc(gmaps(p))}" target="_blank" rel="noopener">★ See rating on Google</a></div>`;
 
   // ------------------------------------------------------------ nearest station (train, metro, monorail)
@@ -906,6 +903,7 @@ button.ghost { background: var(--chip); color: var(--ink); }
     current = rows;
     $("list").removeAttribute("aria-busy");
     syncUrl();
+    syncFilterBadge();
     if (resetMarkers !== false) {
       cluster.clearLayers();
       cluster.addLayers(rows.map((p) => markers[p.id]));
@@ -914,13 +912,12 @@ button.ghost { background: var(--chip); color: var(--ink); }
     const sort = $("sortBy").value;
     rows.forEach((p) => { p.d = km(p, ctr); });
     rows.sort(sort === "name" ? (a, b) => a.name.localeCompare(b.name)
-      : sort === "rating" ? (a, b) => (b.rating || 0) - (a.rating || 0) || a.d - b.d
+      : sort === "rating" ? (a, b) => rk(b) - rk(a) || a.d - b.d
       : sort === "cheap" ? (a, b) => (a.priceTwo || 1e9) - (b.priceTwo || 1e9) || a.d - b.d
       : sort === "info" ? (a, b) => b.info - a.info || a.d - b.d
       : (a, b) => a.d - b.d);
     renderPicks(rows);
     syncShareList();
-    if (heat) drawHeat();
     const total = places.filter(inArea).length;
     $("countLabel").textContent = `${rows.length.toLocaleString("en-IN")} of ${total.toLocaleString("en-IN")} places${state.areaName ? " in " + state.areaName : ""}`;
     if (!rows.length) {
@@ -1043,22 +1040,6 @@ button.ghost { background: var(--chip); color: var(--ink); }
     if (li) openDetail(places[+li.dataset.id]);
   });
 
-  // CSV through the viewer's download prompt, when this view offers it.
-  (async () => {
-    const dl = window.claude && (await window.claude.use("downloads").catch(() => null));
-    if (!dl) return;
-    const btn = $("csvBtn");
-    btn.hidden = false;
-    btn.addEventListener("click", async () => {
-      const cols = ["name", "kind", "cuisine", "address", "hours", "phone", "website", "lat", "lng"];
-      const q = (v) => `"${String(Array.isArray(v) ? v.join("; ") : v ?? "").replace(/"/g, '""')}"`;
-      const csv = "﻿" + [cols.join(","), ...current.map((p) => cols.map((k) => q(p[k])).join(","))].join("\r\n");
-      const slug = (state.areaName || "mumbai").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      try {
-        await dl.save({ filename: `${state.cat === "cafe" ? "cafes" : state.cat === "rest" ? "restaurants" : "cafes-restaurants"}-${slug}.csv`, data: csv });
-      } catch (err) { /* viewer declined the save */ }
-    });
-  })();
 
   // ------------------------------------------------------------ favourites
   const syncFavCount = () => { $("nFav").textContent = favs.size ? `(${favs.size})` : ""; };

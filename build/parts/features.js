@@ -31,7 +31,8 @@
   };
   state.mood = "";
   function moodOk(p) { return !state.mood || MOODS[state.mood].test(p); }
-  $("moods").innerHTML = Object.entries(MOODS).map(([k, m]) => `<button type="button" data-mood="${k}" aria-pressed="false">${m.label}</button>`).join("");
+  const CHIP_MOODS = ["work", "date", "family", "breakfast", "late"];            // the rest are understood by Food Match / search
+  $("moods").innerHTML = Object.entries(MOODS).filter(([k]) => CHIP_MOODS.includes(k)).map(([k, m]) => `<button type="button" data-mood="${k}" aria-pressed="false">${m.label}</button>`).join("");
   $("moods").addEventListener("click", (e) => {
     const b = e.target.closest("[data-mood]"); if (!b) return;
     state.mood = state.mood === b.dataset.mood ? "" : b.dataset.mood;
@@ -193,7 +194,7 @@
 
   // ------------------------------------------------------------ top picks
   function renderPicks(rows) {
-    const picks = rows.filter((p) => p.rating >= 4.3).sort((a, b) => b.rating - a.rating || (b.priceTwo ? 1 : 0) - (a.priceTwo ? 1 : 0)).slice(0, 12);
+    const picks = rows.filter((p) => p.rating >= 4.3 && !p.weak).sort((a, b) => b.rating - a.rating || (b.priceTwo ? 1 : 0) - (a.priceTwo ? 1 : 0)).slice(0, 12);
     $("picks").hidden = picks.length < 2;
     $("picksWhere").textContent = state.areaName ? `in ${state.areaName}` : "across the city";
     $("picksRow").innerHTML = picks.map((p) => `
@@ -215,37 +216,18 @@
     openDetail(p);
   });
 
-  // ------------------------------------------------------------ heatmap
-  let heat = null;
+  // ------------------------------------------------------------ map button: Near me
   const HeatCtl = L.Control.extend({
     options: { position: "topright" },
     onAdd() {
       const box = L.DomUtil.create("div", "leaflet-bar map-tools");
-      box.innerHTML = `<button type="button" id="heatBtn" aria-pressed="false" title="Show where places cluster">🔥 Heatmap</button>
-        <button type="button" id="surpriseMapBtn" title="Pick a random place">🎲 Surprise me</button>
-        <button type="button" id="locateMapBtn" title="Show places near you" hidden>📍 Near me</button>`;
+      box.innerHTML = `<button type="button" id="locateMapBtn" title="Show places near you">📍 Near me</button>`;
       L.DomEvent.disableClickPropagation(box);
       return box;
     },
   });
   map.addControl(new HeatCtl());
-  function drawHeat() {
-    if (heat) { heat.remove(); heat = null; }
-    if (!$("heatBtn").classList.contains("on") || typeof L.heatLayer !== "function") return;
-    heat = L.heatLayer(visible().map((p) => [p.lat, p.lng, p.rating ? 1 : 0.6]), {
-      radius: 22, blur: 18, maxZoom: 15, minOpacity: 0.35,
-      gradient: { 0.2: "#2b6cd1", 0.45: "#10b981", 0.65: "#facc15", 0.85: "#f97316", 1: "#dc2626" },
-    }).addTo(map);
-  }
-  $("heatBtn").addEventListener("click", (e) => {
-    if (typeof L.heatLayer !== "function") return toast("Heatmap isn't available offline");
-    const on = !e.currentTarget.classList.contains("on");
-    e.currentTarget.classList.toggle("on", on); e.currentTarget.setAttribute("aria-pressed", on);
-    if (on) { map.removeLayer(cluster); drawHeat(); toast("Heatmap on: brighter means more places"); }
-    else { drawHeat(); map.addLayer(cluster); }
-  });
-  $("surpriseMapBtn").addEventListener("click", () => $("surpriseBtn").click());
-  $("locateMapBtn").hidden = $("meBtn").hidden;                       // same rule as Near me in the list
+  $("locateMapBtn").closest(".map-tools").hidden = $("meBtn").hidden;   // same rule as Near me in the list
   $("locateMapBtn").addEventListener("click", () => $("meBtn").click());
 
   // ------------------------------------------------------------ smart search
@@ -261,7 +243,7 @@
     [/\bnear (a |the )?(station|metro|train)\b/, () => { $("fNear").checked = true; }],
     [/\bcafe?s?\b|\bcoffee\b/, () => setCat("cafe")],
     [/\brestaurants?\b|\bdinner\b|\blunch\b/, () => setCat("rest")],
-    [/\bcheap\b|\bbudget\b/, () => setMood("budget")],
+    [/\bcheap\b|\bbudget\b/, () => { state.budget = 300; syncDiscoverBanner(); }],   // combines with any mood
     [/\bdate\b|\bromantic\b/, () => setMood("date")],
     [/\blate( night)?\b/, () => setMood("late")],
     [/\bbreakfast\b/, () => setMood("breakfast")],
@@ -269,7 +251,13 @@
     [/\bwork\b|\blaptop\b|\bwifi\b/, () => setMood("work")],
   ];
   function setCat(c) { document.querySelector(`.seg [data-cat="${c}"]`).click(); }
-  function setMood(m) { if (state.mood !== m) document.querySelector(`#moods [data-mood="${m}"]`).click(); }
+  function setMood(m) {
+    if (state.mood === m) return;
+    state.mood = m;
+    document.querySelectorAll("#moods [data-mood]").forEach((x) => { const on = x.dataset.mood === m; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+    if (typeof syncDiscoverBanner === "function") syncDiscoverBanner();
+    state.shown = PAGE; render();
+  }
 
   function smartSearch(raw) {
     raw = deva(raw);

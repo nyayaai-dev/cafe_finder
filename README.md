@@ -18,7 +18,7 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
 - Place detail panel with weekly hours, nearby places and Compare (up to 3)
 - Smart search ("Bandra pizza", "Jain Kala Ghoda", a café name) with suggestions
 - Mood chips (Work-friendly, Date night, Under ₹500, Late night, Breakfast, Desserts),
-  Surprise me, heatmap, top picks, walking times with Near me, shareable saved lists
+  Surprise me, top picks, walking times with Near me, shareable saved lists
 - Nearest train, metro and monorail station for every place, with line, distance and walk or auto time;
   "Near a station" filter (about an 8-minute walk). Stations: `py build/fetch_transit.py` (data/transit.json)
 - Chain outlets across the region (build/fetch_chains.py): Domino's, KFC, Burger King, Pizza Hut, Baskin-Robbins,
@@ -36,8 +36,11 @@ Kalyan–Dombivli, and Navi Mumbai to Panvel, on an OpenStreetMap-style map.
   - Trending: dishes from 2025–26 coverage (sources linked) and guide-featured places nearby
   - Hidden gems: rated 4.3+, not a chain, not one of the famous names, not packed right now
   - Friends: share your list with your name; keep friends' lists; their picks get a badge and a filter
-  - AR view (phones): camera + compass labels for places within 800 m in the direction you point
-  - Moods: work/study, celebration, business meeting, family outing, party, date night, budget, late night, breakfast, desserts
+  - Moods: five chips (work/study, family outing, date night, late night, breakfast); celebration, business, party, budget
+    and desserts are understood by Food Match and search
+  - Filters live in one ⚙️ Filters panel with a count badge; Pure veg and Open now stay one tap away
+  - Approximate pins (listing-site places pinned at their area or mall) have a dashed outline;
+    EazyDiner 5.0 ratings (usually very few reviews) are labelled and ranked as 4.0
   - How busy: typical busyness by hour, best time to visit and likely wait (an estimate from typical patterns, not live)
   - Facilities: Wi-Fi, seating, AC, wheelchair access, takeaway, delivery (OpenStreetMap), public parking within 300 m
     and EV charging within 1 km; Wi-Fi / outdoor / parking filters. Data: `py build/fetch_facilities.py`

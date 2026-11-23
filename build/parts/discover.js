@@ -208,7 +208,7 @@
   // ------------------------------------------------------------ hidden gems
   const FAMOUS = /leopold|bademiya|britannia|kyani|mondegar|pop tate|social|starbucks|theobroma|cafe madras|ram ashray|bastian|trishna|gajalee|mahesh lunch|jimmy boy|yazdani|olive|masque|bombay canteen/i;
   function isGem(p) {
-    if (!(p.rating >= 4.3) || isChain(p) || FAMOUS.test(p.name)) return false;
+    if (!(p.rating >= 4.3) || p.weak || isChain(p) || FAMOUS.test(p.name)) return false;
     const c = costPP(p);
     if (!c.est && c.v > 900) return false;                      // not the fancy, much-talked-about places
     const v = crowdNow(p);
@@ -274,6 +274,7 @@
   }
   function syncDiscoverBanner() {
     const bits = [];
+    if (state.mood && !CHIP_MOODS.includes(state.mood)) bits.push(MOODS[state.mood].label);
     if (state.chain) bits.push(`🏷️ ${state.chain}`);
     if (state.dish) bits.push(`${DISHES[state.dish].icon} ${DISHES[state.dish].label}`);
     if (state.budget) bits.push(`💰 up to ₹${state.budget.toLocaleString("en-IN")} a person`);
@@ -282,11 +283,12 @@
     $("discoverBanner").hidden = !bits.length;
     $("discoverText").textContent = bits.join(" · ");
     document.querySelectorAll("[data-tool=gems]").forEach((b) => b.classList.toggle("on", state.gems));
-    document.querySelectorAll("[data-tool=friends]").forEach((b) => b.classList.toggle("on", state.friendsOnly));
-    $("friendsTool").hidden = !Object.keys(friends).length;
+    $("frOnly").hidden = !Object.keys(friends).length;
+    $("frOnly").textContent = state.friendsOnly ? "Show everyone's places" : "👥 Show only friends' picks";
   }
   $("discoverClear").addEventListener("click", () => {
     state.dish = ""; state.budget = 0; state.gems = false; state.friendsOnly = false; state.chain = "";
+    if (state.mood && !CHIP_MOODS.includes(state.mood)) state.mood = "";
     syncDiscoverBanner(); state.shown = PAGE; render();
   });
   function applyDiscover(patch) {
@@ -338,7 +340,7 @@
     const ctr = state.me || map.getCenter();
     const pool = visible().filter((p) => costPP(p).v <= pp && mealOk(p));
     pool.forEach((p) => { p._bd = km(p, ctr); });
-    pool.sort((a, b) => (b.rating || 0) - (a.rating || 0) || (costPP(a).est - costPP(b).est) || a._bd - b._bd);
+    pool.sort((a, b) => rk(b) - rk(a) || (costPP(a).est - costPP(b).est) || a._bd - b._bd);
     return { pp, people, total, pool };
   }
   function drawBudget() {
@@ -431,7 +433,7 @@
       if (cu && p.cuisine.includes(cu)) { s += 3; hits.push(cu); }
       if (moodHit && moodHit[1].test(p)) { s += 2; }
       if ((dishes.size || cu) && !s) continue;                          // asked for food it doesn't serve
-      s += (p.rating || 3.6) * 0.8;
+      s += (p.weak ? 4.0 : p.rating || 3.6) * 0.8;
       const dist = km(p, ctr);
       s -= area ? 0 : Math.min(3, dist * 0.35);
       scored.push({ p, s, hits, dist });
@@ -485,8 +487,7 @@
     const ctr = state.me || map.getCenter();
     const where = state.me ? "near you" : "near the map centre";
     const guide = places.filter((p) => p.rating && p.src).map((p) => [km(p, ctr), p]).filter(([d]) => d <= 6)
-      .sort((a, b) => b[1].rating - a[1].rating || a[0] - b[0]).slice(0, 8);
-    const gems = places.filter(isGem).map((p) => [km(p, ctr), p]).sort((a, b) => a[0] - b[0]).slice(0, 5);
+      .sort((a, b) => rk(b[1]) - rk(a[1]) || a[0] - b[0]).slice(0, 8);
     const item = ([d, p]) => `<li><button type="button" data-open="${p.key}"><span class="nm">${esc(p.name)}</span>
       <span class="muted">★ ${p.rating.toFixed(1)} (${esc(p.ratingSrc)}) · ${esc(p.loc === p.sub ? p.sub : p.loc)} · ${fmtKm(d)}</span></button></li>`;
     $("trendBody").innerHTML = `
@@ -495,13 +496,13 @@
       <h3 class="d-sub">Hot right now ${where}</h3>
       <p class="muted small">Places featured in current food guides and listings (checked November 2026), best rated first.</p>
       <ul class="near">${guide.map(item).join("") || `<li class="muted">None within 6 km. Move the map to a busier area.</li>`}</ul>
-      <h3 class="d-sub">Rising hidden gems ${where}</h3>
-      <ul class="near">${gems.map(item).join("") || `<li class="muted">None found nearby.</li>`}</ul>`;
+      <p><button type="button" class="linkbtn" id="trGems">💎 See hidden gems</button></p>`;
   }
   $("trendBody").addEventListener("click", (e) => {
     const b = e.target.closest("[data-dish]");
     if (b) { $("trendDlg").close(); return pickDish(b.dataset.dish); }
     if (e.target.closest("[data-open]")) $("trendDlg").close();
+    if (e.target.id === "trGems") { $("trendDlg").close(); applyDiscover({ gems: true }); }
   });
 
   // ------------------------------------------------------------ Friends' picks
@@ -517,6 +518,7 @@
     if (s) { $("friendsDlg").close(); showSharedList(friends[s.dataset.frshow], s.dataset.frshow); return; }
     if (d) { delete friends[d.dataset.frdel]; store.set("cf-friends", friends); drawFriends(); syncDiscoverBanner(); render(false); }
   });
+  $("frOnly").addEventListener("click", () => { $("friendsDlg").close(); applyDiscover({ friendsOnly: !state.friendsOnly }); });
   $("frSave").addEventListener("click", () => { store.set("cf-myname", $("frName").value.trim().slice(0, 30)); toast("Name saved: your shared lists will show it"); });
   $("frShare").addEventListener("click", () => { store.set("cf-myname", $("frName").value.trim().slice(0, 30)); $("friendsDlg").close(); $("shareListBtn").click(); });
   $("listKeep").addEventListener("click", () => { if (state.list) keepFriendList(state.listFrom, [...state.list]); });
@@ -527,63 +529,23 @@
     toast(`Kept as ${n}'s picks. Turn on 👥 Friends' picks to see them`);
   }
 
-  // ------------------------------------------------------------ AR view (phones)
-  const ar = { on: false, stream: null, heading: null, raf: 0, onOri: null };
-  const canAR = () => SITE && window.isSecureContext && "geolocation" in navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && matchMedia("(pointer: coarse)").matches;
-  $("arTool").hidden = !canAR();
-  function bearing(a, b) {
-    const r = Math.PI / 180, y = Math.sin((b.lng - a.lng) * r) * Math.cos(b.lat * r);
-    const x = Math.cos(a.lat * r) * Math.sin(b.lat * r) - Math.sin(a.lat * r) * Math.cos(b.lat * r) * Math.cos((b.lng - a.lng) * r);
-    return (Math.atan2(y, x) / r + 360) % 360;
+
+  // ------------------------------------------------------------ Filters panel
+  const PANEL_CHECKS = ["fJain", "fNon", "fRated", "fNear", "fWifi", "fOutdoor", "fPark", "fFav"];
+  function syncFilterBadge() {
+    const n = PANEL_CHECKS.filter((id) => $(id).checked).length + ($("cuisine").value ? 1 : 0) + ($("filterText").value.trim() ? 1 : 0);
+    $("nFilters").hidden = !n; $("nFilters").textContent = n;
+    $("filtersBtn").classList.toggle("on", n > 0);
   }
-  function drawAR() {
-    ar.raf = 0;
-    if (!ar.on) return;
-    const me = state.me, box = $("arLabels");
-    if (!me || ar.heading === null) { box.innerHTML = `<p class="armsg">${!me ? "Finding your location…" : "Move your phone in a figure-8 to calibrate the compass."}</p>`; return; }
-    const near = visible().map((p) => [km(p, me), p]).filter(([d]) => d <= 0.8).sort((a, b) => a[0] - b[0]).slice(0, 30);
-    const FOV = 30, W = innerWidth, Hh = innerHeight;
-    const shown = [];
-    for (const [d, p] of near) {
-      let rel = ((bearing(me, p) - ar.heading + 540) % 360) - 180;
-      if (Math.abs(rel) > FOV) continue;
-      const x = W / 2 + (rel / FOV) * (W / 2), y = Hh * 0.28 + Math.min(1, d / 0.8) * Hh * 0.42;
-      const v = crowdNow(p), o = openNow(p.hours);
-      shown.push(`<button type="button" class="arlab" data-open="${p.key}" style="left:${Math.round(x)}px;top:${Math.round(y)}px">
-        <b>${esc(p.name)}</b><span>${p.rating ? "★ " + p.rating.toFixed(1) + " · " : ""}${fmtKm(d)} · ${walkMin(d)} min${o === true ? " · open" : o === false ? " · closed" : ""}${v !== null ? " · " + level(v)[1].toLowerCase() : ""}</span></button>`);
-    }
-    box.innerHTML = shown.join("") || `<p class="armsg">No places in this direction within 800 m. Turn around slowly.</p>`;
-  }
-  const queueAR = () => { if (!ar.raf) ar.raf = requestAnimationFrame(drawAR); };
-  async function startAR() {
-    try {
-      if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
-        const r = await DeviceOrientationEvent.requestPermission(); if (r !== "granted") throw new Error("Compass access was not allowed.");
-      }
-      ar.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false });
-    } catch (e) { toast(e && e.message ? e.message : "Camera or compass not available"); return; }
-    $("arVideo").srcObject = ar.stream;
-    $("arView").hidden = false; ar.on = true; ar.heading = null;
-    ar.onOri = (e) => {
-      let h = null;
-      if (typeof e.webkitCompassHeading === "number") h = e.webkitCompassHeading;                // iPhone
-      else if (e.absolute && typeof e.alpha === "number") h = (360 - e.alpha) % 360;           // Android
-      if (h !== null) { ar.heading = h; queueAR(); }
-    };
-    addEventListener("deviceorientationabsolute", ar.onOri);
-    addEventListener("deviceorientation", ar.onOri);
-    if (!state.me) $("meBtn").click();
-    queueAR();
-  }
-  function stopAR() {
-    ar.on = false; $("arView").hidden = true;
-    removeEventListener("deviceorientationabsolute", ar.onOri); removeEventListener("deviceorientation", ar.onOri);
-    if (ar.stream) ar.stream.getTracks().forEach((t) => t.stop());
-    ar.stream = null;
-  }
-  $("arClose").addEventListener("click", stopAR);
-  $("arLabels").addEventListener("click", (e) => { const b = e.target.closest("[data-open]"); if (b) { stopAR(); } });
-  map.on("moveend", () => { if (ar.on) queueAR(); });
+  $("filtersBtn").addEventListener("click", () => {
+    const open = $("morePanel").hidden;
+    $("morePanel").hidden = !open; $("filtersBtn").setAttribute("aria-expanded", open);
+  });
+  $("filtersReset").addEventListener("click", () => {
+    PANEL_CHECKS.forEach((id) => { $(id).checked = false; });
+    $("filterText").value = ""; $("cuisine").value = "";
+    state.shown = PAGE; render();
+  });
 
   // ------------------------------------------------------------ tools row
   $("tools").addEventListener("click", (e) => {
@@ -595,9 +557,7 @@
     else if (t === "budget") { drawBudget(); $("budgetDlg").showModal(); }
     else if (t === "trend") { drawTrending(); $("trendDlg").showModal(); }
     else if (t === "gems") applyDiscover({ gems: !state.gems });
-    else if (t === "friends") applyDiscover({ friendsOnly: !state.friendsOnly });
     else if (t === "friendlist") { drawFriends(); $("friendsDlg").showModal(); }
-    else if (t === "ar") startAR();
   });
   document.querySelectorAll("dialog [data-close]").forEach((b) => b.addEventListener("click", () => b.closest("dialog").close()));
   syncDiscoverBanner();
