@@ -93,7 +93,7 @@ print(f"hotspots: {enriched} map places given ratings/cost, {added} added from l
 chains_path = os.path.join(DATA_DIR, "chains.json")
 if os.path.exists(chains_path):
     def brand_key(n):
-        k = re.sub(r"[^a-z]", "", n.lower().replace("café", "cafe"))
+        k = re.sub(r"[^a-z]", "", re.sub(r"^the\s+", "", n.lower().replace("café", "cafe")))
         return re.sub(r"pizza$|coffeeroasters$|coffee$|restaurant$", "", k) or k
     by_brand = {}
     for it in items:
@@ -101,7 +101,7 @@ if os.path.exists(chains_path):
     ch_added = ch_merged = 0
     for c in json.load(open(chains_path, encoding="utf-8")):
         bk = brand_key(c["name"])[:8]
-        near = next((it for it in by_brand.get(bk, []) if math.hypot((it["lat"] - c["lat"]) * 111, (it["lng"] - c["lng"]) * 105) <= 0.25), None)
+        near = next((it for it in by_brand.get(bk, []) if math.hypot((it["lat"] - c["lat"]) * 111, (it["lng"] - c["lng"]) * 105) <= c.get("radius", 0.25)), None)
         if near:                                       # same outlet already mapped: fill its gaps
             for k in ("hours", "phone", "website"):
                 if not near.get(k) and c.get(k):

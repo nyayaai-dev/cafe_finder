@@ -49,6 +49,19 @@ def key(name):
     return re.sub(r"[\W_]+", "", n)
 
 
+CHAINS = ["mcdonald", "burgerking", "kfc", "domino", "pizzahut", "subway", "starbucks", "tacobell", "baskin", "chaayos", "thirdwave",
+          "monginis", "theobroma", "naturals", "naturalicecream", "kailashparbat", "bhagattarachand", "jumboking", "cafecoffeeday", "caffecoffeeday",
+          "poptate", "haldiram", "wowmomo", "wowchina", "belgianwaffle", "barbequenation", "copperchimney", "maheshlunch", "shivsagar",
+          "bananaleaf", "birdy", "tibb", "bluetokai", "teavilla", "ribbonsballoons", "creamcentre", "prashantcorner", "mamledar", "goli",
+          "bikanervala", "persiandarbar", "gajalee", "mainlandchina", "barista", "sbarro", "keventers", "madoverdonuts", "loveandcheesecake"]
+
+
+def chain_key(name):
+    k = re.sub(r"[^a-z]", "", re.sub(r"^the\s+", "", unicodedata.normalize("NFKD", name).lower().replace("&", "and")))
+    k = k.replace("dominoes", "domino").replace("ribbonsandballoons", "ribbonsballoons")
+    return next((c for c in CHAINS if k.startswith(c)), "")
+
+
 def km(a, b):
     return math.hypot((a["lat"] - b["lat"]) * 111.0, (a["lng"] - b["lng"]) * 105.0)
 
@@ -131,6 +144,27 @@ def run(items):
                 kept[kept.index(near)] = merge(near, it)
                 merged += 1
         result.extend(kept)
+
+    # Chain outlets entered twice under different spellings ("Domino's Piza", "Dominoes"): one outlet
+    # if the same known chain is within 60 m. Limited to known chains so local names never collide.
+    by_chain, final = {}, []
+    for it in result:
+        ck = chain_key(it["name"])
+        if not ck:
+            final.append(it)
+            continue
+        lst = by_chain.setdefault(ck, [])
+        near = next((x for x in lst if km(x, it) <= 0.06), None)
+        if near is None:
+            lst.append(it)
+            final.append(it)
+        else:
+            keep = merge(near, it)
+            if keep is not near:
+                final[final.index(near)] = keep
+                lst[lst.index(near)] = keep
+            merged += 1
+    result = final
 
     veg_n = jain_n = 0
     for it in result:

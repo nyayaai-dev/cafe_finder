@@ -229,6 +229,18 @@
     ["Chaayos", "🫖", /^chaayos/i], ["Baskin-Robbins", "🍨", /^baskin/i], ["Kailash Parbat", "🍛", /^kailash parbat/i],
     ["Bhagat Tarachand", "🍛", /^bhagat tarachand/i], ["Jumbo King", "🍔", /^jumbo king/i], ["Wow! Momo", "🥟", /^wow!? ?momo/i],
     ["Haldiram's", "🍛", /^haldiram/i], ["Theobroma", "🍰", /^theobroma/i],
+    ["Monginis", "🎂", /^monginis/i], ["Merwans", "🧁", /merwan/i], ["Birdy's", "🍰", /^birdy/i], ["Ribbons & Balloons", "🎂", /^ribbons/i],
+    ["Candies", "🥪", /^candies\b/i], ["Grandmama's Cafe", "☕", /^grandmama/i], ["Blue Tokai", "☕", /^blue tokai/i], ["Tea Villa", "🫖", /^tea villa/i],
+    ["Natural Ice Cream", "🍨", /^natural'?s?\b/i], ["The Belgian Waffle Co.", "🧇", /^(the )?belgian waffle/i], ["Bachelorr's", "🥤", /^bachelorr?'?s/i],
+    ["Havmor", "🍨", /^havmor/i], ["Giani's", "🍨", /^giani/i], ["Love & Cheesecake", "🍰", /love (&|and) cheesecake/i], ["Keventers", "🥤", /^keventers/i],
+    ["Mad Over Donuts", "🍩", /^mad over donuts/i], ["Shiv Sagar", "🍛", /^shiv ?sagar/i], ["Sukh Sagar", "🍛", /^sukh ?sagar/i],
+    ["Cream Centre", "🍛", /^cream cent(re|er)/i], ["Prashant Corner", "🍬", /^prashant corner/i], ["Mamledar Misal", "🌶️", /mamledar/i],
+    ["Goli Vada Pav", "🍔", /^goli\b/i], ["Tibb's Frankie", "🌯", /^tibb/i], ["Bikanervala", "🍛", /^bikanervala/i], ["Banana Leaf", "🍌", /^banana leaf/i],
+    ["Jaffer Bhai's Delhi Darbar", "🍛", /jaffer ?bhai/i], ["Behrouz Biryani", "🍛", /^behrouz/i], ["Faasos", "🌯", /^faasos/i], ["Box8", "🍱", /^box ?8/i],
+    ["Charcoal Eats", "🍛", /^charcoal eats/i], ["Copper Chimney", "🍛", /^copper chimney/i], ["Persian Darbar", "🍛", /^persian darbar/i],
+    ["Mahesh Lunch Home", "🦀", /^mahesh lunch/i], ["Gajalee", "🐟", /^gajalee/i], ["Popeyes", "🍗", /^popeyes/i], ["Wow! China", "🥡", /^wow!? ?china/i],
+    ["Mainland China", "🥡", /^mainland china/i], ["Social", "🍻", /\bsocial$/i], ["Pop Tate's", "🍕", /^pop ?tate/i], ["Barbeque Nation", "🍢", /^barbeque nation/i],
+    ["Sigree Global Grill", "🍢", /^sigree/i], ["Chili's", "🌶️", /^chili'?s/i], ["Sbarro", "🍕", /^sbarro/i],
   ];
   state.chain = "";
   const chainRe = (name) => (CHAINS.find(([n]) => n === name) || [])[2];

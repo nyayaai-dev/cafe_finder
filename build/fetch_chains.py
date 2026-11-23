@@ -31,6 +31,7 @@ ATP = {
     "chaayos_in": ("Chaayos", 0, "Cafe", "Tea", 8),
     "taco_bell_in": ("Taco Bell", 1, "Fast food", "Mexican", 12),
     "third_wave_coffee_in": ("Third Wave Coffee Roasters", 0, "Cafe", "Coffee Shop", 8),
+    "monginis_in": ("Monginis", 0, "Bakery cafe", "Cake;Bakery", 8),
 }
 
 BT = ("Bhagat Tarachand", 1, "Restaurant", "North Indian;Vegetarian", 3, "https://bhagattarachand.com/locations/")
@@ -70,6 +71,31 @@ def tidy(s):
     return " ".join(s.split())
 
 
+CHAIN_RE = ("Theobroma|Monginis|Merwan|Birdy|Ribbons ?(&|and) ?Balloons|Candies|Grandmama|Starbucks|Coffee Day|Third Wave|Blue Tokai|Tea Villa|"
+            "Natural'?s? Ice ?Cream|Naturals|Belgian Waffle|Bachelorr?'?s|Havmor|Baskin|Giani|Love ?(&|and) ?Cheesecake|Haldiram|Shiv ?Sagar|Sukh ?Sagar|"
+            "Bhagat Tarachand|Cream Cent(re|er)|Kailash Parbat|Prashant Corner|Mamledar|Jumbo King|Goli|Tibb'?s|Bikanervala|Banana Leaf|Jaffer ?Bhai|"
+            "Behrouz|Faasos|Box8|Charcoal Eats|Copper Chimney|Persian Darbar|Mahesh Lunch|Gajalee|Domino|Pizza Hut|McDonald|Burger King|KFC|Subway|"
+            "Popeyes|Taco Bell|Wow! ?Momo|Wow! ?China|Mainland China|Social|Pop Tate|Barbeque Nation|Sigree|Chili'?s")
+
+
+def osm_chains():
+    """All OpenStreetMap places in the region named / branded as one of the chains (cafes, restaurants, bakeries…)."""
+    import time, urllib.parse
+    bb = "18.85,72.74,19.35,73.21"
+    q = (f'[out:json][timeout:200];('
+         f'nwr["name"~"{CHAIN_RE}",i]["amenity"~"^(cafe|restaurant|fast_food|ice_cream|food_court|bar|pub)$"]({bb});'
+         f'nwr["name"~"{CHAIN_RE}",i]["shop"~"^(bakery|confectionery|ice_cream|pastry|coffee|tea|deli|chocolate|food|sweets)$"]({bb});'
+         f'nwr["brand"~"{CHAIN_RE}",i]["amenity"]({bb});nwr["brand"~"{CHAIN_RE}",i]["shop"]({bb}););out tags center;')
+    for m in ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"] * 4:
+        try:
+            req = urllib.request.Request(m, data=urllib.parse.urlencode({"data": q}).encode(), headers={"User-Agent": UA})
+            return json.loads(urllib.request.urlopen(req, timeout=220).read())["elements"]
+        except Exception as e:
+            print("  overpass retry:", str(e)[:60])
+            time.sleep(12)
+    raise RuntimeError("OpenStreetMap chain query failed")
+
+
 def fetch(url):
     with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=240) as r:
         return r.read()
@@ -102,6 +128,47 @@ def main():
                     "kind": kind, "rest": rest, "cuisine": cuisine, "diet": diet, "src": f"{name} outlet list",
                     "srcUrl": url, "approx": 1})
     print(f"  Bhagat Tarachand + Kailash Parbat: {len(MANUAL)} outlets from their own pages")
+
+    # OpenStreetMap outlets of the chains (incl. bakeries / dessert shops the places download skips).
+    els = osm_chains()
+    n = 0
+    for e in els:
+        t = e.get("tags", {})
+        name = t.get("name") or t.get("brand")
+        lat = e.get("lat") or (e.get("center") or {}).get("lat")
+        lng = e.get("lon") or (e.get("center") or {}).get("lon")
+        if not name or lat is None or not inside(lat, lng):
+            continue
+        a, s = t.get("amenity", ""), t.get("shop", "")
+        kind = ("Fast food" if a == "fast_food" else "Cafe" if a == "cafe" or s in ("coffee", "tea") else
+                "Dessert & ice cream" if a == "ice_cream" or s in ("ice_cream", "confectionery", "chocolate") else
+                "Bakery cafe" if s in ("bakery", "pastry") else "Food court" if a == "food_court" else "Restaurant")
+        addr = ", ".join(x for x in (t.get("addr:housenumber"), t.get("addr:street"), t.get("addr:suburb")) if x)
+        out.append({"name": name, "lat": round(lat, 6), "lng": round(lng, 6), "address": tidy(addr), "hours": t.get("opening_hours", ""),
+                    "phone": t.get("phone", ""), "website": t.get("website", ""), "kind": kind,
+                    "rest": 1 if kind in ("Restaurant", "Fast food") else 0, "cuisine": ";".join(c.strip().replace("_", " ").title() for c in t.get("cuisine", "").split(";") if c.strip()),
+                    "diet": 1 if t.get("diet:vegetarian") == "only" else 0, "src": "OpenStreetMap",
+                    "srcUrl": f"https://www.openstreetmap.org/{e['type']}/{e['id']}", "approx": 0})
+        n += 1
+    print(f"  OpenStreetMap chain outlets: {n}")
+
+    # Malls: outlets listed on the malls' own websites (data/mall_outlets.json), pinned at the mall.
+    malls = json.load(open(os.path.join(HERE, "..", "data", "mall_outlets.json"), encoding="utf-8"))["malls"]
+    KIND = {"restaurant": ("Restaurant", 1), "fast food": ("Fast food", 1), "food court": ("Fast food", 1), "cafe": ("Cafe", 0),
+            "dessert": ("Dessert & ice cream", 0), "bakery": ("Bakery cafe", 0), "bar": ("Restaurant", 1)}
+    n = 0
+    for m in malls:
+        seen = set()
+        for name, typ in m["outlets"]:
+            if name.lower() in seen:
+                continue
+            seen.add(name.lower())
+            kind, rest = KIND.get(typ, ("Restaurant", 1))
+            out.append({"name": name, "lat": m["lat"], "lng": m["lng"], "address": m["mall"], "hours": "", "phone": "", "website": "",
+                        "kind": kind, "rest": rest, "cuisine": "", "diet": 0, "src": m["mall"] + " directory", "srcUrl": m["source"],
+                        "approx": 1, "radius": 0.4})
+            n += 1
+    print(f"  Mall directories: {n} outlets in {len(malls)} malls")
     json.dump(out, open(os.path.join(HERE, "..", "data", "chains.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=0)
     print(len(out), "chain outlets written")
 
