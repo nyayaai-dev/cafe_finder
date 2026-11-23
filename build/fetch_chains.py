@@ -63,6 +63,13 @@ def inside(lat, lng, poly=OUTLINE):
     return res
 
 
+def tidy(s):
+    """Undo common mis-encoded punctuation in source addresses (e.g. 'â€œ' for '“')."""
+    for bad, good in (("â€œ", "“"), ("â€�", "”"), ("â€\x9d", "”"), ("â€™", "’"), ("â€˜", "‘"), ("â€“", "–"), ("â€”", "—"), ("Â", ""), ("�", "")):
+        s = s.replace(bad, good)
+    return " ".join(s.split())
+
+
 def fetch(url):
     with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=240) as r:
         return r.read()
@@ -84,7 +91,7 @@ def main():
             if not inside(lat, lng):
                 continue
             addr = p.get("addr:full") or ", ".join(x for x in (p.get("addr:street_address"), p.get("addr:city")) if x)
-            out.append({"name": name, "lat": round(lat, 6), "lng": round(lng, 6), "address": addr.strip(" ,")[:160],
+            out.append({"name": name, "lat": round(lat, 6), "lng": round(lng, 6), "address": tidy(addr).strip(" ,")[:160],
                         "hours": p.get("opening_hours", ""), "phone": p.get("phone", ""), "website": p.get("website", ""),
                         "kind": kind, "rest": rest, "cuisine": cuisine, "diet": diet, "src": f"{name} store locator",
                         "srcUrl": p.get("website") or f"https://www.alltheplaces.xyz/", "approx": 0})
